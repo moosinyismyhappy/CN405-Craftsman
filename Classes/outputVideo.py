@@ -1,6 +1,8 @@
 import cv2
 import threading
 from threading import Thread
+from mouseDetection import *
+
 
 class outputVideo(Thread):
 
@@ -8,16 +10,20 @@ class outputVideo(Thread):
         super().__init__()
         self.inputVideo = inputVid
 
+        # Create mouseDetection
+        self.mouse = mouseDetection()
+
+        self.window_name = 'Multiple color detection'
+
     def __show_stream_image(self):
 
         print('start show video ...')
 
         while True:
 
-            # hsv_frame = cv2.cvtColor(self.stream_image, cv2.COLOR_BGR2HSV)
-
             try:
-                cv2.imshow('Multiple color detection', self.inputVideo.get_stream_image())
+                cv2.imshow(self.window_name, self.inputVideo.get_stream_image())
+                self.mouse.start_mouse_detection(self.window_name, self.inputVideo.get_hsv_image())
 
             except Exception:
                 print('Connecting ...')

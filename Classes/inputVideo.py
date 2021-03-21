@@ -9,6 +9,7 @@ class inputVideo(Thread):
         self.video_src = cv2.VideoCapture(src_num)
         self.stream_image = None
         self.camera_status = True
+        self.hsv_image = None
 
     # set to private method
     def __save_stream_image(self):
@@ -39,6 +40,10 @@ class inputVideo(Thread):
 
     def set_camera_status(self,statusVal):
         self.camera_status = statusVal
+
+    def get_hsv_image(self):
+        self.hsv_image = cv2.cvtColor(self.get_stream_image(), cv2.COLOR_BGR2HSV)
+        return self.hsv_image
 
     def run(self):
 
