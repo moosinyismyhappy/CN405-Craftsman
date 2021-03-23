@@ -25,21 +25,25 @@ class MouseDetection(Thread):
     def __mouse_detection_process(self, event, x, y, flags, param):
         if event is cv2.EVENT_LBUTTONDOWN:
             if not self.is_left_first_click():
-                self.color_left_hand.set_hsv(x, y)
+                self.color_left_hand.set_x_y(x, y)
+                self.color_left_hand.set_hsv()
             else:
                 print('Starting color detection - Left Hand ...')
                 self.color_left_hand = ColorDetection(self.image_storage)
-                self.color_left_hand.set_hsv(x, y)
+                self.color_left_hand.set_x_y(x, y)
+                self.color_left_hand.set_hsv()
                 self.color_left_hand.start()
                 self.left_first_click = False
 
         elif event is cv2.EVENT_RBUTTONDOWN:
             if not self.is_right_first_click():
-                self.color_right_hand.set_hsv(x, y)
+                self.color_right_hand.set_x_y(x,y)
+                self.color_right_hand.set_hsv()
             else:
                 print('Starting color detection - right Hand ...')
                 self.color_right_hand = ColorDetection(self.image_storage)
-                self.color_right_hand.set_hsv(x, y)
+                self.color_right_hand.set_x_y(x, y)
+                self.color_right_hand.set_hsv()
                 self.color_right_hand.start()
                 self.right_first_click = False
 
