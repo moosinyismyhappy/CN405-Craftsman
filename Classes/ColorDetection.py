@@ -10,15 +10,15 @@ class ColorDetection(Thread):
     def __init__(self, input_storage):
         super().__init__()
         self.image_storage = input_storage
-        self.bg = cv2.imread('../resources/images/black_background.png')
+        self.background = cv2.imread('../resources/images/black_background.png')
         self.x_cord = None
-        self.y_cord  = None
+        self.y_cord = None
         self.is_first_track = True
         self.hsv_image = None
         self.hsv_list = None
         self.hsv_lower = None
         self.hsv_upper = None
-        self.hsv_range = 0.15
+        self.hsv_range = 0.20
         self.w = -1
         self.h = -1
         self.x = -1
@@ -55,17 +55,17 @@ class ColorDetection(Thread):
         # combine hsv separate value to list
         self.hsv_lower = [h_lower, s_lower, v_lower]
 
-    def set_x_y(self,x,y):
+    def set_x_y(self, x, y):
         self.x_cord = x
         self.y_cord = y
 
     def get_x_y(self):
-        return self.x_cord,self.y_cord
+        return self.x_cord, self.y_cord
 
     def set_hsv(self):
         temp_x = self.get_x_y()[0]
         temp_y = self.get_x_y()[1]
-        self.hsv_list = list(self.image_storage.get_hsv_image()[temp_y,temp_x])
+        self.hsv_list = list(self.image_storage.get_hsv_image()[temp_y, temp_x])
         self.__hsv_lower_process()
         self.__hsv_upper_process()
 
@@ -75,11 +75,12 @@ class ColorDetection(Thread):
     def detect_color(self):
         print('Detecting color ...')
         while True:
-
-            cv2.imshow('test',self.bg)
-            cv2.waitKey(1)
-
             try:
+                # Create new window to show tracking
+                cv2.imshow('Tracking', self.background)
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+
                 color_lower = np.array([self.hsv_lower[0], self.hsv_lower[1], self.hsv_lower[2]])
                 color_upper = np.array([self.hsv_upper[0], self.hsv_upper[1], self.hsv_upper[2]])
                 color_mask = cv2.inRange(self.image_storage.get_hsv_image(), color_lower, color_upper)
@@ -107,41 +108,37 @@ class ColorDetection(Thread):
                     center = int((2 * self.x + self.w) / 2), int((2 * self.y + self.h) / 2)
 
                     # Tracking
-                    self.tracking_detection(temp,center)
+                    self.tracking_detection(temp, center)
                     self.is_first_track = False
                     self.count += 1
-
-                    # Draw Circle over temp image
-                    #cv2.circle(temp, center, 2, (255, 255, 0), 2)
 
                     # add detected image to image storage
                     self.image_storage.add_detected_image(temp)
 
-    def tracking_detection(self,input_image,input_cord):
-
+    def tracking_detection(self, input_image, input_cord):
         if not self.is_first_track:
-
-            if self.count%2 == 0:
+            if self.count % 2 == 0:
                 self.prev = self.curr
                 self.curr = input_cord
                 self.prev_status = self.curr_status
 
                 diff_x = self.curr[0] - self.prev[0]
                 diff_y = self.curr[1] - self.prev[1]
-                #print(self.curr,self.prev,diff_x,diff_y,self.count)
+                # print(self.curr,self.prev,diff_x,diff_y,self.count)
 
                 if diff_x and diff_y > 0:
-                    self.curr_status = (1,1)
+                    self.curr_status = (1, 1)
                 elif diff_x and diff_y < 0:
-                    self.curr_status = (-1,-1)
+                    self.curr_status = (-1, -1)
                 elif diff_x > 0 and diff_y < 0:
-                    self.curr_status = (1,-1)
+                    self.curr_status = (1, -1)
                 elif diff_x < 0 and diff_y > 0:
-                    self.curr_status = (-1,1)
+                    self.curr_status = (-1, 1)
 
                 if self.prev_status != self.curr_status:
-                    print('Change Direction from',self.prev_status,self.prev,'to',self.curr_status,self.curr,'with diff',diff_x,diff_y)
-                    cv2.circle(self.bg, input_cord , 2, (255, 255, 0), 2)
+                    print('Change Direction from', self.prev_status, self.prev, 'to', self.curr_status, self.curr,
+                          'with diff', diff_x, diff_y)
+                    cv2.circle(self.background, input_cord, 2, (255, 255, 0), 2)
 
                 # Restart counter
                 self.count = 0
@@ -149,7 +146,7 @@ class ColorDetection(Thread):
         else:
             self.prev = input_cord
             self.curr = input_cord
-            self.curr_status = (0,0)
+            self.curr_status = (0, 0)
 
     def run(self):
         # Display Thread and Process ID
