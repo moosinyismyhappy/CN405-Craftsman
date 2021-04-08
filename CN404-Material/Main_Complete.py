@@ -1,9 +1,8 @@
 import threading
-import time
 from threading import Thread
-
 import cv2
 import numpy as np
+import time
 
 # Global variable
 image_frame = None

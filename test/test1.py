@@ -1,278 +1,245 @@
-import threading
-import time
-from threading import Thread
+# Test Tracking
 
 import cv2
 import numpy as np
 
-# Global variable
-image_frame = None
-hsv_frame = None
-is_read_video = True
-background = cv2.imread('../resources/images/black_background.png')
-
-
-class get_input_video(Thread):
-
-    def __init__(self, source_camera_number):
-        super().__init__()
-        self.camera = cv2.VideoCapture(source_camera_number)
-
-    def save_image_frame(self):
-
-        global image_frame
-
-        print('saving stream images ...')
-
-        while is_read_video:
-
-            ret, input_image = self.camera.read()
-
-            if not ret:
-                break
-
-            else:
-                image_frame = input_image
-
-        print("Stop Saving Image.")
-        self.camera.release()
-
-    def run(self):
-
-        # Display Thread and Process ID
-        print(threading.current_thread())
-
-        # Start function save_image_frame with thread
-        self.save_image_frame()
-
-
-class show_video(Thread):
-    def __init__(self):
-        super().__init__()
-        pass
-
-    def show(self):
-
-        global image_frame, is_read_video, hsv_frame
-
-        print('Showing video ...')
-
-        # Set Mouse callback for window
-        cv2.namedWindow('Multiple color detection')
-        CheckEvent('Multiple color detection').setMouseCallback()
-
-        while is_read_video:
-
-            hsv_frame = cv2.cvtColor(image_frame, cv2.COLOR_BGR2HSV)
-
-            cv2.imshow('Multiple color detection', image_frame)
-            cv2.imshow('Test', background)
-
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-
-        cv2.destroyAllWindows()
-
-        # Stop Camera
-        is_read_video = False
-
-    def run(self):
-
-        # Display Thread and Process ID
-        print(threading.current_thread())
-
-        # Start show video with thread
-        self.show()
-
-
-class CheckEvent:
-
-    def __init__(self, setWindowName):
-        self.windowName = setWindowName
-        self.color_thread_1 = color_detection()
-        self.color_thread_2 = color_detection()
-
-        self.count_click_color_1 = 0
-        self.count_click_color_2 = 0
-
-    # Private function
-    def __getMouseCallback(self, event, x, y, flags, param):
-        if event == cv2.EVENT_LBUTTONDOWN:
-
-            print(x,y)
-
-            self.count_click_color_1 = self.count_click_color_1 + 1
-
-            if self.count_click_color_1 == 1:
-                self.color_thread_1.start()
-                hsv_list = hsv_frame[y, x]
-                self.color_thread_1.setDetectColor(hsv_list[0], hsv_list[1], hsv_list[2])
-
-            else:
-                self.count_click_color_1 = -1
-                hsv_list = hsv_frame[y, x]
-                self.color_thread_1.setDetectColor(hsv_list[0], hsv_list[1], hsv_list[2])
-
-        if event == cv2.EVENT_RBUTTONDOWN:
-
-            self.count_click_color_2 = self.count_click_color_2 + 1
-
-            if self.count_click_color_2 == 1:
-                self.color_thread_2.start()
-                hsv_list = hsv_frame[y, x]
-                self.color_thread_2.setDetectColor(hsv_list[0], hsv_list[1], hsv_list[2])
-
-            else:
-                self.count_click_color_2 = -1
-                hsv_list = hsv_frame[y, x]
-                self.color_thread_2.setDetectColor(hsv_list[0], hsv_list[1], hsv_list[2])
-
-    def setMouseCallback(self):
-        cv2.setMouseCallback(self.windowName, self.__getMouseCallback)
-
-
-class color_detection(Thread):
-
-    def __init__(self):
-        super().__init__()
-
-        # Set lower for HSV
-        self.lower_hue = 0
-        self.lower_sat = 0
-        self.lower_val = 0
-
-        # Set lower for HSV
-        self.upper_hue = 0
-        self.upper_sat = 0
-        self.upper_val = 0
-
-        # Set range (lower and upper)
-        self.range = 0.15
-
-        # Set frame count for optimize detection
-        self.count_frame = 0
-        self.count_frame_max = 10
-        self.count_detect = 0
-
-        # Detect area List[]
-        self.detected_area = None
-
-        self.center_coordinates = None
-        self.is_first_cord = True
-        self.prev_cord = None
-        self.current_cord = None
-        self.is_same_direction = True
-
-    def setDetectColor(self, hVal, sVal, vVal):
-
-        self.lower_hue = int(hVal * (1 - self.range))
-        self.lower_sat = int(sVal * (1 - self.range))
-        self.lower_val = int(vVal * (1 - self.range))
-
-        self.upper_hue = int(hVal * (1 + self.range))
-        self.upper_sat = int(sVal * (1 + self.range))
-        self.upper_val = int(vVal * (1 + self.range))
-
-        if (self.lower_hue <= 0):
-            self.lower_hue = 0
-
-        if (self.lower_sat <= 0):
-            self.lower_sat = 0
-
-        if (self.lower_val <= 0):
-            self.lower_val = 0
-
-        if (self.upper_hue >= 255):
-            self.upper_hue = 255
-
-        if (self.upper_sat >= 255):
-            self.upper_sat = 255
-
-        if (self.upper_val >= 255):
-            self.upper_val = 255
-
-    def detect_color_area(self):
-
-        global hsv_frame, image_frame
-
-        print('Detecting color ...')
-
-        while is_read_video:
-
-            color_lower = np.array([self.lower_hue, self.lower_sat, self.lower_val])
-            color_upper = np.array([self.upper_hue, self.upper_sat, self.upper_val])
-            color_mask = cv2.inRange(hsv_frame, color_lower, color_upper)
-
-            kernal = np.ones((5, 5), "uint8")
-
-            color_mask = cv2.dilate(color_mask, kernal)
-
-            contours, hierarchy = cv2.findContours(color_mask,
-                                                   cv2.RETR_TREE,
-                                                   cv2.CHAIN_APPROX_SIMPLE)
-
-            for pic, contour in enumerate(contours):
-                area = cv2.contourArea(contour)
-                if area > 3000:
-                    x, y, w, h = cv2.boundingRect(contour)
-
-                    self.detected_area = [x, y, w, h]
-
-                    self.count_detect += 1
-
-            if self.count_frame == self.count_frame_max and self.count_detect >= (self.count_frame / 2):
-                cv2.rectangle(image_frame, (self.detected_area[0], self.detected_area[1]),
-                              (self.detected_area[0] + self.detected_area[2],
-                               self.detected_area[1] + self.detected_area[3]),
-                              (0, 255, 0), 2)
-
-
-                self.center_coordinates = (int((2 * self.detected_area[0] + self.detected_area[2]) / 2),
-                                           int((2 * self.detected_area[1] + self.detected_area[3]) / 2))
-
-                self.tracking(self.center_coordinates)
-                #cv2.circle(image_frame, self.center_coordinates, 2, (255, 255, 0), 2)
-
-            if self.count_frame == self.count_frame_max:
-                self.count_frame = 0
-                self.count_detect = 0
-
-            self.count_frame += 1
-
-    def tracking(self,input_cord):
-        if not self.is_first_cord:
-
-            self.prev_cord = self.current_cord
-            self.current_cord = input_cord
-
-            x_diff = self.current_cord[0] - self.prev_cord[0]
-            y_diff = self.current_cord[1] - self.prev_cord[1]
-
-            if(x_diff and y_diff >=0):
-                if self.is_same_direction:
-                    cv2.circle(background, self.center_coordinates, 2, (255, 255, 0), 2)
-
-        else:
-            self.prev_cord = input_cord
-            self.current_cord = input_cord
-            self.is_first_cord = False
-
-    def run(self):
-        time.sleep(0.5)
-
-        # Display Thread and Process ID
-        print(threading.current_thread())
-
-        # Start color detection thread
-        self.detect_color_area()
+is_left_first = True
+prev = -1
+curr = -1
+prev_status = None
+curr_status = None
+
+is_right_first = True
+prev_right = -1
+curr_right = -1
+prev_status_right = None
+curr_status_right = None
+
+count = 0
+imageFrame = None
+newImageFrame = cv2.imread('../resources/images/black_background.png')
+
+
+def trackingLeft(input):
+    global is_left_first, prev, curr, prev_status, curr_status
+    # print('Prev :',prev,'Curr :',curr)
+    diff_x = curr[0] - prev[0]
+    diff_y = curr[1] - prev[1]
+    # print('diff_x :',diff_x,'diff_y :',diff_y,'curr_status',curr_status,'prev_status',prev_status)
+
+    if diff_x and diff_y > 0:
+        curr_status = (1, 1)
+    elif diff_x and diff_y < 0:
+        curr_status = (-1, -1)
+    elif diff_x > 0 and diff_y < 0:
+        curr_status = (1, -1)
+    elif diff_x < 0 and diff_y > 0:
+        curr_status = (-1, 1)
+
+    if prev_status != curr_status:
+        # print('Change Direction from', prev_status, prev, 'to', curr_status, curr, 'with diff', diff_x, diff_y)
+        cv2.circle(newImageFrame, input, 1, (0, 255, 0), 2)
+
+
+def trackingRight(input):
+    global is_right_first, prev_right, curr_right, prev_status_right, curr_status_right
+    # print('Prev :',prev,'Curr :',curr)
+    diff_x = curr[0] - prev[0]
+    diff_y = curr[1] - prev[1]
+    # print('diff_x :',diff_x,'diff_y :',diff_y,'curr_status',curr_status,'prev_status',prev_status)
+
+    if diff_x and diff_y > 0:
+        curr_status_right = (1, 1)
+    elif diff_x and diff_y < 0:
+        curr_status_right = (-1, -1)
+    elif diff_x > 0 and diff_y < 0:
+        curr_statu_right = (1, -1)
+    elif diff_x < 0 and diff_y > 0:
+        curr_status_right = (-1, 1)
+
+    if prev_status_right != curr_status_right:
+        # print('Change Direction from', prev_status, prev, 'to', curr_status, curr, 'with diff', diff_x, diff_y)
+        cv2.circle(newImageFrame, input, 1, (0, 0, 255), 2)
+
+
+def trackbarCallback(x):
+    pass
+
+
+def mouse_click(event, x, y, flags, param):
+    global is_left_first, prev, curr, prev_status, curr_status
+
+    # Left Click to get HSV color value from image
+    if event == cv2.EVENT_LBUTTONDOWN:
+        hsvArray = np.array(hsvFrame[y, x], np.uint8)
+        # print(x, ",", y, hsvArray)
+        cv2.setTrackbarPos("Lower H", "Trackbars1", int(hsvArray[0] * (0.85)))
+        cv2.setTrackbarPos("Lower S", "Trackbars1", int(hsvArray[1] * (0.85)))
+        cv2.setTrackbarPos("Lower V", "Trackbars1", int(hsvArray[2] * (0.85)))
+        cv2.setTrackbarPos("Upper H", "Trackbars1", int(hsvArray[0] * (1.15)))
+        cv2.setTrackbarPos("Upper S", "Trackbars1", int(hsvArray[1] * (1.15)))
+        cv2.setTrackbarPos("Upper V", "Trackbars1", int(hsvArray[2] * (1.15)))
+
+    if event == cv2.EVENT_RBUTTONDOWN:
+        hsvArray = np.array(hsvFrame[y, x], np.uint8)
+        # print(x, ",", y, hsvArray)
+        cv2.setTrackbarPos("Lower H", "Trackbars2", int(hsvArray[0] * (0.85)))
+        cv2.setTrackbarPos("Lower S", "Trackbars2", int(hsvArray[1] * (0.85)))
+        cv2.setTrackbarPos("Lower V", "Trackbars2", int(hsvArray[2] * (0.85)))
+        cv2.setTrackbarPos("Upper H", "Trackbars2", int(hsvArray[0] * (1.15)))
+        cv2.setTrackbarPos("Upper S", "Trackbars2", int(hsvArray[1] * (1.15)))
+        cv2.setTrackbarPos("Upper V", "Trackbars2", int(hsvArray[2] * (1.15)))
 
 
 if __name__ == "__main__":
-    # get video thread
-    get_video_thread = get_input_video(0)
-    get_video_thread.start()
 
-    time.sleep(1)
+    # Capturing video through webcam
+    webcam = cv2.VideoCapture('../resources/videos/Test_Working.mp4')
 
-    show_video_thread = show_video()
-    show_video_thread.start()
+    # Create Pane Window
+    cv2.namedWindow("Trackbars1")
+    cv2.namedWindow("Trackbars2")
+
+    cv2.createTrackbar("Lower H", "Trackbars1", 0, 179, trackbarCallback)
+    cv2.createTrackbar("Lower S", "Trackbars1", 0, 255, trackbarCallback)
+    cv2.createTrackbar("Lower V", "Trackbars1", 0, 255, trackbarCallback)
+    cv2.createTrackbar("Upper H", "Trackbars1", 179, 179, trackbarCallback)
+    cv2.createTrackbar("Upper S", "Trackbars1", 255, 255, trackbarCallback)
+    cv2.createTrackbar("Upper V", "Trackbars1", 255, 255, trackbarCallback)
+    cv2.createTrackbar("Area", "Trackbars1", 500, 5000, trackbarCallback)
+
+    cv2.createTrackbar("Lower H", "Trackbars2", 0, 179, trackbarCallback)
+    cv2.createTrackbar("Lower S", "Trackbars2", 0, 255, trackbarCallback)
+    cv2.createTrackbar("Lower V", "Trackbars2", 0, 255, trackbarCallback)
+    cv2.createTrackbar("Upper H", "Trackbars2", 179, 179, trackbarCallback)
+    cv2.createTrackbar("Upper S", "Trackbars2", 255, 255, trackbarCallback)
+    cv2.createTrackbar("Upper V", "Trackbars2", 255, 255, trackbarCallback)
+    cv2.createTrackbar("Area", "Trackbars2", 500, 5000, trackbarCallback)
+
+    while True:
+
+        try:
+            # Receive stream image from camera
+            _, imageFrame = webcam.read()
+
+            imageFrame = cv2.resize(imageFrame, (640, 480))
+
+            # Change color space from RGB to HSV
+            hsvFrame = cv2.cvtColor(imageFrame, cv2.COLOR_BGR2HSV)
+
+            lowerHue1 = cv2.getTrackbarPos("Lower H", "Trackbars1")
+            lowerSaturation1 = cv2.getTrackbarPos("Lower S", "Trackbars1")
+            lowerValue1 = cv2.getTrackbarPos("Lower V", "Trackbars1")
+            upperHue1 = cv2.getTrackbarPos("Upper H", "Trackbars1")
+            upperSaturation1 = cv2.getTrackbarPos("Upper S", "Trackbars1")
+            upperValue1 = cv2.getTrackbarPos("Upper V", "Trackbars1")
+            detectArea1 = cv2.getTrackbarPos("Area", "Trackbars1")
+
+            color_lower1 = np.array([lowerHue1, lowerSaturation1, lowerValue1], np.uint8)
+            color_upper1 = np.array([upperHue1, upperSaturation1, upperValue1], np.uint8)
+            color_mask1 = cv2.inRange(hsvFrame, color_lower1, color_upper1)
+
+            lowerHue2 = cv2.getTrackbarPos("Lower H", "Trackbars2")
+            lowerSaturation2 = cv2.getTrackbarPos("Lower S", "Trackbars2")
+            lowerValue2 = cv2.getTrackbarPos("Lower V", "Trackbars2")
+            upperHue2 = cv2.getTrackbarPos("Upper H", "Trackbars2")
+            upperSaturation2 = cv2.getTrackbarPos("Upper S", "Trackbars2")
+            upperValue2 = cv2.getTrackbarPos("Upper V", "Trackbars2")
+            detectArea2 = cv2.getTrackbarPos("Area", "Trackbars2")
+
+            color_lower2 = np.array([lowerHue2, lowerSaturation2, lowerValue2], np.uint8)
+            color_upper2 = np.array([upperHue2, upperSaturation2, upperValue2], np.uint8)
+            color_mask2 = cv2.inRange(hsvFrame, color_lower2, color_upper2)
+
+            kernal = np.ones((5, 5), "uint8")
+
+            color_mask1 = cv2.dilate(color_mask1, kernal)
+            resultColor1 = cv2.bitwise_and(hsvFrame, hsvFrame,
+                                           mask=color_mask1)
+
+            contours, hierarchy = cv2.findContours(color_mask1,
+                                                   cv2.RETR_TREE,
+                                                   cv2.CHAIN_APPROX_SIMPLE)
+            for pic, contour in enumerate(contours):
+                area = cv2.contourArea(contour)
+                if (area > detectArea1):
+                    x, y, w, h = cv2.boundingRect(contour)
+
+                    center = int((2 * x + w) / 2), int((2 * y + h) / 2)
+
+                    if not is_left_first:
+                        prev = curr
+                        curr = center
+
+                        if prev == curr:
+                            continue
+
+                        trackingLeft(center)
+
+                    else:
+                        curr = center
+                        prev = center
+                        prev_status = (0, 0)
+                        curr_status = (0, 0)
+                        print('First Time', prev, curr)
+                        is_left_first = False
+
+                    imageFrame = cv2.rectangle(imageFrame, (x, y),
+                                               (x + w, y + h),
+                                               (0, 255, 0), 2)
+
+                    # imageFrame = cv2.circle(imageFrame, center, 2, (255, 255, 0), 2)
+
+                    cv2.putText(imageFrame, "Detected Left", (x, y),
+                                cv2.FONT_HERSHEY_SIMPLEX, 1.0,
+                                (255, 255, 255))
+
+            contours, hierarchy = cv2.findContours(color_mask2,
+                                                   cv2.RETR_TREE,
+                                                   cv2.CHAIN_APPROX_SIMPLE)
+            for pic, contour in enumerate(contours):
+                area = cv2.contourArea(contour)
+                if (area > detectArea2):
+                    x, y, w, h = cv2.boundingRect(contour)
+
+                    center = int((2 * x + w) / 2), int((2 * y + h) / 2)
+
+                    if not is_right_first:
+                        prev_right = curr_right
+                        curr_right = center
+
+                        if prev_right == curr_right:
+                            continue
+
+                        trackingRight(center)
+
+                    else:
+                        curr_right = center
+                        prev_right = center
+                        prev_statu_right = (0, 0)
+                        curr_status_right = (0, 0)
+                        print('First Time', prev_right, curr_right)
+                        is_right_first = False
+
+                    imageFrame = cv2.rectangle(imageFrame, (x, y),
+                                               (x + w, y + h),
+                                               (0, 255, 0), 2)
+
+                    # imageFrame = cv2.circle(imageFrame, center, 2, (255, 255, 0), 2)
+
+                    cv2.putText(imageFrame, "Detected Right", (x, y),
+                                cv2.FONT_HERSHEY_SIMPLEX, 1.0,
+                                (255, 255, 255))
+
+            cv2.imshow("Multiple color Detection", imageFrame)
+            cv2.imshow("Result", newImageFrame)
+            cv2.setMouseCallback("Multiple color Detection", mouse_click)
+
+            if cv2.waitKey(10) & 0xFF == ord('q'):
+                    break
+
+        except:
+            webcam = cv2.VideoCapture('../resources/videos/Test_Working.mp4')
+
+    webcam.release()
+    cv2.destroyAllWindows()

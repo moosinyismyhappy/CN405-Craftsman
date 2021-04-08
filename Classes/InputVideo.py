@@ -9,6 +9,7 @@ class InputVideo(Thread):
         super().__init__()
         self.image_storage = input_storage
         self.video_src = cv2.VideoCapture(src_num)
+        #self.video_src = cv2.VideoCapture('../resources/videos/Slow_Working.mp4')
         self.image = None
         self.camera_status = True
         self.hsv_image = None
