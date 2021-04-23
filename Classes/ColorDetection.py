@@ -88,7 +88,7 @@ class ColorDetection(Thread):
                 print('Exception from detect_color Class ColorDetection')
                 continue
 
-            kernal = np.ones((5, 5), "uint8")
+            kernal = np.ones((5, 5), "int8")
             color_mask = cv2.dilate(color_mask, kernal)
             contours, hierarchy = cv2.findContours(color_mask,
                                                    cv2.RETR_TREE,
@@ -147,6 +147,7 @@ class ColorDetection(Thread):
             self.prev = input_cord
             self.curr = input_cord
             self.curr_status = (0, 0)
+            self.prev_status = (0, 0)
 
     def run(self):
         # Display Thread and Process ID

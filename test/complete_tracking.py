@@ -86,7 +86,7 @@ def mouse_click(event, x, y, flags, param):
             is_first_click = False
 
     else:
-        if count == 20:
+        if count == 5:
             tracking(x, y)
             count = 0
 

@@ -1,10 +1,9 @@
-# tracking with atan2
+# Test Tracking with new method
 
 import cv2
 import numpy as np
-import math
 
-file_name = '../resources/videos/Test_Working.mp4'
+file_name = '../resources/videos/Full_Working1.mp4'
 detect_area = 1000
 lower_value = 0.7
 upper_value = 1.3
@@ -14,6 +13,8 @@ prev_left = -1
 curr_left = -1
 prev_status_left = None
 curr_status_left = None
+center_boundary_left = None
+is_in_boundary_left = False
 
 is_right_first = True
 prev_right = -1
@@ -30,58 +31,31 @@ hsv_upper_right = [-1, -1, -1]
 hsv_lower_right = [-1, -1, -1]
 
 
-def degree(x):
-    pi = math.pi
-    degree = (x * 180) / pi
-    return degree
-
-
 def trackingLeft(input):
-    global is_left_first, prev_left, curr_left, prev_status_left, curr_status_left
-    # print('Prev :',prev,'Curr :',curr)
-    diff_x = curr_left[0] - prev_left[0]
-    diff_y = curr_left[1] - prev_left[1]
-    # print('diff_x :',diff_x,'diff_y :',diff_y,'curr_status',curr_status,'prev_status',prev_status)
+    global is_left_first, prev_left, curr_left, prev_status_left, curr_status_left, imageFrame,center_boundary_left
 
-    result_atan = int(degree(math.atan2(diff_y, diff_x)))
+    x_center = input[0]
+    y_center = input[1]
 
-    if result_atan >= 0 and result_atan < 10:
-        print('Right Direction', result_atan , curr_left[0],curr_left[1],prev_left[0],prev_left[1])
-    elif result_atan >= 10 and result_atan < 80:
-        print('Quadrant1', result_atan, curr_left[0],curr_left[1],prev_left[0],prev_left[1])
-    elif result_atan >= 80 and result_atan < 100:
-        print('Up Direction', result_atan, curr_left[0],curr_left[1],prev_left[0],prev_left[1])
-    elif result_atan >= 100 and result_atan < 170:
-        print('Quadrant2', result_atan, curr_left[0],curr_left[1],prev_left[0],prev_left[1])
-    elif result_atan >= 170 and result_atan < 190:
-        print('Left Direction', result_atan, curr_left[0],curr_left[1],prev_left[0],prev_left[1])
-    elif result_atan >= 190 and result_atan < 260:
-        print('Quadrant3', result_atan, curr_left[0],curr_left[1],prev_left[0],prev_left[1])
-    elif result_atan >= 260 and result_atan < 280:
-        print('Down Direction', result_atan, curr_left[0],curr_left[1],prev_left[0],prev_left[1])
-    elif result_atan >= 280 and result_atan < 360:
-        print('Quadrant4', result_atan, curr_left[0],curr_left[1],prev_left[0],prev_left[1])
+    x1 = center_boundary_left[0]
+    x2 = center_boundary_left[2]
+    y1 = center_boundary_left[1]
+    y2 = center_boundary_left[3]
 
+    if not x_center>=x1 and x_center<=x2 and y_center>=y1 and y_center<=y2 :
+        print('not in')
+        center_boundary_left = [50,50,100,100]
+        imageFrame = cv2.rectangle(imageFrame, (x1, y1),
+                                   (x2, y2),
+                                   (0, 255, 0), 2)
+
+    else:
+        imageFrame = cv2.rectangle(imageFrame, (x1, y1),
+                                   (x2, y2),
+                                   (0, 255, 0), 2)
 
 def trackingRight(input):
     global is_right_first, prev_right, curr_right, prev_status_right, curr_status_right
-    # print('Prev :',prev,'Curr :',curr)
-    diff_x = curr_right[0] - prev_right[0]
-    diff_y = curr_right[1] - prev_right[1]
-    # print('diff_x :',diff_x,'diff_y :',diff_y,'curr_status',curr_status,'prev_status',prev_status)
-
-    if diff_x and diff_y > 0:
-        curr_status_right = (1, 1)
-    elif diff_x and diff_y < 0:
-        curr_status_right = (-1, -1)
-    elif diff_x > 0 and diff_y < 0:
-        curr_status_right = (1, -1)
-    elif diff_x < 0 and diff_y > 0:
-        curr_status_right = (-1, 1)
-
-    if prev_status_right != curr_status_right:
-        print('Right : Change Direction from', prev_status_right, prev_right, 'to', curr_status_right, curr_right,
-              'with diff', diff_x, diff_y)
 
 
 def set_max_value(input_val):
@@ -156,33 +130,25 @@ if __name__ == "__main__":
 
                 center = int((2 * x + w) / 2), int((2 * y + h) / 2)
 
-                if not is_left_first:
-                    prev_left = curr_left
-                    curr_left = center
-                    prev_status_left = curr_status_left
+                imageFrame = cv2.circle(imageFrame, center, 2, (255, 255, 0), 2)
 
-                    if prev_left == curr_left:
-                        continue
-
+                if is_in_boundary_left:
                     trackingLeft(center)
 
                 else:
-                    curr_left = center
-                    prev_left = center
-                    prev_status_left = (0, 0)
-                    curr_status_left = (0, 0)
-                    print('First Time Left', prev_left, curr_left, prev_status_left, curr_status_left)
-                    is_left_first = False
+                    center_boundary_left = [x,y,x+w,y+h]
+                    print('not in boundary', center_boundary_left)
+                    is_in_boundary_left = True
 
-                imageFrame = cv2.rectangle(imageFrame, (x, y),
+                center = int((2 * x + w) / 2), int((2 * y + h) / 2)
+
+                """imageFrame = cv2.rectangle(imageFrame, (x, y),
                                            (x + w, y + h),
                                            (0, 255, 0), 2)
 
-                imageFrame = cv2.circle(imageFrame, center, 2, (255, 255, 0), 2)
-
                 cv2.putText(imageFrame, "Detected Left", (x, y),
                             cv2.FONT_HERSHEY_SIMPLEX, 1.0,
-                            (255, 255, 255))
+                            (255, 255, 255))"""
 
         contours, hierarchy = cv2.findContours(color_mask2,
                                                cv2.RETR_TREE,
@@ -209,7 +175,7 @@ if __name__ == "__main__":
                     prev_right = center
                     prev_status_right = (0, 0)
                     curr_status_right = (0, 0)
-                    print('First Time Right', prev_right, curr_right, prev_status_right, curr_status_right)
+                    # print('First Time Right', prev_right, curr_right, prev_status_right, curr_status_right)
                     is_right_first = False
 
                 imageFrame = cv2.rectangle(imageFrame, (x, y),
@@ -225,7 +191,7 @@ if __name__ == "__main__":
         cv2.imshow("Multiple color Detection", imageFrame)
         cv2.setMouseCallback("Multiple color Detection", mouse_click)
 
-        if cv2.waitKey(10) & 0xFF == ord('q'):
+        if cv2.waitKey(20) & 0xFF == ord('q'):
             break
 
     webcam.release()
