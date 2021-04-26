@@ -1,10 +1,7 @@
-import cv2
-import threading
-from threading import Thread
 from ColorDetection import *
 
 
-class MouseDetection(Thread):
+class MouseDetection():
 
     def __init__(self, input_storage):
         super().__init__()
@@ -37,7 +34,7 @@ class MouseDetection(Thread):
 
         elif event is cv2.EVENT_RBUTTONDOWN:
             if not self.is_right_first_click():
-                self.color_right_hand.set_x_y(x,y)
+                self.color_right_hand.set_x_y(x, y)
                 self.color_right_hand.set_hsv()
             else:
                 print('Starting color detection - right Hand ...')

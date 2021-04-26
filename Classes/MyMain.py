@@ -1,13 +1,13 @@
-import InputVideo
-import OutputVideo
-from InputVideo import *
 from OutputVideo import *
 from ImageStorage import *
+from InputVideo import *
 
-image_storage = ImageStorage()
+if __name__ == "__main__":
 
-thread1 = InputVideo(0, image_storage)
-thread1.start()
+    image_storage = ImageStorage()
 
-thread2 = OutputVideo(thread1, image_storage)
-thread2.start()
+    thread1 = InputVideo(0, image_storage)
+    thread1.start()
+
+    thread2 = OutputVideo(thread1, image_storage)
+    thread2.start()

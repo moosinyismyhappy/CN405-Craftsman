@@ -1,11 +1,11 @@
-# Add new tracking method
+# Copy of test1 -> change to switch case
 
 import cv2
 import numpy as np
 import math
 
 # Configuration
-file_name = '../resources/videos/Full_Working1.mp4'
+file_name = '../resources/videos/Full_Working2.mp4'
 black_img = cv2.imread('../resources/images/black_background.png')
 detect_area = 1000
 lower_value = 0.7
@@ -18,6 +18,7 @@ hsv_lower_left = [-1, -1, -1, -1]
 hsv_upper_left = [-1, -1, -1, -1]
 center_bound_left = [-1, -1, -1, -1]
 is_first_detect_left = True
+is_after_first_detect_left = False
 prev_left = -1
 curr_left = -1
 prev_status_left = -1
@@ -66,20 +67,22 @@ def mouse_click(event, x, y, flags, param):
         hsv_lower_right = adjust_lower_hsv(hsvFrame[y, x])
         hsv_upper_right = adjust_upper_hsv(hsvFrame[y, x])
 
+
 def degree(x):
     pi = math.pi
     degree = ((x * 180) / pi) % 360
     return int(degree)
 
+
 ####################################################################################################################
 ####################################################################################################################
 ####################################################################################################################
 ####################################################################################################################
 
 
-def point_track_left(x,y):
-    global prev_left, curr_left, image_frame, prev_status_left, curr_status_left , black_img
-    #prev_left = curr_left
+def point_track_left(x, y):
+    global prev_left, curr_left, image_frame, prev_status_left, curr_status_left, black_img
+    # prev_left = curr_left
     curr_left = x, y
     prev_status_left = curr_status_left
 
@@ -145,20 +148,21 @@ def point_track_left(x,y):
 
 
 def tracking_left(new_center):
-    global imageFrame, center_bound_left,is_first_detect_left,prev_left
+    global imageFrame, center_bound_left, is_first_detect_left, prev_left
     # x,y of center
     temp_x, temp_y = new_center[0], new_center[1]
 
     # x,y of rectangle
     x1, y1, x2, y2 = center_bound_left[0], center_bound_left[1], center_bound_left[2], center_bound_left[3]
 
-    if temp_x>=x1 and temp_x<=x2 and temp_y>=y1 and temp_y<=y2:
-        #prev_left = temp_x,temp_y
+    if temp_x >= x1 and temp_x <= x2 and temp_y >= y1 and temp_y <= y2:
+        # prev_left = temp_x,temp_y
         pass
 
     else:
-        point_track_left(temp_x,temp_y)
+        point_track_left(temp_x, temp_y)
         is_first_detect_left = True
+
 
 ####################################################################################################################
 ####################################################################################################################
@@ -166,22 +170,23 @@ def tracking_left(new_center):
 ####################################################################################################################
 
 def tracking_right(new_center):
-    global imageFrame, center_bound_right,is_first_detect_right
+    global imageFrame, center_bound_right, is_first_detect_right
     # x,y of center
     temp_x, temp_y = new_center[0], new_center[1]
 
     # x,y of rectangle
     x1, y1, x2, y2 = center_bound_right[0], center_bound_right[1], center_bound_right[2], center_bound_right[3]
 
-    if temp_x>=x1 and temp_x<=x2 and temp_y>=y1 and temp_y<=y2:
+    if temp_x >= x1 and temp_x <= x2 and temp_y >= y1 and temp_y <= y2:
         pass
 
     else:
-        point_track_right(temp_x,temp_y)
+        point_track_right(temp_x, temp_y)
         is_first_detect_right = True
 
-def point_track_right(x,y):
-    global prev_right, curr_right, image_frame, prev_status_right, curr_status_right , black_img
+
+def point_track_right(x, y):
+    global prev_right, curr_right, image_frame, prev_status_right, curr_status_right, black_img
     prev_right = curr_right
     curr_right = x, y
     prev_status_right = curr_status_right
@@ -246,6 +251,7 @@ def point_track_right(x,y):
     if curr_status_right != prev_status_right:
         cv2.circle(black_img, (x, y), 2, (0, 255, 255), 2)
 
+
 ####################################################################################################################
 ####################################################################################################################
 ####################################################################################################################
@@ -281,11 +287,10 @@ if __name__ == "__main__":
         resultColor1 = cv2.bitwise_and(hsvFrame, hsvFrame,
                                        mask=color_mask1)
 
-
-####################################################################################################################
-####################################################################################################################
-####################################################################################################################
-####################################################################################################################
+        ####################################################################################################################
+        ####################################################################################################################
+        ####################################################################################################################
+        ####################################################################################################################
 
         contours, hierarchy = cv2.findContours(color_mask1,
                                                cv2.RETR_TREE,
@@ -296,11 +301,17 @@ if __name__ == "__main__":
                 x, y, w, h = cv2.boundingRect(contour)
 
                 if is_first_detect_left:
-                    center_bound_left = [x, y, x + w, y + h]
-                    curr_left = x,y
-                    prev_left = x,y
-                    is_first_detect_left = False
 
+                    center_bound_left = [x, y, x + w, y + h]
+
+                    if is_after_first_detect_left:
+                        curr_left = x, y
+                        prev_left = x, y
+
+                    else:
+                        print('sdklfjsklfdj')
+
+                    is_first_detect_left = False
 
                 else:
                     imageFrame = cv2.rectangle(imageFrame, (center_bound_left[0], center_bound_left[1]),
@@ -318,10 +329,10 @@ if __name__ == "__main__":
                             cv2.FONT_HERSHEY_SIMPLEX, 1.0,
                             (255, 255, 255))
 
-####################################################################################################################
-####################################################################################################################
-####################################################################################################################
-####################################################################################################################
+        ####################################################################################################################
+        ####################################################################################################################
+        ####################################################################################################################
+        ####################################################################################################################
 
         color_mask2 = cv2.dilate(color_mask2, kernal)
         resultColor2 = cv2.bitwise_and(hsvFrame, hsvFrame,
@@ -357,10 +368,10 @@ if __name__ == "__main__":
                             cv2.FONT_HERSHEY_SIMPLEX, 1.0,
                             (255, 255, 255))
 
-####################################################################################################################
-####################################################################################################################
-####################################################################################################################
-####################################################################################################################
+        ####################################################################################################################
+        ####################################################################################################################
+        ####################################################################################################################
+        ####################################################################################################################
 
         cv2.imshow("Multiple color Detection", imageFrame)
         cv2.imshow("Result", black_img)
