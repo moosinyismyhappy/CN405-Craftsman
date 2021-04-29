@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'test_gui.ui'
+# Form implementation generated from reading ui file 'test_class_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.2
 #
@@ -12,32 +12,34 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_MainWindow(object):
-    def __init__(self,MainWindow):
+    def __init__(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1024, 768)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.frame = QtWidgets.QFrame(self.centralwidget)
-        self.frame.setGeometry(QtCore.QRect(200, 70, 640, 480))
-        self.frame.setMouseTracking(False)
-        self.frame.setStyleSheet("background-color: rgb(0, 0, 0);")
-        self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.frame.setObjectName("frame")
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(350, 610, 131, 51))
+        self.pushButton.setGeometry(QtCore.QRect(240, 600, 131, 51))
         self.pushButton.setStyleSheet("background-color: rgb(0, 170, 0);")
         self.pushButton.setObjectName("pushButton")
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(580, 610, 131, 51))
+        self.pushButton_2.setGeometry(QtCore.QRect(460, 600, 131, 51))
         self.pushButton_2.setStyleSheet("background-color: rgb(255, 0, 0);")
         self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_3.setGeometry(QtCore.QRect(920, 10, 91, 31))
         self.pushButton_3.setObjectName("pushButton_3")
+        self.pushButton_4 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_4.setGeometry(QtCore.QRect(660, 600, 131, 51))
+        self.pushButton_4.setStyleSheet("background-color: rgb(255, 170, 0);")
+        self.pushButton_4.setObjectName("pushButton_4")
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(190, 70, 640, 480))
+        self.label.setStyleSheet("background-color: rgb(117, 117, 117);")
+        self.label.setText("")
+        self.label.setObjectName("label")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1024, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1024, 26))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -52,5 +54,5 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "Craftsman Effectiveness Detection"))
         self.pushButton.setText(_translate("MainWindow", "Open Camera"))
         self.pushButton_2.setText(_translate("MainWindow", "Stop"))
-        self.pushButton_3.setText(_translate("MainWindow", "Next"))
-
+        self.pushButton_3.setText(_translate("MainWindow", "Exit"))
+        self.pushButton_4.setText(_translate("MainWindow", "Settings"))
