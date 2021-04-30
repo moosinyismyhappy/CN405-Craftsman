@@ -27,7 +27,7 @@
      <string notr="true">background-color: rgb(188, 188, 188);</string>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="page">
      <widget class="QLabel" name="label">
@@ -40,7 +40,7 @@
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(47, 47, 47);</string>
+       <string notr="true"/>
       </property>
       <property name="text">
        <string/>
@@ -69,7 +69,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Close Camera</string>
+       <string>Stop Camera</string>
       </property>
      </widget>
      <widget class="QPushButton" name="pushButton_3">
@@ -85,20 +85,55 @@
        <string>Settings</string>
       </property>
      </widget>
+     <widget class="QWidget" name="widget" native="true">
+      <property name="geometry">
+       <rect>
+        <x>190</x>
+        <y>60</y>
+        <width>661</width>
+        <height>501</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(63, 63, 63);</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_5">
+      <property name="geometry">
+       <rect>
+        <x>930</x>
+        <y>0</y>
+        <width>71</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 0, 0);</string>
+      </property>
+      <property name="text">
+       <string>Exit</string>
+      </property>
+     </widget>
+     <zorder>pushButton</zorder>
+     <zorder>pushButton_2</zorder>
+     <zorder>pushButton_3</zorder>
+     <zorder>widget</zorder>
+     <zorder>label</zorder>
+     <zorder>pushButton_5</zorder>
     </widget>
     <widget class="QWidget" name="page_2">
      <widget class="QLabel" name="label_2">
       <property name="geometry">
        <rect>
-        <x>440</x>
-        <y>40</y>
-        <width>121</width>
-        <height>41</height>
+        <x>400</x>
+        <y>30</y>
+        <width>181</width>
+        <height>61</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <pointsize>24</pointsize>
+        <pointsize>36</pointsize>
        </font>
       </property>
       <property name="text">
@@ -118,11 +153,123 @@
        <string>Back to Menu</string>
       </property>
      </widget>
+     <widget class="QDial" name="dial">
+      <property name="geometry">
+       <rect>
+        <x>640</x>
+        <y>340</y>
+        <width>131</width>
+        <height>151</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_3">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>180</y>
+        <width>281</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>20</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Camera Device Number</string>
+      </property>
+     </widget>
+     <widget class="QLCDNumber" name="lcdNumber">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>260</y>
+        <width>231</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="mode">
+       <enum>QLCDNumber::Bin</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_4">
+      <property name="geometry">
+       <rect>
+        <x>620</x>
+        <y>180</y>
+        <width>171</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>20</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Area to detect</string>
+      </property>
+     </widget>
+     <widget class="QLCDNumber" name="lcdNumber_2">
+      <property name="geometry">
+       <rect>
+        <x>590</x>
+        <y>260</y>
+        <width>231</width>
+        <height>61</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QDial" name="dial_2">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>330</y>
+        <width>131</width>
+        <height>151</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>dial</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>lcdNumber_2</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>748</x>
+     <y>435</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>806</x>
+     <y>305</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dial_2</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>lcdNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>236</x>
+     <y>413</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>279</x>
+     <y>323</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

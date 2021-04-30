@@ -21,6 +21,8 @@ class GuiOutputVideo(Thread):
                 # get input image from image_storage
                 input_image = self.image_storage.get_input_image()
 
+                input_image = cv2.rectangle(input_image,(100,100),(200,200),(0,255,0),3)
+
                 # Change color system BGR(OpenCV) to RGB(Qt)
                 self.input_image_rgb = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
             except:

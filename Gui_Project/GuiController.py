@@ -31,7 +31,9 @@ class GuiController(Thread):
         self.ui.pushButton_2.clicked.connect(self.close_camera_button)
         self.ui.pushButton_3.clicked.connect(self.change_to_setting_page)
         self.ui.pushButton_4.clicked.connect(self.change_to_main_page)
+        self.ui.pushButton_5.clicked.connect(self.exit_button)
         self.ui.label.mousePressEvent = self.get_position_from_image
+        self.ui.label.setVisible(False)
 
         MainWindow.show()
         sys.exit(app.exec_())
@@ -47,12 +49,16 @@ class GuiController(Thread):
     def change_to_setting_page(self):
         self.ui.stackedWidget.setCurrentIndex(1)
 
+    def exit_button(self):
+        sys.exit(0)
+
     def open_camera_button(self):
         print('Open Camera Button Clicked...')
 
         # Setting widget event
         self.ui.pushButton.setEnabled(False)
         self.ui.pushButton_2.setEnabled(True)
+        self.ui.label.setVisible(True)
 
         # Create Thread for input_video
         self.thread_input_video = GuiInputVideo(self.image_storage)
@@ -74,4 +80,6 @@ class GuiController(Thread):
         self.ui.pushButton_2.setEnabled(False)
         self.thread_input_video.set_camera_status(False)
         self.image_storage.set_storage_status(False)
+        self.ui.label.setVisible(False)
+
 
