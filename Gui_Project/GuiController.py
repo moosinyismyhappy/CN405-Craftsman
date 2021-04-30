@@ -2,7 +2,10 @@ import time
 import sys
 import threading
 from threading import Thread
-from PyQt5 import QtGui, QtWidgets
+from PyQt5 import QtGui, QtWidgets, Qt, QtCore
+from PyQt5.QtGui import QMouseEvent
+
+from Gui_Project.GuiColorDetection import GuiColorDetection
 from Gui_Project.GuiImageStorage import GuiImageStorage
 from Gui_Project.GuiInputVideo import GuiInputVideo
 from Gui_Project.GuiLayout import Ui_MainWindow
@@ -16,6 +19,8 @@ class GuiController(Thread):
         self.thread_input_video = None
         self.thread_output_video = None
         self.count = 0
+        self.is_first_left_click = True
+        self.is_first_right_click = True
 
     def run(self):
         # Display Thread and Process ID
@@ -39,9 +44,26 @@ class GuiController(Thread):
         sys.exit(app.exec_())
 
     def get_position_from_image(self, event):
-        x = event.pos().x()
-        y = event.pos().y()
-        print(x,y)
+        if event.buttons() == QtCore.Qt.LeftButton:
+            if self.is_first_left_click:
+                print('First Left Click')
+                self.left_color_detection = GuiColorDetection(self, self.image_storage)
+                self.left_color_detection.start()
+                self.left_color_detection.set_pos(event.pos().x(), event.pos().y())
+                self.is_first_left_click = False
+            else:
+                print('Left Click')
+                self.left_color_detection.set_pos(event.pos().x(), event.pos().y())
+        elif event.buttons() == QtCore.Qt.RightButton:
+            if self.is_first_right_click:
+                print('First Right Click')
+                self.right_color_detection = GuiColorDetection(self, self.image_storage)
+                self.right_color_detection.start()
+                self.right_color_detection.set_pos(event.pos().x(), event.pos().y())
+                self.is_first_right_click = False
+            else:
+                print('Right Click')
+                self.right_color_detection.set_pos(event.pos().x(), event.pos().y())
 
     def change_to_main_page(self):
         self.ui.stackedWidget.setCurrentIndex(0)
@@ -67,10 +89,10 @@ class GuiController(Thread):
         self.thread_input_video.start()
 
         # Create Thread for output_video
-        self.thread_output_video = GuiOutputVideo(self,self.image_storage)
+        self.thread_output_video = GuiOutputVideo(self, self.image_storage)
         self.thread_output_video.start()
 
-    def draw_image(self,image):
+    def draw_image(self, image):
         time.sleep(0.001)
         self.ui.label.setPixmap(QtGui.QPixmap.fromImage(image))
 
@@ -81,5 +103,3 @@ class GuiController(Thread):
         self.thread_input_video.set_camera_status(False)
         self.image_storage.set_storage_status(False)
         self.ui.label.setVisible(False)
-
-

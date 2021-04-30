@@ -21,13 +21,18 @@ class GuiOutputVideo(Thread):
                 # get input image from image_storage
                 input_image = self.image_storage.get_input_image()
 
-                input_image = cv2.rectangle(input_image,(100,100),(200,200),(0,255,0),3)
+                # Change color system BGR(OpenCV) to HSV for Detection
+                self.input_image_hsv = cv2.cvtColor(input_image, cv2.COLOR_BGR2HSV)
 
                 # Change color system BGR(OpenCV) to RGB(Qt)
                 self.input_image_rgb = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
+
             except:
                 print('Waiting for image from InputVideo')
                 continue
+
+            # add converted hsv image to image storage
+            self.image_storage.set_hsv_image(self.input_image_hsv)
 
             # Convert to QImage form
             h, w, ch = self.input_image_rgb.shape
