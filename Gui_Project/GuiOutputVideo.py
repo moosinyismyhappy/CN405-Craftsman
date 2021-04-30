@@ -1,30 +1,40 @@
 import threading
 import cv2
-from PyQt5.QtCore import QThread, pyqtSignal, Qt
-from PyQt5.QtGui import QImage
+from threading import Thread
+from PyQt5 import QtGui
 
-class GuiOutputVideo(QThread):
-    image_update = pyqtSignal(QImage)
+class GuiOutputVideo(Thread):
 
-    def __init__(self, input_video):
+    def __init__(self, gui, image_storage):
         super().__init__()
-        self.input_video = input_video
-
-    def get_image_from_camera(self):
-        while self.input_video.get_camera_status():
-            try:
-                # Change color system BGR(OpenCV) to RGB(Qt)
-                self.input_image_rgb = cv2.cvtColor(self.input_video.get_input_image(), cv2.COLOR_BGR2RGB)
-            except:
-                print('Waiting for image from InputVideo')
-                continue
-            # Convert RGB image to RGB888
-            converted_rgb888_image = QImage(self.input_image_rgb.data, self.input_image_rgb.shape[1],
-                                                self.input_image_rgb.shape[0], QImage.Format_RGB888)
-            converted_image = converted_rgb888_image.scaled(640, 480, Qt.KeepAspectRatio)
-            # Send signal to GuiController to show Picture
-            self.image_update.emit(converted_image)
+        self.gui = gui
+        self.image_storage = image_storage
 
     def run(self):
         # Display Thread and Process ID
-        self.get_image_from_camera()
+        print(threading.current_thread())
+        self.__processing_output()
+
+    def __processing_output(self):
+        while self.image_storage.get_storage_status():
+            try:
+                # get input image from image_storage
+                input_image = self.image_storage.get_input_image()
+
+                # Change color system BGR(OpenCV) to RGB(Qt)
+                self.input_image_rgb = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
+            except:
+                print('Waiting for image from InputVideo')
+                continue
+
+            # Convert to QImage form
+            h, w, ch = self.input_image_rgb.shape
+            bytesPerLine = ch * w
+            converted_image = QtGui.QImage(self.input_image_rgb.data, w, h, bytesPerLine, QtGui.QImage.Format_RGB888)
+
+            # send converted image back to gui
+            self.gui.draw_image(converted_image)
+
+
+
+

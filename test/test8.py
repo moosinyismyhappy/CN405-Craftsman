@@ -1,45 +1,64 @@
-import time
-from threading import Thread
-from PyQt5.QtCore import QThread, pyqtSignal, QCoreApplication
+from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5.QtWidgets import QWidget, QApplication, QLabel, QVBoxLayout, QHBoxLayout
+from PyQt5.QtGui import QPixmap, QImage, QColor
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt, QObject
+import sys
+import cv2
 
-class AThread(Thread):
 
+class App(QWidget):
     def __init__(self):
         super().__init__()
-        self.count = 0
+        self.setWindowTitle("Qt static label demo")
+        self.disply_width = 640
+        self.display_height = 480
+        # create the label that holds the image
+        self.image_label = QLabel(self)
+        # self.image_label.resize(self.disply_width, self.display_height)
+        # create a text label
+        self.textLabel = QLabel('Polecat')
 
-    def get_count(self):
-        return self.count
+        # create a vertical box layout and add the two labels
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.image_label)
+        vbox.addWidget(self.textLabel)
+        # set the vbox layout as the widgets layout
+        self.setLayout(vbox)
+        # don't need the grey image now
+        # grey = QPixmap(self.disply_width, self.display_height)
+        # grey.fill(QColor('darkGray'))
+        # self.image_label.setPixmap(grey)
 
-    def run(self):
-        while True:
-            time.sleep(0.1)
-            self.count += 1
-            print('AThread',self.get_count())
+        # load the test image - we really should have checked that this worked!
+        cv_img = cv2.imread('../resources/images/shape.png')
+        # convert the image to Qt format
+        qt_img = self.convert_cv_qt(cv_img)
+
+        # display it
+        self.image_label.setPixmap(qt_img)
+
+        self.image_label.mousePressEvent = self.get_position_from_image
+
+    def get_position_from_image(self, event):
+        x = event.pos().x()
+        y = event.pos().y()
+        print(x,y)
+
+    def convert_cv_qt(self, cv_img):
+        """Convert from an opencv image to QPixmap"""
+        rgb_image = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
+        h, w, ch = rgb_image.shape
+        bytes_per_line = ch * w
+        convert_to_Qt_format = QtGui.QImage(rgb_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
+        rgb = convert_to_Qt_format.pixel(389,247)
+        print(rgb)
+        print(QtGui.qRed(rgb), QtGui.qGreen(rgb), QtGui.qBlue(rgb))
+        p = convert_to_Qt_format.scaled(self.disply_width, self.display_height, Qt.KeepAspectRatio)
+        return QPixmap.fromImage(p)
 
 
-class BThread(QThread):
-    finished = pyqtSignal()
-
-    def __init__(self,a):
-        super().__init__()
-        self.count = 0
-        self.a = a
-
-    def run(self):
-        while self.count<100:
-            time.sleep(0.1)
-            print('BThread', self.a.get_count())
-            self.count = self.count + 1
-        self.finished.emit()
-
-
-app = QCoreApplication([])
-thread1 = AThread()
-thread1.start()
-
-
-thread2 = BThread(thread1)
-thread2.start()
-thread2.finished.connect(app.exit)
-app.exec_()
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    a = App()
+    a.show()
+    sys.exit(app.exec_())
