@@ -26,7 +26,7 @@ class GuiColorDetection(Thread):
     def run(self):
         # Display Thread and Process ID
         print(threading.current_thread())
-        #time.sleep(0.1)
+        # time.sleep(0.1)
         self.detect_color()
 
     def __hsv_upper_process(self):
@@ -58,16 +58,20 @@ class GuiColorDetection(Thread):
     def set_hsv(self):
         temp_x = self.get_pos()[0]
         temp_y = self.get_pos()[1]
-        self.hsv_list = list(self.image_storage.get_hsv_image()[temp_y, temp_x])
+        self.hsv_list = list(self.image_storage.get_hsv_image_for_detect()[temp_y, temp_x])
         self.__hsv_lower_process()
         self.__hsv_upper_process()
 
     def detect_color(self):
         print('Starting Detect color ...')
         while True:
-            color_lower = np.array([self.hsv_lower[0], self.hsv_lower[1], self.hsv_lower[2]])
-            color_upper = np.array([self.hsv_upper[0], self.hsv_upper[1], self.hsv_upper[2]])
-            color_mask = cv2.inRange(self.image_storage.get_hsv_image(), color_lower, color_upper)
+            try:
+                color_lower = np.array([self.hsv_lower[0], self.hsv_lower[1], self.hsv_lower[2]])
+                color_upper = np.array([self.hsv_upper[0], self.hsv_upper[1], self.hsv_upper[2]])
+                color_mask = cv2.inRange(self.image_storage.get_hsv_image_for_detect(), color_lower, color_upper)
+            except:
+                print('Exception from detect_color Class ColorDetection')
+                continue
 
             kernal = np.ones((5, 5), "int8")
             color_mask = cv2.dilate(color_mask, kernal)
@@ -79,8 +83,10 @@ class GuiColorDetection(Thread):
                 if area > 3000:
                     self.x, self.y, self.w, self.h = cv2.boundingRect(contour)
 
-                    cv2.rectangle(self.image_storage.get_input_image(), (self.x, self.y),
-                                  (self.x + self.w, self.y + self.h), (0, 255, 0), 2)
+                    detected_image = cv2.rectangle(self.image_storage.get_input_image(), (self.x, self.y),
+                                                   (self.x + self.w, self.y + self.h), (0, 255, 0), 2)
+
+                    self.image_storage.set_detected_image(detected_image)
 
     def print_hsv_value(self):
         print(self.hsv_list, self.hsv_lower, self.hsv_upper)

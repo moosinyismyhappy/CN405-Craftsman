@@ -22,10 +22,13 @@ class GuiOutputVideo(Thread):
                 # get input image from image_storage
                 input_image = self.image_storage.get_input_image()
 
+                # Change color system BGR(OpenCV) to HSV for Detection
+                self.hsv_image_for_detect = cv2.cvtColor(input_image, cv2.COLOR_BGR2HSV)
+
                 # Change color system BGR(OpenCV) to RGB(Qt)
                 self.input_image_rgb = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
 
-                # Change color system BGR(OpenCV) to HSV for Detection
+                # Change color system BGR(OpenCV) to HSV
                 self.input_image_hsv = cv2.cvtColor(input_image, cv2.COLOR_BGR2HSV)
 
                 # Change color system BGR(OpenCV) to HSV for Detection
@@ -36,7 +39,7 @@ class GuiOutputVideo(Thread):
                 continue
 
             # add converted hsv image to image storage
-            self.image_storage.set_hsv_image(self.input_image_hsv)
+            self.image_storage.set_hsv_image_for_detect(self.hsv_image_for_detect)
 
             # Convert to QImage form
             h, w, ch = self.input_image_rgb.shape
@@ -45,10 +48,10 @@ class GuiOutputVideo(Thread):
                                                QtGui.QImage.Format_RGB888)
 
             # Convert to QImage form
-            """h, w, ch = self.input_image_hsv.shape
+            h, w, ch = self.input_image_hsv.shape
             bytesPerLine = ch * w
             converted_hsv_image = QtGui.QImage(self.input_image_hsv.data, w, h, bytesPerLine,
-                                               QtGui.QImage.Format_RGB888)"""
+                                               QtGui.QImage.Format_RGB888)
 
             # Convert to QImage form
             h, w = self.input_image_gray.shape
@@ -56,10 +59,11 @@ class GuiOutputVideo(Thread):
             converted_gray_image = QtGui.QImage(self.input_image_gray.data, w, h, bytesPerLine,
                                                 QtGui.QImage.Format_Grayscale8)
 
+            # add converted hsv image to image storage
+            self.image_storage.set_hsv_image(converted_hsv_image)
+
             # add converted rgb image to image storage
             self.image_storage.set_rgb_image(converted_rgb_image)
-
-
 
             # add converted rgb image to image storage
             self.image_storage.set_gray_image(converted_gray_image)
