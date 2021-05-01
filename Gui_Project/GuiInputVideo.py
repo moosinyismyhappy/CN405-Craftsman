@@ -9,6 +9,7 @@ class GuiInputVideo(Thread):
         self.image_storage = image_storage
         self.camera_number = 0
         self.webcam = cv2.VideoCapture(self.camera_number)
+        #self.webcam = cv2.VideoCapture('../resources/videos/Full_Working1.mp4')
         self.camera_status = False
 
     def run(self):
@@ -21,6 +22,7 @@ class GuiInputVideo(Thread):
         while(self.camera_status):
             ret,input_image = self.webcam.read()
             if ret:
+                input_image = cv2.resize(input_image,(640,480))
                 self.image_storage.set_input_image(input_image)
         print('Stop receive image ...')
         self.webcam.release()

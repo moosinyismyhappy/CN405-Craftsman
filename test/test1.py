@@ -6,7 +6,7 @@ import math
 
 # Configuration
 file_name = '../resources/videos/Full_Working1.mp4'
-black_img = cv2.imread('../resources/images/black_background.png')
+black_img = cv2.imread('../resources/images/transparent.png')
 detect_area = 1000
 lower_value = 0.7
 upper_value = 1.3
