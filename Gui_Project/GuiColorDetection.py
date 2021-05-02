@@ -1,9 +1,10 @@
 import threading
-import time
 from threading import Thread
 
 import cv2
 import numpy as np
+
+from Gui_Project.GuiTracking import GuiTracking
 
 
 class GuiColorDetection(Thread):
@@ -12,6 +13,9 @@ class GuiColorDetection(Thread):
         super().__init__()
         self.gui = gui
         self.image_storage = input_storage
+        self.tracking = None
+        self.tracking_status = 0
+        self.center_pos = (-1,-1)
         self.x_pos = -1
         self.y_pos = -1
         self.w = -1
@@ -64,7 +68,7 @@ class GuiColorDetection(Thread):
 
     def detect_color(self):
         print('Starting Detect color ...')
-        while True:
+        while self.image_storage.get_storage_status():
             try:
                 color_lower = np.array([self.hsv_lower[0], self.hsv_lower[1], self.hsv_lower[2]])
                 color_upper = np.array([self.hsv_upper[0], self.hsv_upper[1], self.hsv_upper[2]])
@@ -82,6 +86,25 @@ class GuiColorDetection(Thread):
                 area = cv2.contourArea(contour)
                 if area > 3000:
                     self.x, self.y, self.w, self.h = cv2.boundingRect(contour)
+
+                    self.center_pos = int((2 * self.x + self.w) / 2), int((2 * self.y + self.h) / 2)
+
+                    # First detection -> Set value for first tracking
+                    if self.tracking_status == 0:
+                        print('First Tracking')
+                        self.tracking = GuiTracking(self.gui,self.image_storage)
+                        self.tracking.set_center_position(self.center_pos)
+                        self.tracking_status = 1
+
+                    # After first detection -> Set value for tracking
+                    elif self.tracking_status ==1:
+                        print('After first tracking')
+                        self.tracking.set_center_position(self.center_pos)
+                        self.tracking.print_center()
+
+                    elif self.tracking_status ==2:
+                        print('temp')
+
 
                     detected_image = cv2.rectangle(self.image_storage.get_input_image(), (self.x, self.y),
                                                    (self.x + self.w, self.y + self.h), (0, 255, 0), 2)

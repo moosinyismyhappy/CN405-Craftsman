@@ -69,4 +69,4 @@ class GuiOutputVideo(Thread):
             self.image_storage.set_gray_image(converted_gray_image)
 
             # send converted image back to gui
-            self.gui.draw_image(self.image_storage.get_show_image())
+            self.gui.show_image_to_screen(self.image_storage.get_show_image())

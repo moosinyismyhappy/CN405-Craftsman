@@ -1,3 +1,6 @@
+import cv2
+
+
 class GuiImageStorage():
 
     def __init__(self):
@@ -7,8 +10,16 @@ class GuiImageStorage():
         self.rgb_image = None
         self.gray_image = None
         self.detected_image = None
+        self.transparent_original_image = cv2.imread('../resources/images/transparent.png')
+        self.transparent_image = self.transparent_original_image.copy()
         self.storage_status = False
         self.show_status = 0
+
+    def get_transparent_image(self):
+        return self.transparent_image
+
+    def set_transparent_image(self,new_image):
+        self.transparent_image = new_image
 
     def set_input_image(self, new_image):
         self.input_image = new_image.copy()

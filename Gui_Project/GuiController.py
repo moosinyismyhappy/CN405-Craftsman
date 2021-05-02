@@ -2,8 +2,11 @@ import time
 import sys
 import threading
 from threading import Thread
+
+import cv2
 from PyQt5 import QtGui, QtWidgets, Qt, QtCore
-from PyQt5.QtGui import QMouseEvent, QPixmap
+from PyQt5.QtGui import QMouseEvent, QPixmap, QPainter, QPen, QBrush
+from PyQt5.QtCore import Qt
 
 from Gui_Project.GuiColorDetection import GuiColorDetection
 from Gui_Project.GuiImageStorage import GuiImageStorage
@@ -21,6 +24,7 @@ class GuiController(Thread):
         self.count = 0
         self.is_first_left_click = True
         self.is_first_right_click = True
+        self.is_first_open_button = True
         self.show_tracking_toggle_status = True
 
     def run(self):
@@ -49,6 +53,7 @@ class GuiController(Thread):
         self.ui.label_5.setVisible(False)
         self.ui.label_5.setStyleSheet("background-color: rgba(0,0,0,0%)")
         self.ui.label_7.setVisible(False)
+        self.ui.label_8.setVisible(False)
         self.ui.label_6.setText("Camera is close")
         self.ui.label.mousePressEvent = self.get_position_from_image
         self.ui.label.setVisible(False)
@@ -61,7 +66,7 @@ class GuiController(Thread):
             self.ui.label_5.setVisible(True)
             self.ui.label_7.setText("Show Tracking")
             self.ui.label_7.setVisible(True)
-            pixmap = QPixmap('../resources/images/transparent1.png')
+            pixmap = QPixmap('../resources/images/test_transparent.png')
             self.ui.label_5.setPixmap(pixmap)
             self.show_tracking_toggle_status = False
         else:
@@ -69,7 +74,6 @@ class GuiController(Thread):
             self.ui.label_7.setText("")
             self.ui.label_7.setVisible(False)
             self.show_tracking_toggle_status = True
-
 
     def change_showing_image_to_rgb(self):
         self.image_storage.set_show_status(0)
@@ -94,7 +98,6 @@ class GuiController(Thread):
         self.ui.pushButton_8.setEnabled(False)
         self.ui.pushButton_6.setEnabled(True)
         self.ui.pushButton_7.setEnabled(True)
-
 
     def get_position_from_image(self, event):
         if event.buttons() == QtCore.Qt.LeftButton:
@@ -142,18 +145,23 @@ class GuiController(Thread):
         self.ui.pushButton_2.setEnabled(True)
         self.ui.label.setVisible(True)
 
-        # Create Thread for input_video
-        self.thread_input_video = GuiInputVideo(self.image_storage)
-        self.thread_input_video.set_camera_status(True)
-        self.image_storage.set_storage_status(True)
-        self.thread_input_video.start()
+        if self.is_first_open_button:
+            # Create Thread for input_video
+            self.thread_input_video = GuiInputVideo(self.image_storage)
+            self.thread_input_video.set_camera_status(True)
+            self.image_storage.set_storage_status(True)
+            self.thread_input_video.start()
+            # Create Thread for output_video
+            self.thread_output_video = GuiOutputVideo(self, self.image_storage)
+            self.thread_output_video.start()
+            # set first push open button to false
+            self.is_first_open_button = False
+        else:
+            self.thread_input_video.set_camera_status(True)
+            self.image_storage.set_storage_status(True)
 
-        # Create Thread for output_video
-        self.thread_output_video = GuiOutputVideo(self, self.image_storage)
-        self.thread_output_video.start()
-
-    def draw_image(self, image):
-        time.sleep(0.001)
+    def show_image_to_screen(self, image):
+        time.sleep(0.000000001)
         self.ui.label.setPixmap(QtGui.QPixmap.fromImage(image))
 
     def close_camera_button(self):
