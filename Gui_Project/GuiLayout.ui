@@ -30,7 +30,7 @@
      <number>0</number>
     </property>
     <widget class="QWidget" name="page">
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="pushButton_open_camera">
       <property name="geometry">
        <rect>
         <x>290</x>
@@ -46,7 +46,7 @@
        <string>Open Camera</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_2">
+     <widget class="QPushButton" name="pushButton_stop_camera">
       <property name="geometry">
        <rect>
         <x>580</x>
@@ -62,7 +62,7 @@
        <string>Stop Camera</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_3">
+     <widget class="QPushButton" name="pushButton_show_setting">
       <property name="geometry">
        <rect>
         <x>790</x>
@@ -78,7 +78,7 @@
        <string>Settings</string>
       </property>
      </widget>
-     <widget class="QWidget" name="widget" native="true">
+     <widget class="QWidget" name="widget_place_camera" native="true">
       <property name="geometry">
        <rect>
         <x>180</x>
@@ -90,7 +90,7 @@
       <property name="styleSheet">
        <string notr="true">background-color: rgb(229, 231, 255);</string>
       </property>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="label_camera">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -106,24 +106,11 @@
         <string/>
        </property>
       </widget>
-      <widget class="QLabel" name="label_8">
+      <widget class="QLabel" name="label_show_tracking">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>10</y>
-         <width>640</width>
-         <height>480</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_5">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>10</y>
+         <x>140</x>
+         <y>100</y>
          <width>640</width>
          <height>480</height>
         </rect>
@@ -136,7 +123,7 @@
        </property>
       </widget>
      </widget>
-     <widget class="QPushButton" name="pushButton_5">
+     <widget class="QPushButton" name="pushButton_exit">
       <property name="geometry">
        <rect>
         <x>910</x>
@@ -152,7 +139,7 @@
        <string>Exit</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_6">
+     <widget class="QPushButton" name="pushButton_show_rgb">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -168,7 +155,7 @@
        <string>RGB Image</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_7">
+     <widget class="QPushButton" name="pushButton_show_gray">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -184,7 +171,7 @@
        <string>Gray Scale Image</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_8">
+     <widget class="QPushButton" name="pushButton_show_hsv">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -200,7 +187,7 @@
        <string>HSV Image</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_9">
+     <widget class="QPushButton" name="pushButton_show_tracking">
       <property name="geometry">
        <rect>
         <x>860</x>
@@ -216,7 +203,7 @@
        <string>Show Tracking</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_6">
+     <widget class="QLabel" name="label_image_type">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -237,12 +224,12 @@
        <string>Camera is close</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_7">
+     <widget class="QLabel" name="label_show_type">
       <property name="geometry">
        <rect>
-        <x>870</x>
+        <x>860</x>
         <y>100</y>
-        <width>141</width>
+        <width>151</width>
         <height>31</height>
        </rect>
       </property>
@@ -255,10 +242,10 @@
        <string notr="true">color: rgb(255, 0, 0);</string>
       </property>
       <property name="text">
-       <string/>
+       <string>Not Selected</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_10">
+     <widget class="QPushButton" name="pushButton_show_detection">
       <property name="geometry">
        <rect>
         <x>860</x>
@@ -274,21 +261,38 @@
        <string>Show Detection</string>
       </property>
      </widget>
-     <zorder>widget</zorder>
-     <zorder>pushButton</zorder>
-     <zorder>pushButton_2</zorder>
-     <zorder>pushButton_3</zorder>
-     <zorder>pushButton_5</zorder>
-     <zorder>pushButton_6</zorder>
-     <zorder>pushButton_7</zorder>
-     <zorder>pushButton_8</zorder>
-     <zorder>pushButton_9</zorder>
-     <zorder>label_6</zorder>
-     <zorder>label_7</zorder>
-     <zorder>pushButton_10</zorder>
+     <widget class="QLabel" name="label_show_detection">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>100</y>
+        <width>640</width>
+        <height>480</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <zorder>widget_place_camera</zorder>
+     <zorder>pushButton_open_camera</zorder>
+     <zorder>pushButton_stop_camera</zorder>
+     <zorder>pushButton_show_setting</zorder>
+     <zorder>pushButton_exit</zorder>
+     <zorder>pushButton_show_rgb</zorder>
+     <zorder>pushButton_show_gray</zorder>
+     <zorder>pushButton_show_hsv</zorder>
+     <zorder>pushButton_show_tracking</zorder>
+     <zorder>label_image_type</zorder>
+     <zorder>label_show_type</zorder>
+     <zorder>pushButton_show_detection</zorder>
+     <zorder>label_show_detection</zorder>
     </widget>
     <widget class="QWidget" name="page_2">
-     <widget class="QLabel" name="label_2">
+     <widget class="QLabel" name="label_settings">
       <property name="geometry">
        <rect>
         <x>420</x>
@@ -306,7 +310,7 @@
        <string>Settings</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_4">
+     <widget class="QPushButton" name="pushButton_back_to_menu">
       <property name="geometry">
        <rect>
         <x>420</x>
@@ -319,7 +323,7 @@
        <string>Back to Menu</string>
       </property>
      </widget>
-     <widget class="QDial" name="dial">
+     <widget class="QDial" name="dial_detect_area">
       <property name="geometry">
        <rect>
         <x>700</x>
@@ -329,7 +333,7 @@
        </rect>
       </property>
      </widget>
-     <widget class="QLabel" name="label_3">
+     <widget class="QLabel" name="label_camera_number">
       <property name="geometry">
        <rect>
         <x>120</x>
@@ -347,7 +351,7 @@
        <string>Camera Device Number</string>
       </property>
      </widget>
-     <widget class="QLCDNumber" name="lcdNumber">
+     <widget class="QLCDNumber" name="lcdNumber_camera_number">
       <property name="geometry">
        <rect>
         <x>140</x>
@@ -360,7 +364,7 @@
        <enum>QLCDNumber::Bin</enum>
       </property>
      </widget>
-     <widget class="QLabel" name="label_4">
+     <widget class="QLabel" name="label_detect_area">
       <property name="geometry">
        <rect>
         <x>690</x>
@@ -378,7 +382,7 @@
        <string>Area to detect</string>
       </property>
      </widget>
-     <widget class="QLCDNumber" name="lcdNumber_2">
+     <widget class="QLCDNumber" name="lcdNumber_detect_area">
       <property name="geometry">
        <rect>
         <x>650</x>
@@ -388,7 +392,7 @@
        </rect>
       </property>
      </widget>
-     <widget class="QDial" name="dial_2">
+     <widget class="QDial" name="dial_camera_number">
       <property name="geometry">
        <rect>
         <x>180</x>
@@ -406,9 +410,9 @@
  <resources/>
  <connections>
   <connection>
-   <sender>dial</sender>
+   <sender>dial_detect_area</sender>
    <signal>sliderMoved(int)</signal>
-   <receiver>lcdNumber_2</receiver>
+   <receiver>lcdNumber_detect_area</receiver>
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -422,9 +426,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>dial_2</sender>
+   <sender>dial_camera_number</sender>
    <signal>sliderMoved(int)</signal>
-   <receiver>lcdNumber</receiver>
+   <receiver>lcdNumber_camera_number</receiver>
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">

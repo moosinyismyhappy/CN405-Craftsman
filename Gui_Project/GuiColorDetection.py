@@ -1,10 +1,8 @@
 import threading
 from threading import Thread
-
 import cv2
 import numpy as np
-
-from Gui_Project.GuiTracking import GuiTracking
+from PyQt5 import QtGui
 
 
 class GuiColorDetection(Thread):
@@ -15,7 +13,7 @@ class GuiColorDetection(Thread):
         self.image_storage = input_storage
         self.tracking = None
         self.tracking_status = 0
-        self.center_pos = (-1,-1)
+        self.center_pos = (-1, -1)
         self.x_pos = -1
         self.y_pos = -1
         self.w = -1
@@ -26,6 +24,7 @@ class GuiColorDetection(Thread):
         self.hsv_list = None
         self.hsv_lower = None
         self.hsv_upper = None
+        self.trans_image = cv2.imread('../resources/images/test_transparent.png')
 
     def run(self):
         # Display Thread and Process ID
@@ -62,19 +61,19 @@ class GuiColorDetection(Thread):
     def set_hsv(self):
         temp_x = self.get_pos()[0]
         temp_y = self.get_pos()[1]
-        self.hsv_list = list(self.image_storage.get_hsv_image_for_detect()[temp_y, temp_x])
+        self.hsv_list = list(self.image_storage.get_hsv_image_for_detection()[temp_y, temp_x])
         self.__hsv_lower_process()
         self.__hsv_upper_process()
 
     def detect_color(self):
         print('Starting Detect color ...')
-        while self.image_storage.get_storage_status():
+        while True:
             try:
                 color_lower = np.array([self.hsv_lower[0], self.hsv_lower[1], self.hsv_lower[2]])
                 color_upper = np.array([self.hsv_upper[0], self.hsv_upper[1], self.hsv_upper[2]])
-                color_mask = cv2.inRange(self.image_storage.get_hsv_image_for_detect(), color_lower, color_upper)
+                color_mask = cv2.inRange(self.image_storage.get_hsv_image_for_detection(), color_lower, color_upper)
             except:
-                print('Exception from detect_color Class ColorDetection')
+                print('Exception from detect_color class ColorDetection')
                 continue
 
             kernal = np.ones((5, 5), "int8")
@@ -89,7 +88,7 @@ class GuiColorDetection(Thread):
 
                     self.center_pos = int((2 * self.x + self.w) / 2), int((2 * self.y + self.h) / 2)
 
-                    # First detection -> Set value for first tracking
+                    """# First detection -> Set value for first tracking
                     if self.tracking_status == 0:
                         print('First Tracking')
                         self.tracking = GuiTracking(self.gui,self.image_storage)
@@ -103,13 +102,11 @@ class GuiColorDetection(Thread):
                         self.tracking.print_center()
 
                     elif self.tracking_status ==2:
-                        print('temp')
+                        print('temp')"""
 
-
-                    detected_image = cv2.rectangle(self.image_storage.get_input_image(), (self.x, self.y),
+                    cv2.rectangle(self.image_storage.get_input_image(),
+                                                   (self.x, self.y),
                                                    (self.x + self.w, self.y + self.h), (0, 255, 0), 2)
-
-                    self.image_storage.set_detected_image(detected_image)
 
     def print_hsv_value(self):
         print(self.hsv_list, self.hsv_lower, self.hsv_upper)
