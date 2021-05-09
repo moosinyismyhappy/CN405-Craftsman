@@ -1,4 +1,3 @@
-import cv2
 
 class GuiImageStorage():
 
@@ -7,8 +6,6 @@ class GuiImageStorage():
         self.input_image = None
         self.hsv_image_for_detection = None
         self.detected_image = None
-        self.transparent_image_for_detection = cv2.imread('../resources/images/test_transparent.png')
-        self.transparent_image_for_tracking = cv2.imread('../resources/images/transparent.png')
         self.is_detected_status = False
 
         # other instance variable for process

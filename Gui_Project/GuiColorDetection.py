@@ -104,9 +104,7 @@ class GuiColorDetection(Thread):
                     elif self.tracking_status ==2:
                         print('temp')"""
 
-                    cv2.rectangle(self.image_storage.get_input_image(),
-                                                   (self.x, self.y),
-                                                   (self.x + self.w, self.y + self.h), (0, 255, 0), 2)
+                    self.gui.display_to_detection_zone(self.x,self.y,self.w,self.h)
 
     def print_hsv_value(self):
         print(self.hsv_list, self.hsv_lower, self.hsv_upper)

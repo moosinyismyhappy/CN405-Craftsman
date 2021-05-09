@@ -26,6 +26,7 @@ class GuiOutputVideo(Thread):
 
                 # Change color system BGR(OpenCV) to HSV
                 hsv_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2HSV)
+
                 # Send to image storage for color detection
                 self.image_storage.set_hsv_image_for_detection(hsv_image)
 

@@ -13,7 +13,6 @@ from Gui_Project.GuiOutputVideo import GuiOutputVideo
 class GuiController(threading.Thread):
     def __init__(self):
         super().__init__()
-
         # declare instance variable for access other class
         self.image_storage = GuiImageStorage()
         self.thread_input_video = None
@@ -25,6 +24,12 @@ class GuiController(threading.Thread):
         self.tracking_toggle_status = True
         self.detection_toggle_status = True
         self.show_image_type = 0
+        self.is_first_click_toggle_detect = 0
+
+        # instance for toggle detect
+        self.transparent_image_detect = None
+        self.painter_instance_detect = None
+        self.pen_rect = None
 
     def run(self):
         # Display Thread and Process ID
@@ -50,8 +55,8 @@ class GuiController(threading.Thread):
         self.ui.pushButton_show_hsv.clicked.connect(self.display_hsv_image_button)
         self.ui.pushButton_show_detection.clicked.connect(self.toggle_display_detect_area)
         self.ui.pushButton_show_tracking.clicked.connect(self.toggle_display_track_area)
-        self.ui.label_show_detection.setStyleSheet("background-color: rgba(0,0,0,0%)")
-        self.ui.label_show_tracking.setStyleSheet("background-color: rgba(0,0,0,0%)")
+        self.ui.label_show_detection.setStyleSheet("background:transparent")
+        self.ui.label_show_tracking.setStyleSheet("background:transparent")
         self.ui.label_camera.mousePressEvent = self.get_position_from_image
         self.ui.label_show_detection.setVisible(False)
         self.ui.label_show_tracking.setVisible(False)
@@ -74,7 +79,24 @@ class GuiController(threading.Thread):
     # Toggle display detected area Button
     def toggle_display_detect_area(self):
         print('toggle display detect area')
-        self.ui.label_show_detection.setVisible(True)
+        if self.is_first_click_toggle_detect == 0:
+            self.transparent_image_detect = QtGui.QPixmap('../resources/images/transparent.png')
+            self.painter_instance_detect = QtGui.QPainter(self.transparent_image_detect)
+            self.pen_rect = QtGui.QPen(QtCore.Qt.cyan)
+            self.pen_rect.setWidth(5)
+            self.painter_instance_detect.setPen(self.pen_rect)
+            self.painter_instance_detect.drawRect(0,100,100,100)
+            # set pixmap onto the label widget
+            self.ui.label_show_detection.setPixmap(self.transparent_image_detect)
+            self.ui.label_show_detection.show()
+            self.ui.label_show_detection.setVisible(True)
+            self.is_first_click_toggle_detect = 1
+        elif self.is_first_click_toggle_detect == 1:
+            self.ui.label_show_detection.setVisible(False)
+            self.is_first_click_toggle_detect = 2
+        elif self.is_first_click_toggle_detect == 2:
+            self.ui.label_show_detection.setVisible(True)
+            self.is_first_click_toggle_detect = 1
 
     # Toggle display track area Button
     def toggle_display_track_area(self):
@@ -113,13 +135,12 @@ class GuiController(threading.Thread):
         time.sleep(0.001)
         self.ui.label_camera.setPixmap(QtGui.QPixmap.fromImage(receive_image))
 
-    # Receive detected image from other class and display to gui
-    def display_image_to_detection_zone(self, receive_image):
-        time.sleep(0.001)
-        self.ui.label_show_detection.setPixmap(QtGui.QPixmap.fromImage(receive_image))
+    # Receive detected point from other class and display to gui
+    def display_to_detection_zone(self,x,y,w,h):
+        pass
 
-    # Receive track image from other class and display to gui
-    def display_image_to_tracking_zone(self, receive_image):
+    # Receive track point from other class and display to gui
+    def display_to_tracking_zone(self,x,y):
         pass
 
     # Set which type of image (RGB,HSV,GRAYSCALE)

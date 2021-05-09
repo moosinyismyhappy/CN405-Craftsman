@@ -25,7 +25,7 @@ class TestGuiMain():
         self.painterInstance = QtGui.QPainter(self.pixmap_image)
         # set rectangle color and thickness
         self.penCircle = QtGui.QPen(QtCore.Qt.cyan)
-        self.penCircle.setWidth(3)
+        self.penCircle.setWidth(10)
         # draw rectangle on painter
         self.painterInstance.setPen(self.penCircle)
 
@@ -43,7 +43,7 @@ class TestGuiMain():
         pass
 
     def display_image_to_tracking_zone(self,x,y):
-        self.painterInstance.drawEllipse(x, y, 20, 20)
+        self.painterInstance.drawPoint(x, y)
 
         # set pixmap onto the label widget
         self.ui.track_label.setPixmap(self.pixmap_image)
