@@ -24,7 +24,6 @@ class GuiController(threading.Thread):
         self.tracking_toggle_status = True
         self.detection_toggle_status = True
         self.show_image_type = 0
-        self.is_first_click_toggle_detect = 0
 
         # instance for toggle detect
         self.transparent_image_detect = None
@@ -45,21 +44,18 @@ class GuiController(threading.Thread):
 
     def widget_setting(self):
         # Setting widget and event
-        self.ui.pushButton_open_camera.clicked.connect(self.open_camera_button)
-        self.ui.pushButton_stop_camera.clicked.connect(self.stop_camera_button)
-        self.ui.pushButton_show_setting.clicked.connect(self.go_to_setting_page_button)
-        self.ui.pushButton_back_to_menu.clicked.connect(self.go_to_main_page_button)
-        self.ui.pushButton_exit.clicked.connect(self.exit_button)
-        self.ui.pushButton_show_rgb.clicked.connect(self.display_rgb_image_button)
-        self.ui.pushButton_show_gray.clicked.connect(self.display_gray_image_button)
-        self.ui.pushButton_show_hsv.clicked.connect(self.display_hsv_image_button)
-        self.ui.pushButton_show_detection.clicked.connect(self.toggle_display_detect_area)
-        self.ui.pushButton_show_tracking.clicked.connect(self.toggle_display_track_area)
-        self.ui.label_show_detection.setStyleSheet("background:transparent")
-        self.ui.label_show_tracking.setStyleSheet("background:transparent")
-        self.ui.label_camera.mousePressEvent = self.get_position_from_image
-        self.ui.label_show_detection.setVisible(False)
-        self.ui.label_show_tracking.setVisible(False)
+        self.ui.open_camera_button.clicked.connect(self.open_camera_button)
+        self.ui.setting_button.clicked.connect(self.go_to_setting_page_button)
+        self.ui.back_to_main_button.clicked.connect(self.go_to_main_page_button)
+        self.ui.exit_button.clicked.connect(self.exit_button)
+        self.ui.display_rgb_image_button.clicked.connect(self.display_rgb_image_button)
+        self.ui.display_gray_image_button.clicked.connect(self.display_gray_image_button)
+        self.ui.display_hsv_image_button.clicked.connect(self.display_hsv_image_button)
+        self.ui.display_detect_button.clicked.connect(self.toggle_display_detect_area)
+        self.ui.display_track_button.clicked.connect(self.toggle_display_track_area)
+        self.ui.display_detect_frame.setStyleSheet("background:transparent")
+        self.ui.display_track_frame.setStyleSheet("background:transparent")
+        self.ui.display_camera_frame.mousePressEvent = self.get_position_from_image
 
     # RGB Image Button
     def display_rgb_image_button(self):
@@ -79,24 +75,10 @@ class GuiController(threading.Thread):
     # Toggle display detected area Button
     def toggle_display_detect_area(self):
         print('toggle display detect area')
-        if self.is_first_click_toggle_detect == 0:
-            self.transparent_image_detect = QtGui.QPixmap('../resources/images/transparent.png')
-            self.painter_instance_detect = QtGui.QPainter(self.transparent_image_detect)
-            self.pen_rect = QtGui.QPen(QtCore.Qt.cyan)
-            self.pen_rect.setWidth(5)
-            self.painter_instance_detect.setPen(self.pen_rect)
-            self.painter_instance_detect.drawRect(0,100,100,100)
-            # set pixmap onto the label widget
-            self.ui.label_show_detection.setPixmap(self.transparent_image_detect)
-            self.ui.label_show_detection.show()
-            self.ui.label_show_detection.setVisible(True)
-            self.is_first_click_toggle_detect = 1
-        elif self.is_first_click_toggle_detect == 1:
-            self.ui.label_show_detection.setVisible(False)
-            self.is_first_click_toggle_detect = 2
-        elif self.is_first_click_toggle_detect == 2:
-            self.ui.label_show_detection.setVisible(True)
-            self.is_first_click_toggle_detect = 1
+
+    # Receive detected point from other class and display to gui
+    def display_to_detection_zone(self):
+        pass
 
     # Toggle display track area Button
     def toggle_display_track_area(self):
@@ -133,11 +115,8 @@ class GuiController(threading.Thread):
     # Receive image from other class and display to gui
     def display_image_to_camera_zone(self, receive_image):
         time.sleep(0.001)
-        self.ui.label_camera.setPixmap(QtGui.QPixmap.fromImage(receive_image))
+        self.ui.display_camera_frame.setPixmap(QtGui.QPixmap.fromImage(receive_image))
 
-    # Receive detected point from other class and display to gui
-    def display_to_detection_zone(self,x,y,w,h):
-        pass
 
     # Receive track point from other class and display to gui
     def display_to_tracking_zone(self,x,y):

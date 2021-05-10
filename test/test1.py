@@ -237,8 +237,8 @@ def point_track_right(x, y):
 if __name__ == "__main__":
 
     # Capturing video through webcam
-    #webcam = cv2.VideoCapture(file_name)
-    webcam = cv2.VideoCapture(1)
+    webcam = cv2.VideoCapture(file_name)
+    #webcam = cv2.VideoCapture(0)
     while True:
         # Receive stream image from camera
         _, imageFrame = webcam.read()
