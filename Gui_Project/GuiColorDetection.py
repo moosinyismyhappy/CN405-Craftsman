@@ -88,23 +88,7 @@ class GuiColorDetection(Thread):
 
                     self.center_pos = int((2 * self.x + self.w) / 2), int((2 * self.y + self.h) / 2)
 
-                    """# First detection -> Set value for first tracking
-                    if self.tracking_status == 0:
-                        print('First Tracking')
-                        self.tracking = GuiTracking(self.gui,self.image_storage)
-                        self.tracking.set_center_position(self.center_pos)
-                        self.tracking_status = 1
-
-                    # After first detection -> Set value for tracking
-                    elif self.tracking_status ==1:
-                        print('After first tracking')
-                        self.tracking.set_center_position(self.center_pos)
-                        self.tracking.print_center()
-
-                    elif self.tracking_status ==2:
-                        print('temp')"""
-
-                    self.gui.display_to_detection_zone(self.x,self.y,self.w,self.h)
+                    #self.gui.display_to_detection_zone(self.x,self.y,self.w,self.h)
 
     def print_hsv_value(self):
         print(self.hsv_list, self.hsv_lower, self.hsv_upper)
