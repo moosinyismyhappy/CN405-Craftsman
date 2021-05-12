@@ -1,4 +1,3 @@
-# test tracking (temp)
 
 import cv2
 import math

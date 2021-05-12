@@ -1,4 +1,5 @@
 import threading
+import time
 from threading import Thread
 import cv2
 import numpy as np
@@ -24,7 +25,8 @@ class GuiColorDetection(Thread):
         self.hsv_list = None
         self.hsv_lower = None
         self.hsv_upper = None
-        self.trans_image = cv2.imread('../resources/images/test_transparent.png')
+        self.count_detect = 0
+        self.count_round = 0
 
     def run(self):
         # Display Thread and Process ID
@@ -85,10 +87,9 @@ class GuiColorDetection(Thread):
                 area = cv2.contourArea(contour)
                 if area > 3000:
                     self.x, self.y, self.w, self.h = cv2.boundingRect(contour)
-
                     self.center_pos = int((2 * self.x + self.w) / 2), int((2 * self.y + self.h) / 2)
-
-                    #self.gui.display_to_detection_zone(self.x,self.y,self.w,self.h)
+                    #self.gui.display_to_detect_frame(self.x, self.y, self.w, self.h)
+                    #cv2.rectangle(self.image_storage.get_input_image(), (self.x, self.y),(self.x + self.w, self.y + self.h), (0, 255, 0), 2)
 
     def print_hsv_value(self):
         print(self.hsv_list, self.hsv_lower, self.hsv_upper)
