@@ -3,9 +3,7 @@ import cv2
 from threading import Thread
 from PyQt5 import QtGui
 
-
-class GuiOutputVideo(Thread):
-
+class GuiProcessOutput(Thread):
     def __init__(self, gui, image_storage):
         super().__init__()
         self.gui = gui

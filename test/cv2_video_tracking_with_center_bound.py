@@ -92,8 +92,6 @@ def point_track_left(x, y):
 
     result = degree(math.atan2(diff_y, diff_x))
 
-    print(degree(math.atan2(228-366, 461-334)))
-
     prev_left = curr_left
 
     ########################################
@@ -112,40 +110,40 @@ def point_track_left(x, y):
     #          120   DOWN   060            #
     ########################################
 
-    if result >= 240 and result < 300:
-        print('UP')
+    if result >= 255 and result < 285:
+        # print('UP')
         curr_status_left = 1
 
-    elif result >= 300 and result < 330:
-        print('Q1')
+    elif result >= 285 and result < 345:
+        # print('Q1')
         curr_status_left = 2
 
-    elif result >= 330 and result < 360:
-        print('RIGHT')
+    elif result >= 345 and result < 360:
+        # print('RIGHT')
         curr_status_left = 3
 
-    elif result >= 0 and result < 30:
-        print('RIGHT')
+    elif result >= 0 and result < 15:
+        # print('RIGHT')
         curr_status_left = 3
 
-    elif result >= 30 and result < 60:
-        print('Q4')
+    elif result >= 15 and result < 75:
+        # print('Q4')
         curr_status_left = 5
 
-    elif result >= 60 and result < 120:
-        print('DOWN')
+    elif result >= 75 and result < 105:
+        # print('DOWN')
         curr_status_left = 6
 
-    elif result >= 120 and result < 150:
-        print('Q3')
+    elif result >= 105 and result < 165:
+        # print('Q3')
         curr_status_left = 7
 
-    elif result >= 150 and result < 210:
-        print('LEFT')
+    elif result >= 165 and result < 195:
+        # print('LEFT')
         curr_status_left = 8
 
-    elif result >= 210 and result < 240:
-        print('Q2')
+    elif result >= 195 and result < 255:
+        # print('Q2')
         curr_status_left = 9
 
     if curr_status_left != prev_status_left:
@@ -179,55 +177,55 @@ def point_track_right(x, y):
     prev_right = curr_right
 
     ########################################
-    #          240    UP    300            #
+    #          255    UP    285            #
     #                                      #
     #      Q2                   Q1         #
     #                                      #
-    #   210                        330     #
+    #   195                        345     #
     #                                      #
     # LEFT          ORIGIN           RIGHT #
     #                                      #
-    #   150                        030     #
+    #   165                        015     #
     #                                      #
     #      Q3                   Q4         #
     #                                      #
-    #          120   DOWN   060            #
+    #          105   DOWN   075            #
     ########################################
 
-    if result >= 240 and result < 300:
-        print('UP')
+    if result >= 255 and result < 285:
+        # print('UP')
         curr_status_right = 1
 
-    elif result >= 300 and result < 330:
-        print('Q1')
+    elif result >= 285 and result < 345:
+        # print('Q1')
         curr_status_right = 2
 
-    elif result >= 330 and result < 360:
-        print('RIGHT')
+    elif result >= 345 and result < 360:
+        # print('RIGHT')
         curr_status_right = 3
 
-    elif result >= 0 and result < 30:
-        print('RIGHT')
+    elif result >= 0 and result < 15:
+        # print('RIGHT')
         curr_status_right = 3
 
-    elif result >= 30 and result < 60:
-        print('Q4')
+    elif result >= 15 and result < 75:
+        # print('Q4')
         curr_status_right = 5
 
-    elif result >= 60 and result < 120:
-        print('DOWN')
+    elif result >= 75 and result < 105:
+        # print('DOWN')
         curr_status_right = 6
 
-    elif result >= 120 and result < 150:
-        print('Q3')
+    elif result >= 105 and result < 165:
+        # print('Q3')
         curr_status_right = 7
 
-    elif result >= 150 and result < 210:
-        print('LEFT')
+    elif result >= 165 and result < 195:
+        # print('LEFT')
         curr_status_right = 8
 
-    elif result >= 210 and result < 240:
-        print('Q2')
+    elif result >= 195 and result < 255:
+        # print('Q2')
         curr_status_right = 9
 
     if curr_status_right != prev_status_right:

@@ -74,7 +74,7 @@
         <string/>
        </property>
       </widget>
-      <widget class="QLabel" name="display_detect_frame">
+      <widget class="QLabel" name="display_mark_area_frame">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -85,22 +85,6 @@
        </property>
        <property name="styleSheet">
         <string notr="true">background-color: rgb(0, 255, 0);</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="display_track_frame">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>10</y>
-         <width>640</width>
-         <height>480</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color: rgb(85, 170, 255);</string>
        </property>
        <property name="text">
         <string/>
@@ -181,22 +165,6 @@
        <string>Detection is off</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="display_detect_button">
-      <property name="geometry">
-       <rect>
-        <x>50</x>
-        <y>350</y>
-        <width>101</width>
-        <height>51</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true"/>
-      </property>
-      <property name="text">
-       <string>Display Detect</string>
-      </property>
-     </widget>
      <widget class="QPushButton" name="display_hsv_image_button">
       <property name="geometry">
        <rect>
@@ -233,7 +201,7 @@
       <property name="geometry">
        <rect>
         <x>50</x>
-        <y>410</y>
+        <y>420</y>
         <width>101</width>
         <height>51</height>
        </rect>
@@ -249,7 +217,7 @@
       <property name="geometry">
        <rect>
         <x>50</x>
-        <y>500</y>
+        <y>510</y>
         <width>101</width>
         <height>51</height>
        </rect>
@@ -705,13 +673,28 @@
        <string>Export</string>
       </property>
      </widget>
+     <widget class="QPushButton" name="display_mark_button">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>360</y>
+        <width>101</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string>Display Mark</string>
+      </property>
+     </widget>
      <zorder>widget_display</zorder>
      <zorder>setting_button</zorder>
      <zorder>exit_button</zorder>
      <zorder>display_rgb_image_button</zorder>
      <zorder>text_image_type</zorder>
      <zorder>text_detect</zorder>
-     <zorder>display_detect_button</zorder>
      <zorder>display_hsv_image_button</zorder>
      <zorder>display_gray_image_button</zorder>
      <zorder>display_track_button</zorder>
@@ -740,6 +723,7 @@
      <zorder>text_display_avg_output</zorder>
      <zorder>text_display_avg_cycle_time</zorder>
      <zorder>export_button</zorder>
+     <zorder>display_mark_button</zorder>
     </widget>
     <widget class="QWidget" name="page_2">
      <widget class="QLabel" name="text_setting">

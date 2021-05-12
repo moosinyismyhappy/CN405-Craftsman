@@ -36,12 +36,6 @@ class GuiImageStorage():
     def get_input_image(self):
         return self.input_image
 
-    def get_transparent_image_for_detection(self):
-        return self.transparent_image_for_detection.copy()
-
-    def get_transparent_image_for_tracking(self):
-        return self.transparent_image_for_tracking
-
 
 
 
