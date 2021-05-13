@@ -10,13 +10,16 @@ class GuiColorDetection(Thread):
         super().__init__()
         self.gui = gui
         self.image_storage = input_storage
-        self.tracking = GuiTracking(self.gui, self.image_storage)
+        self.tracking = GuiTracking(self.gui, self.image_storage,self)
         self.x_position = -1
         self.y_position = -1
         self.w = -1
         self.h = -1
         self.x = -1
         self.y = -1
+        self.r = -1
+        self.g = -1
+        self.b = -1
         self.hsv_range = 0.2
         self.hsv_list = None
         self.hsv_lower = None
@@ -31,6 +34,14 @@ class GuiColorDetection(Thread):
     def set_hsv(self):
         temp_x = self.get_position()[0]
         temp_y = self.get_position()[1]
+
+        # set bgr color
+        bgr_color = self.image_storage.get_input_image()[temp_y,temp_x]
+        self.b = int(bgr_color[0])
+        self.g = int(bgr_color[1])
+        self.r = int(bgr_color[2])
+
+        # set get hsv to process lower and upper
         self.hsv_list = list(self.image_storage.get_hsv_image_for_detection()[temp_y, temp_x])
         self.__hsv_lower_process()
         self.__hsv_upper_process()
@@ -60,6 +71,15 @@ class GuiColorDetection(Thread):
 
         # combine hsv separate value to list
         self.hsv_lower = [h_lower, s_lower, v_lower]
+
+    def get_r(self):
+        return self.r
+
+    def get_g(self):
+        return self.g
+
+    def get_b(self):
+        return self.b
 
     def set_position(self, x, y):
         self.x_position = x
@@ -92,7 +112,6 @@ class GuiColorDetection(Thread):
                 if area > 3000:
                     self.x, self.y, self.w, self.h = cv2.boundingRect(contour)
                     center_position = int((2 * self.x + self.w) / 2), int((2 * self.y + self.h) / 2)
-
                     if self.is_first_detect:
                         center_boundary = [self.x, self.y, self.x + self.w, self.y + self.h]
                         self.tracking.set_center_boundary(center_boundary)
@@ -107,12 +126,17 @@ class GuiColorDetection(Thread):
                             center_boundary = [self.x, self.y, self.x + self.w, self.y + self.h]
                             self.tracking.set_center_boundary(center_boundary)
 
-                    cv2.rectangle(self.image_storage.get_input_image(), (
-                        self.tracking.get_center_boundary()[0], self.tracking.get_center_boundary()[1]),
-                                  (self.tracking.get_center_boundary()[2], self.tracking.get_center_boundary()[3]),
-                                  (0, 255, 255), 2)
-
+                    # check detect button is active
                     if self.gui.get_toggle_detect_status():
+                        # Draw rectangle over detect color
                         cv2.rectangle(self.image_storage.get_input_image(), (self.x, self.y),
-                                      (self.x + self.w, self.y + self.h), (0, 255, 0), 2)
-                        cv2.circle(self.image_storage.get_input_image(), center_position, 2, (0, 0, 255), 2)
+                                          (self.x + self.w, self.y + self.h), (0, 255, 0), 2)
+
+                        # Draw center point on detect rectangle
+                        #cv2.circle(self.image_storage.get_input_image(), center_position, 2, (0, 0, 255), 2)
+
+                        # Draw rectangle boundary over detect
+                        """cv2.rectangle(self.image_storage.get_input_image(), (
+                            self.tracking.get_center_boundary()[0], self.tracking.get_center_boundary()[1]),
+                                      (self.tracking.get_center_boundary()[2], self.tracking.get_center_boundary()[3]),
+                                      (0, 255, 255), 2)"""

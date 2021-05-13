@@ -16,6 +16,9 @@ class GuiInputVideo(Thread):
         print(threading.current_thread())
         self.__get_image_from_camera()
 
+    def set_camera_number(self,number):
+        self.camera_number = number
+
     def __get_image_from_camera(self):
         print('Start receive image ...')
         while True:
@@ -28,6 +31,5 @@ class GuiInputVideo(Thread):
         print('Stop receive image ...')
         self.webcam.release()
 
-    def set_camera_number(self,number):
-        self.camera_number = number
+
 

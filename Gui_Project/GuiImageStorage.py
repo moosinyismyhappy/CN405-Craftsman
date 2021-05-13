@@ -1,6 +1,5 @@
 import cv2
 
-
 class GuiImageStorage():
     def __init__(self):
         # Instance variable for images
@@ -19,3 +18,6 @@ class GuiImageStorage():
 
     def get_input_image(self):
         return self.input_image
+
+    def get_background_image_for_track(self):
+        return self.background_image_for_track

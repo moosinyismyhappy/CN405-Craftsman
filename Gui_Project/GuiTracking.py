@@ -1,11 +1,14 @@
 import math
 
+import cv2
+
 
 class GuiTracking():
 
-    def __init__(self, gui, image_storage):
+    def __init__(self, gui, image_storage,color_detect):
         self.gui = gui
         self.image_storage = image_storage
+        self.color_detect = color_detect
         self.previous_position = None
         self.current_position = None
         self.previous_direction = None
@@ -63,6 +66,7 @@ class GuiTracking():
         degree = ((x * 180) / pi) % 360
         return int(degree)
 
+    # check center is in rectangle boundary
     def is_center_in_boundary(self, center_position):
         x_center, y_center = center_position[0], center_position[1]
         # boundary of rectangle
@@ -143,7 +147,7 @@ class GuiTracking():
             self.current_direction = 9
 
         if self.current_direction != self.previous_direction:
-            #cv2.circle(black_img, (x, y), 2, (255, 255, 255), 2)
-            pass
+            cv2.circle(self.image_storage.get_background_image_for_track(), center_position, 2, (255, 0, 0), 2)
+
 
 

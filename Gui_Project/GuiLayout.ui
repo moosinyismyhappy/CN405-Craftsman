@@ -705,7 +705,7 @@
        <string>Display Detect</string>
       </property>
      </widget>
-     <widget class="QLabel" name="text_detect_2">
+     <widget class="QLabel" name="text_mark_area">
       <property name="geometry">
        <rect>
         <x>410</x>
@@ -762,7 +762,7 @@
      <zorder>export_button</zorder>
      <zorder>display_mark_button</zorder>
      <zorder>display_detect_button</zorder>
-     <zorder>text_detect_2</zorder>
+     <zorder>text_mark_area</zorder>
     </widget>
     <widget class="QWidget" name="page_2">
      <widget class="QLabel" name="text_setting">

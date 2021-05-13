@@ -5,8 +5,7 @@ import math
 
 # Configuration
 file_name = '../resources/videos/Full_Working1.mp4'
-transparent_image1 = cv2.imread('../resources/images/transparent.png')
-transparent_image2 = cv2.imread('../resources/images/transparent.png')
+black_img = cv2.imread('../resources/images/transparent.png')
 detect_area = 1000
 lower_value = 0.7
 upper_value = 1.3
@@ -23,6 +22,7 @@ curr_left = -1
 prev_status_left = -1
 curr_status_left = -1
 is_out_left = False
+rgb_color_left = [-1,-1,-1]
 
 # For right hand
 hsv_lower_right = [-1, -1, -1, -1]
@@ -34,11 +34,14 @@ curr_right = -1
 prev_status_right = -1
 curr_status_right = -1
 is_out_right = False
+rgb_color_right = [-1,-1,-1]
+
 
 def set_max_value(input_val):
     if (input_val > 255):
         input_val = 255
     return input_val
+
 
 def adjust_lower_hsv(input_list):
     temp_list = []
@@ -46,28 +49,34 @@ def adjust_lower_hsv(input_list):
         temp_list.append(int(i * lower_value))
     return temp_list
 
+
 def adjust_upper_hsv(input_list):
     temp_list = []
     for i in input_list:
         temp_list.append(int(set_max_value(i * upper_value)))
     return temp_list
 
+
 def mouse_click(event, x, y, flags, param):
-    global hsv_lower_left, hsv_upper_left, hsv_lower_right, hsv_upper_right
+    global hsv_lower_left, hsv_upper_left, hsv_lower_right, hsv_upper_right,rgb_color_left,rgb_color_right
 
     # Left Click to get HSV color value from image
     if event == cv2.EVENT_LBUTTONDOWN:
         hsv_lower_left = adjust_lower_hsv(hsvFrame[y, x])
         hsv_upper_left = adjust_upper_hsv(hsvFrame[y, x])
+        rgb_color_left = imageFrame[y, x]
 
     if event == cv2.EVENT_RBUTTONDOWN:
         hsv_lower_right = adjust_lower_hsv(hsvFrame[y, x])
         hsv_upper_right = adjust_upper_hsv(hsvFrame[y, x])
+        rgb_color_right = imageFrame[y, x]
+
 
 def degree(x):
     pi = math.pi
     degree = ((x * 180) / pi) % 360
     return int(degree)
+
 
 def tracking_left(new_center):
     global imageFrame, center_bound_left, is_first_detect_left, prev_left, curr_left, is_out_left
@@ -83,8 +92,9 @@ def tracking_left(new_center):
         point_track_left(x_center, y_center)
         is_out_left = True
 
+
 def point_track_left(x, y):
-    global prev_left, curr_left, image_frame, prev_status_left, curr_status_left, transparent_image2
+    global prev_left, curr_left, image_frame, prev_status_left, curr_status_left, black_img
     curr_left = x, y
     prev_status_left = curr_status_left
 
@@ -92,8 +102,6 @@ def point_track_left(x, y):
     diff_y = curr_left[1] - prev_left[1]
 
     result = degree(math.atan2(diff_y, diff_x))
-
-    print(degree(math.atan2(228-366, 461-334)))
 
     prev_left = curr_left
 
@@ -113,44 +121,48 @@ def point_track_left(x, y):
     #          120   DOWN   060            #
     ########################################
 
-    if result >= 240 and result < 300:
-        #print('UP')
+    if result >= 255 and result < 285:
+        # print('UP')
         curr_status_left = 1
 
-    elif result >= 300 and result < 330:
-        #print('Q1')
+    elif result >= 285 and result < 345:
+        # print('Q1')
         curr_status_left = 2
 
-    elif result >= 330 and result < 360:
-        #print('RIGHT')
+    elif result >= 345 and result < 360:
+        # print('RIGHT')
         curr_status_left = 3
 
-    elif result >= 0 and result < 30:
-        #print('RIGHT')
+    elif result >= 0 and result < 15:
+        # print('RIGHT')
         curr_status_left = 3
 
-    elif result >= 30 and result < 60:
-        #print('Q4')
+    elif result >= 15 and result < 75:
+        # print('Q4')
         curr_status_left = 5
 
-    elif result >= 60 and result < 120:
-        #print('DOWN')
+    elif result >= 75 and result < 105:
+        # print('DOWN')
         curr_status_left = 6
 
-    elif result >= 120 and result < 150:
-        #print('Q3')
+    elif result >= 105 and result < 165:
+        # print('Q3')
         curr_status_left = 7
 
-    elif result >= 150 and result < 210:
-        #print('LEFT')
+    elif result >= 165 and result < 195:
+        # print('LEFT')
         curr_status_left = 8
 
-    elif result >= 210 and result < 240:
-        #print('Q2')
+    elif result >= 195 and result < 255:
+        # print('Q2')
         curr_status_left = 9
 
     if curr_status_left != prev_status_left:
-        cv2.circle(transparent_image2, (x, y), 2, (0, 0, 255), 2)
+        b = int(rgb_color_left[0])
+        g = int(rgb_color_left[1])
+        r = int(rgb_color_left[2])
+        cv2.circle(black_img, (x, y), 2, (b, g, r), 2)
+
 
 def tracking_right(new_center):
     global imageFrame, center_bound_right, is_first_detect_right, prev_right, curr_right, is_out_right
@@ -166,6 +178,7 @@ def tracking_right(new_center):
         point_track_right(x_center, y_center)
         is_out_right = True
 
+
 def point_track_right(x, y):
     global prev_right, curr_right, image_frame, prev_status_right, curr_status_right, black_img
     curr_right = x, y
@@ -175,7 +188,6 @@ def point_track_right(x, y):
     diff_y = curr_right[1] - prev_right[1]
 
     result = degree(math.atan2(diff_y, diff_x))
-
 
     prev_right = curr_right
 
@@ -195,57 +207,59 @@ def point_track_right(x, y):
     #          105   DOWN   075            #
     ########################################
 
-    if result >= 240 and result < 300:
-        #print('UP')
+    if result >= 255 and result < 285:
+        # print('UP')
         curr_status_right = 1
 
-    elif result >= 300 and result < 330:
-        #print('Q1')
+    elif result >= 285 and result < 345:
+        # print('Q1')
         curr_status_right = 2
 
-    elif result >= 330 and result < 360:
-        #print('RIGHT')
+    elif result >= 345 and result < 360:
+        # print('RIGHT')
         curr_status_right = 3
 
-    elif result >= 0 and result < 30:
-        #print('RIGHT')
+    elif result >= 0 and result < 15:
+        # print('RIGHT')
         curr_status_right = 3
 
-    elif result >= 30 and result < 60:
-        #print('Q4')
+    elif result >= 15 and result < 75:
+        # print('Q4')
         curr_status_right = 5
 
-    elif result >= 60 and result < 120:
-        #print('DOWN')
+    elif result >= 75 and result < 105:
+        # print('DOWN')
         curr_status_right = 6
 
-    elif result >= 120 and result < 150:
-        #print('Q3')
+    elif result >= 105 and result < 165:
+        # print('Q3')
         curr_status_right = 7
 
-    elif result >= 150 and result < 210:
-        #print('LEFT')
+    elif result >= 165 and result < 195:
+        # print('LEFT')
         curr_status_right = 8
 
-    elif result >= 210 and result < 240:
-        #print('Q2')
+    elif result >= 195 and result < 255:
+        # print('Q2')
         curr_status_right = 9
 
     if curr_status_right != prev_status_right:
-        cv2.circle(transparent_image2, (x, y), 2, (255, 255, 255), 2)
+        b = int(rgb_color_right[0])
+        g = int(rgb_color_right[1])
+        r = int(rgb_color_right[2])
+        cv2.circle(black_img, (x, y), 2, (b, g, r), 2)
 
 
 if __name__ == "__main__":
 
     # Capturing video through webcam
     webcam = cv2.VideoCapture(file_name)
-    #webcam = cv2.VideoCapture(0)
+    # webcam = cv2.VideoCapture(0)
     while True:
         # Receive stream image from camera
         _, imageFrame = webcam.read()
         imageFrame = cv2.resize(imageFrame, (640, 480))
         # imageFrame = cv2.flip(imageFrame, 1)
-        image_for_detect = cv2.imread('../resources/images/transparent.png')
 
         # Change color space from RGB to HSV
         hsvFrame = cv2.cvtColor(imageFrame, cv2.COLOR_BGR2HSV)
@@ -295,16 +309,20 @@ if __name__ == "__main__":
                         center_bound_left[3] = y + h
                         print(prev_left, curr_left)
 
+                b = int(rgb_color_left[0])
+                g = int(rgb_color_left[1])
+                r = int(rgb_color_left[2])
+
                 imageFrame = cv2.rectangle(imageFrame, (center_bound_left[0], center_bound_left[1]),
                                            (center_bound_left[2], center_bound_left[3]),
-                                           (0, 255, 0), 2)
+                                           (255, 255, 255), 2)
                 imageFrame = cv2.circle(imageFrame, center, 2, (0, 0, 255), 2)
                 imageFrame = cv2.rectangle(imageFrame, (x, y),
                                            (x + w, y + h),
-                                           (0, 0, 255), 2)
+                                           (b, g, r), 2)
                 cv2.putText(imageFrame, str(center), center,
                             cv2.FONT_HERSHEY_SIMPLEX, 1.0,
-                            (255, 255, 255))
+                            (b, g, r))
 
         color_mask2 = cv2.dilate(color_mask2, kernal)
         resultColor2 = cv2.bitwise_and(hsvFrame, hsvFrame,
@@ -343,24 +361,26 @@ if __name__ == "__main__":
                         center_bound_right[3] = y + h
                         print(prev_right, curr_right)
 
+                b = int(rgb_color_right[0])
+                g = int(rgb_color_right[1])
+                r = int(rgb_color_right[2])
+
                 imageFrame = cv2.rectangle(imageFrame, (center_bound_right[0], center_bound_right[1]),
                                            (center_bound_right[2], center_bound_right[3]),
-                                           (0, 255, 0), 2)
+                                           (255, 255, 255), 2)
                 imageFrame = cv2.circle(imageFrame, center, 2, (0, 0, 255), 2)
                 imageFrame = cv2.rectangle(imageFrame, (x, y),
                                            (x + w, y + h),
-                                           (0, 0, 255), 2)
+                                           (b, g, r), 2)
                 cv2.putText(imageFrame, str(center), center,
                             cv2.FONT_HERSHEY_SIMPLEX, 1.0,
-                            (255, 255, 255))
+                            (b, g, r))
 
-        dst = cv2.addWeighted(imageFrame, 1.0, transparent_image2, 2.0, 0)
-        #img_arr = np.hstack((imageFrame, transparent_image2))
-
-        cv2.imshow('Multiple color Detection', dst)
-        #cv2.imshow('transparent_image1',transparent_image1)
-        #cv2.imshow('transparent_image2', transparent_image2)
-        cv2.setMouseCallback("Multiple color Detection", mouse_click)
+        dst = cv2.addWeighted(imageFrame, 1.0, black_img, 1.5, 5)
+        #cv2.imshow("Multiple color Detection", imageFrame)
+        #cv2.imshow("Result", black_img)
+        cv2.imshow('blend',dst)
+        cv2.setMouseCallback("blend", mouse_click)
 
         if cv2.waitKey(20) & 0xFF == ord('q'):
             break
