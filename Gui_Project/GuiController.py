@@ -23,9 +23,11 @@ class GuiController(threading.Thread):
         self.is_first_right_click = True
         self.toggle_track_status = 0
         self.toggle_mark_area_status = 0
+        self.toggle_detect_status = False
         self.show_image_type = 0
         self.left_or_right_color = -1
         self.mark_area_status = -1
+
 
         # draw instance
         self.transparent_image_detect = None
@@ -65,6 +67,7 @@ class GuiController(threading.Thread):
         self.ui.display_gray_image_button.clicked.connect(self.display_gray_image_button)
         self.ui.display_mark_button.clicked.connect(self.toggle_display_mark_area_frame_button)
         self.ui.display_track_button.clicked.connect(self.toggle_display_track_frame_button)
+        self.ui.display_detect_button.clicked.connect(self.toggle_display_detect_frame_button)
         self.ui.mark_input_button.clicked.connect(self.mark_input_button)
         self.ui.mark_output_button.clicked.connect(self.mark_output_button)
         self.ui.mark_working_button.clicked.connect(self.mark_working_button)
@@ -97,6 +100,13 @@ class GuiController(threading.Thread):
     def mark_input_button(self):
         print('mark input')
         self.mark_area_status = 0
+
+    def mark_output_button(self):
+        print('mark output')
+        self.mark_area_status = 1
+
+    def mark_working_button(self):
+        self.mark_area_status = 2
 
     def draw_mark_area(self, x, y):
         if self.mark_area_status == 0:
@@ -131,16 +141,11 @@ class GuiController(threading.Thread):
             # set pixmap onto the label widget
             self.ui.display_mark_area_frame.setPixmap(self.transparent_image_detect)
 
-    def mark_output_button(self):
-        print('mark output')
-        self.mark_area_status = 1
-
-    def mark_working_button(self):
-        self.mark_area_status = 2
-
+    # Select Left Color Button
     def select_left_color_button(self):
         self.left_or_right_color = 0
 
+    # Select Right Color Button
     def select_right_color_button(self):
         print('select right color')
         self.left_or_right_color = 1
@@ -159,6 +164,27 @@ class GuiController(threading.Thread):
     def display_gray_image_button(self):
         print('display gray')
         self.set_show_image_type(2)
+
+    # Set which type of image (RGB,HSV,GRAYSCALE)
+    def set_show_image_type(self, new_type):
+        self.show_image_type = new_type
+
+    def get_show_image_type(self):
+        return self.show_image_type
+
+    # Toggle display detect area Button
+    def toggle_display_detect_frame_button(self):
+        if self.toggle_detect_status:
+            self.ui.text_detect.setText('Detection is on')
+            self.ui.text_detect.setStyleSheet('color:lime')
+            self.toggle_detect_status = False
+        else:
+            self.ui.text_detect.setText('Detection is off')
+            self.ui.text_detect.setStyleSheet('color:red')
+            self.toggle_detect_status = True
+
+    def get_toggle_detect_status(self):
+        return self.toggle_detect_status
 
     # Toggle display track area Button
     def toggle_display_track_frame_button(self):
@@ -179,6 +205,11 @@ class GuiController(threading.Thread):
         # Disable button
         self.ui.open_camera_button.setEnabled(False)
 
+    # Receive image from other class and display to gui
+    def display_image_to_camera_zone(self, receive_image):
+        time.sleep(0.000001)
+        self.ui.display_camera_frame.setPixmap(QtGui.QPixmap.fromImage(receive_image))
+
     # Exit program Button
     def exit_button(self):
         print('Exit Button Clicked...')
@@ -191,18 +222,6 @@ class GuiController(threading.Thread):
     # Back to main page from setting page button
     def go_to_main_page_button(self):
         self.ui.stackedWidget.setCurrentIndex(0)
-
-    # Receive image from other class and display to gui
-    def display_image_to_camera_zone(self, receive_image):
-        time.sleep(0.000001)
-        self.ui.display_camera_frame.setPixmap(QtGui.QPixmap.fromImage(receive_image))
-
-    # Set which type of image (RGB,HSV,GRAYSCALE)
-    def set_show_image_type(self, new_type):
-        self.show_image_type = new_type
-
-    def get_show_image_type(self):
-        return self.show_image_type
 
     # Get x,y from mouse clicked method
     def get_position_from_camera_frame(self, event):

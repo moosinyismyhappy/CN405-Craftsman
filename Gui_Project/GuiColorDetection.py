@@ -1,14 +1,11 @@
 import threading
-import time
-from threading import Thread
 import cv2
 import numpy as np
-
 from Gui_Project.GuiTracking import GuiTracking
+from threading import Thread
 
 
 class GuiColorDetection(Thread):
-
     def __init__(self, gui, input_storage):
         super().__init__()
         self.gui = gui
@@ -30,6 +27,13 @@ class GuiColorDetection(Thread):
         # Display Thread and Process ID
         print(threading.current_thread())
         self.detect_color()
+
+    def set_hsv(self):
+        temp_x = self.get_position()[0]
+        temp_y = self.get_position()[1]
+        self.hsv_list = list(self.image_storage.get_hsv_image_for_detection()[temp_y, temp_x])
+        self.__hsv_lower_process()
+        self.__hsv_upper_process()
 
     def __hsv_upper_process(self):
         h_upper = int(self.hsv_list[0] * (1 + self.hsv_range))
@@ -57,12 +61,15 @@ class GuiColorDetection(Thread):
         # combine hsv separate value to list
         self.hsv_lower = [h_lower, s_lower, v_lower]
 
-    def set_hsv(self):
-        temp_x = self.get_position()[0]
-        temp_y = self.get_position()[1]
-        self.hsv_list = list(self.image_storage.get_hsv_image_for_detection()[temp_y, temp_x])
-        self.__hsv_lower_process()
-        self.__hsv_upper_process()
+    def set_position(self, x, y):
+        self.x_position = x
+        self.y_position = y
+
+    def get_position(self):
+        return self.x_position, self.y_position
+
+    def print_hsv_value(self):
+        print(self.hsv_list, self.hsv_lower, self.hsv_upper)
 
     def detect_color(self):
         print('Starting Detect color ...')
@@ -84,29 +91,28 @@ class GuiColorDetection(Thread):
                 area = cv2.contourArea(contour)
                 if area > 3000:
                     self.x, self.y, self.w, self.h = cv2.boundingRect(contour)
-                    self.center_position = int((2 * self.x + self.w) / 2), int((2 * self.y + self.h) / 2)
+                    center_position = int((2 * self.x + self.w) / 2), int((2 * self.y + self.h) / 2)
 
                     if self.is_first_detect:
-                        self.center_boundary = [self.x, self.y, self.x + self.w, self.y + self.h]
-                        self.tracking.set_center_boundary(self.center_boundary)
+                        center_boundary = [self.x, self.y, self.x + self.w, self.y + self.h]
+                        self.tracking.set_center_boundary(center_boundary)
+                        self.tracking.set_current_position(center_position)
+                        self.tracking.set_previous_position(center_position)
+                        self.tracking.set_current_direction(-1)
+                        self.tracking.set_previous_direction(-1)
                         self.is_first_detect = False
                     else:
-                        print(self.tracking.get_center_boundary())
+                        self.tracking.is_center_in_boundary(center_position)
+                        if self.tracking.get_is_position_out_of_boundary():
+                            center_boundary = [self.x, self.y, self.x + self.w, self.y + self.h]
+                            self.tracking.set_center_boundary(center_boundary)
 
                     cv2.rectangle(self.image_storage.get_input_image(), (
-                    self.tracking.get_center_boundary()[0], self.tracking.get_center_boundary()[1]),
-                    (self.tracking.get_center_boundary()[2], self.tracking.get_center_boundary()[3]),(0,255,255),2)
+                        self.tracking.get_center_boundary()[0], self.tracking.get_center_boundary()[1]),
+                                  (self.tracking.get_center_boundary()[2], self.tracking.get_center_boundary()[3]),
+                                  (0, 255, 255), 2)
 
-                    cv2.rectangle(self.image_storage.get_input_image(), (self.x, self.y),
-                                  (self.x + self.w, self.y + self.h), (0, 255, 0), 2)
-                    cv2.circle(self.image_storage.get_input_image(), self.center_position, 2, (0, 0, 255), 2)
-
-    def print_hsv_value(self):
-        print(self.hsv_list, self.hsv_lower, self.hsv_upper)
-
-    def set_position(self, x, y):
-        self.x_position = x
-        self.y_position = y
-
-    def get_position(self):
-        return self.x_position, self.y_position
+                    if self.gui.get_toggle_detect_status():
+                        cv2.rectangle(self.image_storage.get_input_image(), (self.x, self.y),
+                                      (self.x + self.w, self.y + self.h), (0, 255, 0), 2)
+                        cv2.circle(self.image_storage.get_input_image(), center_position, 2, (0, 0, 255), 2)

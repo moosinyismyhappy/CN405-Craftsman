@@ -9,7 +9,6 @@ class GuiProcessOutput(Thread):
         self.gui = gui
         self.image_storage = image_storage
         self.converted_image = None
-        self.detected_image = None
 
     def run(self):
         # Display Thread and Process ID
