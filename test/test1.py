@@ -137,9 +137,41 @@ def calculate_area():
     avg_x = int(sum_x / len(temp_list))
     avg_y = int(sum_y / len(temp_list))
 
-    print(avg_x,avg_y)
+    print(temp_list)
 
-    cv2.rectangle(image_frame,(avg_x-50,avg_y-50),(avg_x+50,avg_y+50),(0,0,255),2)
+    temp_min_x = 0
+    temp_max_x = 0
+    temp_min_y = 0
+    temp_max_y = 0
+
+    for i in range(len(temp_list)):
+        if i == 0:
+            temp_min_x = temp_list[i][0]
+            temp_max_x = temp_list[i][0]
+            temp_min_y = temp_list[i][1]
+            temp_max_y = temp_list[i][1]
+        else:
+            if temp_list[i][0] >= temp_max_x:
+                temp_max_x = temp_list[i][0]
+            if temp_list[i][0] <= temp_min_x:
+                temp_min_x = temp_list[i][0]
+            if temp_list[i][1] >= temp_max_y:
+                temp_max_y = temp_list[i][1]
+            if temp_list[i][1] <= temp_min_y:
+                temp_min_y = temp_list[i][1]
+
+    print(temp_min_x,temp_max_x,temp_min_y,temp_max_y)
+
+    temp_x1 = int((avg_x - (avg_x - temp_min_x))*0.9)
+    temp_y1 = int((avg_y - (avg_y - temp_min_y))*0.9)
+    temp_x2 = int((avg_x + (temp_max_x - avg_x))*1.1)
+    temp_y2 = int((avg_y + (temp_max_y - avg_y))*1.1)
+
+    print(temp_x1,temp_y1,temp_x2,temp_y2)
+
+    #cv2.putText(image_frame, str('input ' + str(avg_x)+','+ str(avg_y)), (avg_x - 30, avg_y - 10), cv2.FONT_HERSHEY_SIMPLEX,0.4, (0, 255, 255))
+    cv2.circle(image_frame, (avg_x, avg_y), 2, (0, 255, 255), 2)
+    cv2.rectangle(image_frame,(temp_x1,temp_y1),(temp_x2,temp_y2),(0,0,255),2)
 
 
 def mouse_click(event, x, y, flags, param):
@@ -147,9 +179,7 @@ def mouse_click(event, x, y, flags, param):
 
     if is_first_click == 0:
         if event == cv2.EVENT_LBUTTONDOWN:
-            cv2.putText(image_frame, 'input' + str((x, y)), (x - 15, y - 15),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-                        (0, 0, 255))
+            # cv2.putText(image_frame, 'input' + str((x, y)), (x - 15, y - 15),cv2.FONT_HERSHEY_SIMPLEX, 0.5,(0, 0, 255))
             cv2.circle(image_frame, (x, y), 2, (0, 0, 255), 2)
             input_position = x, y
             print('input position ', x, y)
