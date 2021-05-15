@@ -27,7 +27,7 @@ class GuiProcessOutput(Thread):
 
                 if self.gui.get_toggle_track_status():
                     input_image = cv2.addWeighted(input_image, 1.0, self.image_storage.get_background_image_for_track(),
-                                                  10, 5)
+                                                1.0,0)
 
                 # Send to image storage for color detection
                 self.image_storage.set_hsv_image_for_detection(hsv_image)

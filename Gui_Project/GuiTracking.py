@@ -147,7 +147,7 @@ class GuiTracking():
             self.current_direction = 9
 
         if self.current_direction != self.previous_direction:
-            cv2.circle(self.image_storage.get_background_image_for_track(), center_position, 2, (255, 0, 0), 2)
+            cv2.circle(self.image_storage.get_background_image_for_track(), center_position, 2, (0, 0, 255), 2)
 
 
 
