@@ -22,8 +22,6 @@ curr = -1
 prev_status = -1
 curr_status = -1
 is_learning = True
-rectangle_extender = 1.2
-reduce_average = 0.5
 
 
 def get_distance(origin, points):
@@ -143,13 +141,13 @@ def calculate_area():
     temp_output = []
     temp_work = []
     for i in range(len(point_list)):
-        if distance_input1[i][0] < average_distance_input1*reduce_average:
+        if distance_input1[i][0] < average_distance_input1:
             temp_input1.append(point_list[distance_input1[i][1]])
-        if distance_input2[i][0] < average_distance_input2*reduce_average:
+        if distance_input2[i][0] < average_distance_input2:
             temp_input2.append(point_list[distance_input2[i][1]])
-        if distance_output[i][0] < average_distance_output*reduce_average:
+        if distance_output[i][0] < average_distance_output:
             temp_output.append(point_list[distance_output[i][1]])
-        if distance_work[i][0] < average_distance_work*reduce_average:
+        if distance_work[i][0] < average_distance_work:
             temp_work.append(point_list[distance_work[i][1]])
 
     # find average point around area input1
@@ -172,12 +170,9 @@ def calculate_area():
         if temp_input1[i][1] <= temp_min_y:
             temp_min_y = temp_input1[i][1]
     center_input1 = (int(sum_x / len(temp_input1)), int(sum_y / len(temp_input1)))
-    x1 = int(center_input1[0] - (center_input1[0] - temp_min_x) * rectangle_extender)
-    y1 = int(center_input1[1] - (center_input1[1] - temp_min_y) * rectangle_extender)
-    x2 = int(center_input1[0] + (temp_max_x - center_input1[0]) * rectangle_extender)
-    y2 = int(center_input1[1] + (temp_max_y - center_input1[1]) * rectangle_extender)
-    cv2.circle(image_frame, center_input1, 2, (0, 0, 255), 5)
-    cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
+    cv2.circle(image_frame, center_input1, 2, (0, 0, 255), 8)
+    cv2.rectangle(image_frame, (center_input1[0] - 50, center_input1[1] - 50),
+                  (center_input1[0] + 50, center_input1[1] + 50), (0, 0, 255), 2)
 
     # find average point around area input2
     sum_x = 0
@@ -199,12 +194,9 @@ def calculate_area():
         if temp_input2[i][1] <= temp_min_y:
             temp_min_y = temp_input2[i][1]
     center_input2 = (int(sum_x / len(temp_input2)), int(sum_y / len(temp_input2)))
-    x1 = int(center_input2[0] - (center_input2[0] - temp_min_x) * rectangle_extender)
-    y1 = int(center_input2[1] - (center_input2[1] - temp_min_y) * rectangle_extender)
-    x2 = int(center_input2[0] + (temp_max_x - center_input2[0]) * rectangle_extender)
-    y2 = int(center_input2[1] + (temp_max_y - center_input2[1]) * rectangle_extender)
-    cv2.circle(image_frame, center_input2, 2, (0, 150, 255), 5)
-    cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 150, 255), 2)
+    cv2.circle(image_frame, center_input2, 2, (0, 150, 255), 8)
+    cv2.rectangle(image_frame, (center_input2[0] - 50, center_input2[1] - 50),
+                  (center_input2[0] + 50, center_input2[1] + 50), (0, 150, 255), 2)
 
     # find average point around area output
     sum_x = 0
@@ -225,12 +217,9 @@ def calculate_area():
         if temp_output[i][1] <= temp_min_y:
             temp_min_y = temp_output[i][1]
     center_output = (int(sum_x / len(temp_output)), int(sum_y / len(temp_output)))
-    x1 = int(center_output[0] - (center_output[0] - temp_min_x) * rectangle_extender)
-    y1 = int(center_output[1] - (center_output[1] - temp_min_y) * rectangle_extender)
-    x2 = int(center_output[0] + (temp_max_x - center_output[0]) * rectangle_extender)
-    y2 = int(center_output[1] + (temp_max_y - center_output[1]) * rectangle_extender)
-    cv2.circle(image_frame, center_output, 2, (0, 80, 255), 5)
-    cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 80, 255), 2)
+    cv2.circle(image_frame, center_output, 2, (0, 80, 255), 8)
+    cv2.rectangle(image_frame, (center_output[0] - 50, center_output[1] - 50),
+                  (center_output[0] + 50, center_output[1] + 50), (0, 80, 255), 2)
 
     # find average point around area work
     sum_x = 0
@@ -251,12 +240,9 @@ def calculate_area():
         if temp_work[i][1] <= temp_min_y:
             temp_min_y = temp_work[i][1]
     center_work = (int(sum_x / len(temp_work)), int(sum_y / len(temp_work)))
-    x1 = int(center_work[0] - (center_work[0] - temp_min_x) * rectangle_extender)
-    y1 = int(center_work[1] - (center_work[1] - temp_min_y) * rectangle_extender)
-    x2 = int(center_work[0] + (temp_max_x - center_work[0]) * rectangle_extender)
-    y2 = int(center_work[1] + (temp_max_y - center_work[1]) * rectangle_extender)
-    cv2.circle(image_frame, center_work, 2, (150, 80, 255), 5)
-    cv2.rectangle(image_frame, (x1, y1), (x2, y2), (150, 80, 255), 2)
+    cv2.circle(image_frame, center_work, 2, (150, 80, 255), 8)
+    cv2.rectangle(image_frame, (center_work[0] - 50, center_work[1] - 50),
+                  (center_work[0] + 50, center_work[1] + 50), (150, 80, 255), 2)
 
     print('End of calculate')
 

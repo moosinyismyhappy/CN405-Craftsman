@@ -1,12 +1,17 @@
-# Test automatically create rectangle over work area
-# distance = math.sqrt( ((p1[0]-p2[0])**2)+((p1[1]-p2[1])**2) )
+# Add new tracking method
 import cv2
+import numpy as np
 import math
 
-# file_name = '../resources/videos/Full_Working1.mp4'
-image_frame = cv2.imread('../resources/images/black_background.png')
-boundary = [-1, -1, -1, -1]
-input_boundary = [-1, -1, -1, -1]
+# Configuration
+file_name = '../resources/videos/Full_Working2.mp4'
+black_img = cv2.imread('../resources/images/transparent.png')
+detect_area = 1000
+lower_value = 0.7
+upper_value = 1.3
+imageFrame = None
+hsvFrame = None
+click_state = 0
 point_list = []
 distance_input1 = []
 distance_input2 = []
@@ -16,17 +21,103 @@ input1_position = (-1, -1)
 input2_position = (-1, -1)
 output_position = (-1, -1)
 work_position = (-1, -1)
-is_first_click = 0
-count = 0
-prev = -1
-curr = -1
-prev_status = -1
-curr_status = -1
 is_learning = True
+number_of_learning = 100
+average_reducer = 0.6
+rectangle_extender = 1.2
+
+# For left hand
+hsv_lower_left = [-1, -1, -1, -1]
+hsv_upper_left = [-1, -1, -1, -1]
+center_bound_left = [-1, -1, -1, -1]
+is_first_detect_left = 0
+prev_left = -1
+curr_left = -1
+prev_status_left = -1
+curr_status_left = -1
+is_out_left = False
+
+# For right hand
+hsv_lower_right = [-1, -1, -1, -1]
+hsv_upper_right = [-1, -1, -1, -1]
+center_bound_right = [-1, -1, -1, -1]
+is_first_detect_right = 0
+prev_right = -1
+curr_right = -1
+prev_status_right = -1
+curr_status_right = -1
+is_out_right = False
 
 
-def get_distance(origin, points):
-    return int(math.sqrt(((points[0] - origin[0]) ** 2) + ((points[1] - origin[1]) ** 2)))
+def set_max_value(input_val):
+    if (input_val > 255):
+        input_val = 255
+    return input_val
+
+
+def adjust_lower_hsv(input_list):
+    temp_list = []
+    for i in input_list:
+        temp_list.append(int(i * lower_value))
+    return temp_list
+
+
+def adjust_upper_hsv(input_list):
+    temp_list = []
+    for i in input_list:
+        temp_list.append(int(set_max_value(i * upper_value)))
+    return temp_list
+
+
+def mouse_click(event, x, y, flags, param):
+    global hsv_lower_left, hsv_upper_left, hsv_lower_right, hsv_upper_right
+    global input1_position, input2_position, output_position, work_position, click_state
+
+    if click_state == 0:
+        if event == cv2.EVENT_LBUTTONDOWN:
+            cv2.putText(black_img, 'input1' + str((x, y)), (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                        (0, 0, 255))
+            cv2.circle(black_img, (x, y), 2, (0, 0, 255), 2)
+            input1_position = x, y
+            print('input1 position ', x, y)
+            click_state = 1
+
+    elif click_state == 1:
+        if event == cv2.EVENT_LBUTTONDOWN:
+            cv2.putText(black_img, 'input2' + str((x, y)), (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                        (0, 150, 255))
+            cv2.circle(black_img, (x, y), 2, (0, 150, 255), 2)
+            input2_position = x, y
+            print('input2 position ', x, y)
+            click_state = 2
+
+    elif click_state == 2:
+        if event == cv2.EVENT_LBUTTONDOWN:
+            cv2.putText(black_img, 'output' + str((x, y)), (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                        (0, 80, 255))
+            cv2.circle(black_img, (x, y), 2, (0, 80, 255), 2)
+            output_position = x, y
+            print('output position ', x, y)
+            click_state = 3
+
+    elif click_state == 3:
+        if event == cv2.EVENT_LBUTTONDOWN:
+            cv2.putText(black_img, 'working' + str((x, y)), (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                        (150, 80, 255))
+            cv2.circle(black_img, (x, y), 2, (150, 80, 255), 2)
+            work_position = x, y
+            print('work position ', x, y)
+            click_state = 4
+
+    elif click_state == 4:
+        # Left Click to get HSV color value from image
+        if event == cv2.EVENT_LBUTTONDOWN:
+            hsv_lower_left = adjust_lower_hsv(hsvFrame[y, x])
+            hsv_upper_left = adjust_upper_hsv(hsvFrame[y, x])
+
+        if event == cv2.EVENT_RBUTTONDOWN:
+            hsv_lower_right = adjust_lower_hsv(hsvFrame[y, x])
+            hsv_upper_right = adjust_upper_hsv(hsvFrame[y, x])
 
 
 def degree(x):
@@ -35,16 +126,121 @@ def degree(x):
     return int(degree)
 
 
-def tracking(x, y):
-    global prev, curr, image_frame, prev_status, curr_status, point_list, input_boundary, is_learning
-    prev = curr
-    curr = x, y
-    prev_status = curr_status
+def tracking_left(new_center):
+    global imageFrame, center_bound_left, is_first_detect_left, prev_left, curr_left, is_out_left
+    # x,y of center
+    x_center, y_center = new_center[0], new_center[1]
 
-    diff_x = curr[0] - prev[0]
-    diff_y = curr[1] - prev[1]
+    # x,y of rectangle
+    x1, y1, x2, y2 = center_bound_left[0], center_bound_left[1], center_bound_left[2], center_bound_left[3]
+
+    if x_center >= x1 and x_center <= x2 and y_center >= y1 and y_center <= y2:
+        is_out_left = False
+    else:
+        point_track_left(x_center, y_center)
+        is_out_left = True
+
+
+def point_track_left(x, y):
+    global prev_left, curr_left, image_frame, prev_status_left, curr_status_left, black_img, is_learning, number_of_learning
+    curr_left = x, y
+    prev_status_left = curr_status_left
+
+    diff_x = curr_left[0] - prev_left[0]
+    diff_y = curr_left[1] - prev_left[1]
 
     result = degree(math.atan2(diff_y, diff_x))
+
+    prev_left = curr_left
+
+    ########################################
+    #          240    UP    300            #
+    #                                      #
+    #      Q2                   Q1         #
+    #                                      #
+    #   210                        330     #
+    #                                      #
+    # LEFT          ORIGIN           RIGHT #
+    #                                      #
+    #   150                        030     #
+    #                                      #
+    #      Q3                   Q4         #
+    #                                      #
+    #          120   DOWN   060            #
+    ########################################
+
+    if result >= 255 and result < 285:
+        # print('UP')
+        curr_status_left = 1
+
+    elif result >= 285 and result < 345:
+        # print('Q1')
+        curr_status_left = 2
+
+    elif result >= 345 and result < 360:
+        # print('RIGHT')
+        curr_status_left = 3
+
+    elif result >= 0 and result < 15:
+        # print('RIGHT')
+        curr_status_left = 3
+
+    elif result >= 15 and result < 75:
+        # print('Q4')
+        curr_status_left = 5
+
+    elif result >= 75 and result < 105:
+        # print('DOWN')
+        curr_status_left = 6
+
+    elif result >= 105 and result < 165:
+        # print('Q3')
+        curr_status_left = 7
+
+    elif result >= 165 and result < 195:
+        # print('LEFT')
+        curr_status_left = 8
+
+    elif result >= 195 and result < 255:
+        # print('Q2')
+        curr_status_left = 9
+
+    if curr_status_left != prev_status_left:
+        cv2.circle(black_img, (x, y), 2, (0, 0, 255), 2)
+        if not len(point_list) == number_of_learning:
+            point_list.append((x, y))
+        elif is_learning:
+            calculate_area()
+            print('finished calculate')
+            is_learning = False
+
+
+def tracking_right(new_center):
+    global imageFrame, center_bound_right, is_first_detect_right, prev_right, curr_right, is_out_right
+    # x,y of center
+    x_center, y_center = new_center[0], new_center[1]
+
+    # x,y of rectangle
+    x1, y1, x2, y2 = center_bound_right[0], center_bound_right[1], center_bound_right[2], center_bound_right[3]
+
+    if x_center >= x1 and x_center <= x2 and y_center >= y1 and y_center <= y2:
+        is_out_right = False
+    else:
+        point_track_right(x_center, y_center)
+        is_out_right = True
+
+
+def point_track_right(x, y):
+    global prev_right, curr_right, image_frame, prev_status_right, curr_status_right, black_img, is_learning, number_of_learning
+    curr_right = x, y
+    prev_status_right = curr_status_right
+
+    diff_x = curr_right[0] - prev_right[0]
+    diff_y = curr_right[1] - prev_right[1]
+
+    result = degree(math.atan2(diff_y, diff_x))
+
+    prev_right = curr_right
 
     ########################################
     #          255    UP    285            #
@@ -64,44 +260,43 @@ def tracking(x, y):
 
     if result >= 255 and result < 285:
         # print('UP')
-        curr_status = 1
+        curr_status_right = 1
 
     elif result >= 285 and result < 345:
         # print('Q1')
-        curr_status = 2
+        curr_status_right = 2
 
     elif result >= 345 and result < 360:
         # print('RIGHT')
-        curr_status = 3
+        curr_status_right = 3
 
     elif result >= 0 and result < 15:
         # print('RIGHT')
-        curr_status = 3
+        curr_status_right = 3
 
     elif result >= 15 and result < 75:
         # print('Q4')
-        curr_status = 5
+        curr_status_right = 5
 
     elif result >= 75 and result < 105:
         # print('DOWN')
-        curr_status = 6
+        curr_status_right = 6
 
     elif result >= 105 and result < 165:
         # print('Q3')
-        curr_status = 7
+        curr_status_right = 7
 
     elif result >= 165 and result < 195:
         # print('LEFT')
-        curr_status = 8
+        curr_status_right = 8
 
     elif result >= 195 and result < 255:
         # print('Q2')
-        curr_status = 9
+        curr_status_right = 9
 
-    if curr_status != prev_status:
-        cv2.circle(image_frame, (x, y), 2, (255, 255, 0), 2)
-        cv2.putText(image_frame, str((x, y)), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 0))
-        if not len(point_list) == 50:
+    if curr_status_right != prev_status_right:
+        cv2.circle(black_img, (x, y), 2, (0, 255, 255), 2)
+        if not len(point_list) == number_of_learning:
             point_list.append((x, y))
         elif is_learning:
             calculate_area()
@@ -109,8 +304,12 @@ def tracking(x, y):
             is_learning = False
 
 
+def get_distance(origin, points):
+    return int(math.sqrt(((points[0] - origin[0]) ** 2) + ((points[1] - origin[1]) ** 2)))
+
+
 def calculate_area():
-    global image_frame
+    global image_frame, average_reducer
     global point_list, distance_input1, distance_input2, distance_work, distance_output
     global input1_position, input2_position, output_position, work_position
 
@@ -142,14 +341,16 @@ def calculate_area():
     temp_output = []
     temp_work = []
     for i in range(len(point_list)):
-        if distance_input1[i][0] < average_distance_input1:
+        if distance_input1[i][0] < average_distance_input1 * average_reducer:
             temp_input1.append(point_list[distance_input1[i][1]])
-        if distance_input2[i][0] < average_distance_input2:
+        if distance_input2[i][0] < average_distance_input2 * average_reducer:
             temp_input2.append(point_list[distance_input2[i][1]])
-        if distance_output[i][0] < average_distance_output:
+        if distance_output[i][0] < average_distance_output * average_reducer:
             temp_output.append(point_list[distance_output[i][1]])
-        if distance_work[i][0] < average_distance_work:
+        if distance_work[i][0] < average_distance_work * average_reducer:
             temp_work.append(point_list[distance_work[i][1]])
+
+    print(temp_input1, temp_input2, temp_output, temp_work)
 
     # find average point around area input1
     sum_x = 0
@@ -171,9 +372,12 @@ def calculate_area():
         if temp_input1[i][1] <= temp_min_y:
             temp_min_y = temp_input1[i][1]
     center_input1 = (int(sum_x / len(temp_input1)), int(sum_y / len(temp_input1)))
-    cv2.circle(image_frame, center_input1, 2, (0, 0, 255), 8)
-    cv2.rectangle(image_frame, (center_input1[0] - 50, center_input1[1] - 50),
-                  (center_input1[0] + 50, center_input1[1] + 50), (0, 0, 255), 2)
+    x1 = int(center_input1[0] - (center_input1[0] - temp_min_x)*rectangle_extender)
+    y1 = int(center_input1[1] - (center_input1[1] - temp_min_y)*rectangle_extender)
+    x2 = int(center_input1[0] + (temp_max_x - center_input1[0]) * rectangle_extender)
+    y2 = int(center_input1[1] + (temp_max_y - center_input1[1]) * rectangle_extender)
+    cv2.circle(black_img, center_input1, 2, (0, 0, 255), 5)
+    cv2.rectangle(black_img, (x1, y1), (x2, y2), (0, 0, 255), 2)
 
     # find average point around area input2
     sum_x = 0
@@ -195,9 +399,12 @@ def calculate_area():
         if temp_input2[i][1] <= temp_min_y:
             temp_min_y = temp_input2[i][1]
     center_input2 = (int(sum_x / len(temp_input2)), int(sum_y / len(temp_input2)))
-    cv2.circle(image_frame, center_input2, 2, (0, 150, 255), 8)
-    cv2.rectangle(image_frame, (center_input2[0] - 50, center_input2[1] - 50),
-                  (center_input2[0] + 50, center_input2[1] + 50), (0, 150, 255), 2)
+    x1 = int(center_input2[0] - (center_input2[0] - temp_min_x)*rectangle_extender)
+    y1 = int(center_input2[1] - (center_input2[1] - temp_min_y)*rectangle_extender)
+    x2 = int(center_input2[0] + (temp_max_x - center_input2[0]) * rectangle_extender)
+    y2 = int(center_input2[1] + (temp_max_y - center_input2[1]) * rectangle_extender)
+    cv2.circle(black_img, center_input2, 2, (0, 150, 255), 5)
+    cv2.rectangle(black_img, (x1, y1), (x2, y2), (0, 150, 255), 2)
 
     # find average point around area output
     sum_x = 0
@@ -218,9 +425,12 @@ def calculate_area():
         if temp_output[i][1] <= temp_min_y:
             temp_min_y = temp_output[i][1]
     center_output = (int(sum_x / len(temp_output)), int(sum_y / len(temp_output)))
-    cv2.circle(image_frame, center_output, 2, (0, 80, 255), 8)
-    cv2.rectangle(image_frame, (center_output[0] - 50, center_output[1] - 50),
-                  (center_output[0] + 50, center_output[1] + 50), (0, 80, 255), 2)
+    x1 = int(center_output[0] - (center_output[0] - temp_min_x)*rectangle_extender)
+    y1 = int(center_output[1] - (center_output[1] - temp_min_y)*rectangle_extender)
+    x2 = int(center_output[0] + (temp_max_x - center_output[0]) * rectangle_extender)
+    y2 = int(center_output[1] + (temp_max_y - center_output[1]) * rectangle_extender)
+    cv2.circle(black_img, center_output, 2, (0, 80, 255), 5)
+    cv2.rectangle(black_img, (x1, y1), (x2, y2), (0, 80, 255), 2)
 
     # find average point around area work
     sum_x = 0
@@ -241,78 +451,138 @@ def calculate_area():
         if temp_work[i][1] <= temp_min_y:
             temp_min_y = temp_work[i][1]
     center_work = (int(sum_x / len(temp_work)), int(sum_y / len(temp_work)))
-    cv2.circle(image_frame, center_work, 2, (150, 80, 255), 8)
-    cv2.rectangle(image_frame, (center_work[0] - 50, center_work[1] - 50),
-                  (center_work[0] + 50, center_work[1] + 50), (150, 80, 255), 2)
+    x1 = int(center_work[0] - (center_work[0] - temp_min_x)*rectangle_extender)
+    y1 = int(center_work[1] - (center_work[1] - temp_min_y)*rectangle_extender)
+    x2 = int(center_work[0] + (temp_max_x - center_work[0]) * rectangle_extender)
+    y2 = int(center_work[1] + (temp_max_y - center_work[1]) * rectangle_extender)
+    cv2.circle(black_img, center_work, 2, (150, 80, 255), 8)
+    cv2.rectangle(black_img, (x1, y1), (x2, y2), (150, 80, 255), 2)
 
     print('End of calculate')
-
-def mouse_click(event, x, y, flags, param):
-    global image_frame, is_first_click, count, prev, curr, boundary, input_boundary
-    global input1_position, input2_position, output_position, work_position
-
-    if is_first_click == 0:
-        if event == cv2.EVENT_LBUTTONDOWN:
-            cv2.putText(image_frame, 'input1' + str((x, y)), (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-                        (0, 0, 255))
-            cv2.circle(image_frame, (x, y), 2, (0, 0, 255), 2)
-            input1_position = x, y
-            print('input1 position ', x, y)
-            is_first_click = 1
-
-    elif is_first_click == 1:
-        if event == cv2.EVENT_LBUTTONDOWN:
-            cv2.putText(image_frame, 'input2' + str((x, y)), (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-                        (0, 150, 255))
-            cv2.circle(image_frame, (x, y), 2, (0, 150, 255), 2)
-            input2_position = x, y
-            print('input2 position ', x, y)
-            is_first_click = 2
-
-    elif is_first_click == 2:
-        if event == cv2.EVENT_LBUTTONDOWN:
-            cv2.putText(image_frame, 'output' + str((x, y)), (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-                        (0, 80, 255))
-            cv2.circle(image_frame, (x, y), 2, (0, 80, 255), 2)
-            output_position = x, y
-            print('output position ', x, y)
-            is_first_click = 3
-
-    elif is_first_click == 3:
-        if event == cv2.EVENT_LBUTTONDOWN:
-            cv2.putText(image_frame, 'working' + str((x, y)), (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-                        (150, 80, 255))
-            cv2.circle(image_frame, (x, y), 2, (150, 80, 255), 2)
-            work_position = x, y
-            print('work position ', x, y)
-            is_first_click = 4
-
-    elif is_first_click == 4:
-        if event == cv2.EVENT_LBUTTONDOWN:
-            prev = x, y
-            curr = x, y
-            boundary = [x - 15, y - 15, x + 15, y + 15]
-            is_first_click = False
-            is_first_click = 5
-
-    elif is_first_click == 5:
-        if x >= boundary[0] and x <= boundary[2] and y >= boundary[1] and y <= boundary[3]:
-            pass
-        else:
-            boundary = [x - 15, y - 15, x + 15, y + 15]
-            tracking(x, y)
-
-    if event == cv2.EVENT_RBUTTONDOWN:
-        image_frame = cv2.imread('../resources/images/black_background.png')
-        is_first_click = 0
 
 
 if __name__ == "__main__":
 
+    # Capturing video through webcam
+    webcam = cv2.VideoCapture(file_name)
+    # webcam = cv2.VideoCapture(0)
     while True:
-        cv2.imshow("Multiple color Detection", image_frame)
+        # Receive stream image from camera
+        _, imageFrame = webcam.read()
+        imageFrame = cv2.resize(imageFrame, (640, 480))
+        # imageFrame = cv2.flip(imageFrame, 1)
+
+        # Change color space from RGB to HSV
+        hsvFrame = cv2.cvtColor(imageFrame, cv2.COLOR_BGR2HSV)
+
+        color_lower1 = np.array([hsv_lower_left[0], hsv_lower_left[1], hsv_lower_left[2]], np.uint8)
+        color_upper1 = np.array([hsv_upper_left[0], hsv_upper_left[1], hsv_upper_left[2]], np.uint8)
+        color_mask1 = cv2.inRange(hsvFrame, color_lower1, color_upper1)
+
+        color_lower2 = np.array([hsv_lower_right[0], hsv_lower_right[1], hsv_lower_right[2]], np.uint8)
+        color_upper2 = np.array([hsv_upper_right[0], hsv_upper_right[1], hsv_upper_right[2]], np.uint8)
+        color_mask2 = cv2.inRange(hsvFrame, color_lower2, color_upper2)
+
+        kernal = np.ones((5, 5), "int8")
+        color_mask1 = cv2.dilate(color_mask1, kernal)
+        resultColor1 = cv2.bitwise_and(hsvFrame, hsvFrame,
+                                       mask=color_mask1)
+        contours, hierarchy = cv2.findContours(color_mask1,
+                                               cv2.RETR_TREE,
+                                               cv2.CHAIN_APPROX_SIMPLE)
+        for pic, contour in enumerate(contours):
+            area = cv2.contourArea(contour)
+            if (area > detect_area):
+                x, y, w, h = cv2.boundingRect(contour)
+                x = x + -5
+                y = y + -5
+                w = w + 10
+                h = h + 10
+                center = int((2 * x + w) / 2), int((2 * y + h) / 2)
+
+                # step one : draw static rectangle over first detect area
+                if is_first_detect_left == 0:
+                    center_bound_left[0] = x
+                    center_bound_left[1] = y
+                    center_bound_left[2] = x + w
+                    center_bound_left[3] = y + h
+                    curr_left = center
+                    prev_left = center
+                    prev_status_left = -1
+                    curr_status_left = -1
+                    is_first_detect_left = 1
+                elif is_first_detect_left == 1:
+                    tracking_left(center)
+                    if is_out_left:
+                        center_bound_left[0] = x
+                        center_bound_left[1] = y
+                        center_bound_left[2] = x + w
+                        center_bound_left[3] = y + h
+
+                """imageFrame = cv2.rectangle(imageFrame, (center_bound_left[0], center_bound_left[1]),
+                                           (center_bound_left[2], center_bound_left[3]),
+                                           (0, 255, 0), 2)
+                imageFrame = cv2.circle(imageFrame, center, 2, (0, 0, 255), 2)
+                cv2.putText(imageFrame, str(center), center,
+                            cv2.FONT_HERSHEY_SIMPLEX, 1.0,
+                            (255, 255, 255))"""
+                imageFrame = cv2.rectangle(imageFrame, (x, y),
+                                           (x + w, y + h),
+                                           (0, 0, 255), 2)
+
+        color_mask2 = cv2.dilate(color_mask2, kernal)
+        resultColor2 = cv2.bitwise_and(hsvFrame, hsvFrame,
+                                       mask=color_mask2)
+        contours, hierarchy = cv2.findContours(color_mask2,
+                                               cv2.RETR_TREE,
+                                               cv2.CHAIN_APPROX_SIMPLE)
+
+        for pic, contour in enumerate(contours):
+            area = cv2.contourArea(contour)
+            if (area > detect_area):
+                x, y, w, h = cv2.boundingRect(contour)
+                x = x + -5
+                y = y + -5
+                w = w + 10
+                h = h + 10
+                center = int((2 * x + w) / 2), int((2 * y + h) / 2)
+
+                # step one : draw static rectangle over first detect area
+                if is_first_detect_right == 0:
+                    center_bound_right[0] = x
+                    center_bound_right[1] = y
+                    center_bound_right[2] = x + w
+                    center_bound_right[3] = y + h
+                    curr_right = center
+                    prev_right = center
+                    prev_status_right = -1
+                    curr_status_right = -1
+                    is_first_detect_right = 1
+                elif is_first_detect_right == 1:
+                    tracking_right(center)
+                    if is_out_right:
+                        center_bound_right[0] = x
+                        center_bound_right[1] = y
+                        center_bound_right[2] = x + w
+                        center_bound_right[3] = y + h
+
+                """imageFrame = cv2.rectangle(imageFrame, (center_bound_right[0], center_bound_right[1]),
+                                           (center_bound_right[2], center_bound_right[3]),
+                                           (0, 255, 0), 2)
+                imageFrame = cv2.circle(imageFrame, center, 2, (0, 0, 255), 2)
+                cv2.putText(imageFrame, str(center), center,
+                            cv2.FONT_HERSHEY_SIMPLEX, 1.0,
+                            (255, 255, 255))"""
+                imageFrame = cv2.rectangle(imageFrame, (x, y),
+                                           (x + w, y + h),
+                                           (0, 255, 255), 2)
+
+        final_image = cv2.addWeighted(imageFrame, 1.0, black_img, 1.0, 0)
+        cv2.imshow("Multiple color Detection", final_image)
         cv2.setMouseCallback("Multiple color Detection", mouse_click)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+
+        if cv2.waitKey(15) & 0xFF == ord('q'):
             break
 
+    webcam.release()
     cv2.destroyAllWindows()
