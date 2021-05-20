@@ -95,54 +95,54 @@ def point_track_left(x, y):
     prev_left = curr_left
 
     ########################################
-    #          240    UP    300            #
+    #          250    UP    290            #
     #                                      #
     #      Q2                   Q1         #
     #                                      #
-    #   210                        330     #
+    #   200                        340     #
     #                                      #
     # LEFT          ORIGIN           RIGHT #
     #                                      #
-    #   150                        030     #
+    #   160                        020     #
     #                                      #
     #      Q3                   Q4         #
     #                                      #
-    #          120   DOWN   060            #
+    #          110   DOWN   70             #
     ########################################
 
-    if result >= 255 and result < 285:
+    if result >= 250 and result < 290:
         # print('UP')
         curr_status_left = 1
 
-    elif result >= 285 and result < 345:
+    elif result >= 290 and result < 340:
         # print('Q1')
         curr_status_left = 2
 
-    elif result >= 345 and result < 360:
+    elif result >= 340 and result < 360:
         # print('RIGHT')
         curr_status_left = 3
 
-    elif result >= 0 and result < 15:
+    elif result >= 0 and result < 20:
         # print('RIGHT')
         curr_status_left = 3
 
-    elif result >= 15 and result < 75:
+    elif result >= 20 and result < 70:
         # print('Q4')
         curr_status_left = 5
 
-    elif result >= 75 and result < 105:
+    elif result >= 70 and result < 110:
         # print('DOWN')
         curr_status_left = 6
 
-    elif result >= 105 and result < 165:
+    elif result >= 110 and result < 160:
         # print('Q3')
         curr_status_left = 7
 
-    elif result >= 165 and result < 195:
+    elif result >= 160 and result < 200:
         # print('LEFT')
         curr_status_left = 8
 
-    elif result >= 195 and result < 255:
+    elif result >= 200 and result < 250:
         # print('Q2')
         curr_status_left = 9
 
@@ -177,59 +177,59 @@ def point_track_right(x, y):
     prev_right = curr_right
 
     ########################################
-    #          255    UP    285            #
+    #          250    UP    290            #
     #                                      #
     #      Q2                   Q1         #
     #                                      #
-    #   195                        345     #
+    #   200                        340     #
     #                                      #
     # LEFT          ORIGIN           RIGHT #
     #                                      #
-    #   165                        015     #
+    #   160                        020     #
     #                                      #
     #      Q3                   Q4         #
     #                                      #
-    #          105   DOWN   075            #
+    #          110   DOWN   70             #
     ########################################
 
-    if result >= 255 and result < 285:
+    if result >= 250 and result < 290:
         # print('UP')
         curr_status_right = 1
 
-    elif result >= 285 and result < 345:
+    elif result >= 290 and result < 340:
         # print('Q1')
         curr_status_right = 2
 
-    elif result >= 345 and result < 360:
+    elif result >= 340 and result < 360:
         # print('RIGHT')
         curr_status_right = 3
 
-    elif result >= 0 and result < 15:
+    elif result >= 0 and result < 20:
         # print('RIGHT')
         curr_status_right = 3
 
-    elif result >= 15 and result < 75:
+    elif result >= 20 and result < 70:
         # print('Q4')
         curr_status_right = 5
 
-    elif result >= 75 and result < 105:
+    elif result >= 70 and result < 110:
         # print('DOWN')
         curr_status_right = 6
 
-    elif result >= 105 and result < 165:
+    elif result >= 110 and result < 160:
         # print('Q3')
         curr_status_right = 7
 
-    elif result >= 165 and result < 195:
+    elif result >= 160 and result < 200:
         # print('LEFT')
         curr_status_right = 8
 
-    elif result >= 195 and result < 255:
+    elif result >= 200 and result < 250:
         # print('Q2')
         curr_status_right = 9
 
     if curr_status_right != prev_status_right:
-        cv2.circle(black_img, (x, y), 2, (255, 255, 255), 2)
+        cv2.circle(black_img, (x, y), 2, (0, 255, 255), 2)
 
 
 if __name__ == "__main__":
@@ -265,10 +265,6 @@ if __name__ == "__main__":
             area = cv2.contourArea(contour)
             if (area > detect_area):
                 x, y, w, h = cv2.boundingRect(contour)
-                x = x + -5
-                y = y + -5
-                w = w + 10
-                h = h + 10
                 center = int((2 * x + w) / 2), int((2 * y + h) / 2)
 
                 # step one : draw static rectangle over first detect area
@@ -293,14 +289,14 @@ if __name__ == "__main__":
 
                 imageFrame = cv2.rectangle(imageFrame, (center_bound_left[0], center_bound_left[1]),
                                            (center_bound_left[2], center_bound_left[3]),
-                                           (0, 255, 0), 2)
+                                           (100, 100, 100), 2)
                 imageFrame = cv2.circle(imageFrame, center, 2, (0, 0, 255), 2)
                 imageFrame = cv2.rectangle(imageFrame, (x, y),
                                            (x + w, y + h),
                                            (0, 0, 255), 2)
                 cv2.putText(imageFrame, str(center), center,
-                            cv2.FONT_HERSHEY_SIMPLEX, 1.0,
-                            (255, 255, 255))
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                            (0, 0, 255))
 
         color_mask2 = cv2.dilate(color_mask2, kernal)
         resultColor2 = cv2.bitwise_and(hsvFrame, hsvFrame,
@@ -313,10 +309,6 @@ if __name__ == "__main__":
             area = cv2.contourArea(contour)
             if (area > detect_area):
                 x, y, w, h = cv2.boundingRect(contour)
-                x = x + -5
-                y = y + -5
-                w = w + 10
-                h = h + 10
                 center = int((2 * x + w) / 2), int((2 * y + h) / 2)
 
                 # step one : draw static rectangle over first detect area
@@ -341,17 +333,17 @@ if __name__ == "__main__":
 
                 imageFrame = cv2.rectangle(imageFrame, (center_bound_right[0], center_bound_right[1]),
                                            (center_bound_right[2], center_bound_right[3]),
-                                           (0, 255, 0), 2)
-                imageFrame = cv2.circle(imageFrame, center, 2, (0, 0, 255), 2)
+                                           (100, 100, 100), 2)
+                imageFrame = cv2.circle(imageFrame, center, 2, (0, 255, 255), 2)
                 imageFrame = cv2.rectangle(imageFrame, (x, y),
                                            (x + w, y + h),
-                                           (0, 0, 255), 2)
+                                           (0, 255, 255), 2)
                 cv2.putText(imageFrame, str(center), center,
-                            cv2.FONT_HERSHEY_SIMPLEX, 1.0,
-                            (255, 255, 255))
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                            (0, 255, 255))
 
-        cv2.imshow("Multiple color Detection", imageFrame)
-        cv2.imshow("Result", black_img)
+        final_image = cv2.addWeighted(imageFrame,1.0,black_img,1.0,0)
+        cv2.imshow("Multiple color Detection", final_image)
         cv2.setMouseCallback("Multiple color Detection", mouse_click)
 
         if cv2.waitKey(20) & 0xFF == ord('q'):

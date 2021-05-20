@@ -1,5 +1,4 @@
 import math
-
 import cv2
 
 
@@ -95,54 +94,54 @@ class GuiTracking():
         ########################################
         #           Tracking Chart             #
         ########################################
-        #          255    UP    285            #
+        #          250    UP    290            #
         #                                      #
         #      Q2                   Q1         #
         #                                      #
-        #   195                        345     #
+        #   200                        340     #
         #                                      #
         # LEFT          ORIGIN           RIGHT #
         #                                      #
-        #   165                        015     #
+        #   160                        020     #
         #                                      #
         #      Q3                   Q4         #
         #                                      #
-        #          105   DOWN   075            #
+        #          110   DOWN   70             #
         ########################################
 
-        if result >= 255 and result < 285:
+        if result >= 250 and result < 290:
             # print('UP')
             self.current_direction = 1
 
-        elif result >= 285 and result < 345:
+        elif result >= 290 and result < 340:
             # print('Q1')
             self.current_direction = 2
 
-        elif result >= 345 and result < 360:
+        elif result >= 340 and result < 360:
             # print('RIGHT')
             self.current_direction = 3
 
-        elif result >= 0 and result < 15:
+        elif result >= 0 and result < 20:
             # print('RIGHT')
             self.current_direction = 3
 
-        elif result >= 15 and result < 75:
+        elif result >= 20 and result < 70:
             # print('Q4')
             self.current_direction = 5
 
-        elif result >= 75 and result < 105:
+        elif result >= 70 and result < 110:
             # print('DOWN')
             self.current_direction = 6
 
-        elif result >= 105 and result < 165:
+        elif result >= 110 and result < 160:
             # print('Q3')
             self.current_direction = 7
 
-        elif result >= 165 and result < 195:
+        elif result >= 160 and result < 200:
             # print('LEFT')
             self.current_direction = 8
 
-        elif result >= 195 and result < 255:
+        elif result >= 200 and result < 250:
             # print('Q2')
             self.current_direction = 9
 

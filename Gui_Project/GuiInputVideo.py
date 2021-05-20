@@ -5,10 +5,11 @@ import cv2
 
 class GuiInputVideo(Thread):
 
-    def __init__(self,image_storage):
+    def __init__(self,gui,image_storage):
         super().__init__()
+        self.gui = gui
         self.image_storage = image_storage
-        self.camera_number = 0
+        self.camera_number = self.gui.ui.dial_camera_number.value()
         self.webcam = cv2.VideoCapture(self.camera_number)
         #self.webcam = cv2.VideoCapture('../resources/videos/Full_Working1.mp4')
 

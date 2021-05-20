@@ -4,7 +4,7 @@ import numpy as np
 import math
 
 # Configuration
-file_name = '../resources/videos/Full_Working1.mp4'
+file_name = '../resources/videos/Full_Working2.mp4'
 black_img = cv2.imread('../resources/images/transparent.png')
 detect_area = 1000
 lower_value = 0.7
@@ -22,7 +22,7 @@ input2_position = (-1, -1)
 output_position = (-1, -1)
 work_position = (-1, -1)
 is_learning = True
-number_of_learning = 120
+number_of_learning = 100
 average_reducer = 0.6
 rectangle_extender = 1.15
 boundary_detect_reducer = 15
@@ -155,38 +155,56 @@ def point_track_left(x, y):
     prev_left = curr_left
 
     ########################################
-    #          240    UP    300            #
+    #          250    UP    290            #
     #                                      #
+    #      Q2                   Q1         #
     #                                      #
-    #     Q2                        Q1     #
+    #   200                        340     #
     #                                      #
+    # LEFT          ORIGIN           RIGHT #
     #                                      #
-    # 180           ORIGIN            000  #
+    #   160                        020     #
     #                                      #
+    #      Q3                   Q4         #
     #                                      #
-    #     Q3                        Q4     #
-    #                                      #
-    #                                      #
-    #          120   DOWN    60            #
+    #          110   DOWN   70             #
     ########################################
 
-    if result >= 240 and result < 300:
+    if result >= 250 and result < 290:
+        # print('UP')
         curr_status_left = 1
 
-    elif result >= 300 and result < 360:
+    elif result >= 290 and result < 340:
+        # print('Q1')
         curr_status_left = 2
 
-    elif result >= 0 and result < 60:
+    elif result >= 340 and result < 360:
+        # print('RIGHT')
         curr_status_left = 3
 
-    elif result >= 60 and result < 120:
-        curr_status_left = 4
+    elif result >= 0 and result < 20:
+        # print('RIGHT')
+        curr_status_left = 3
 
-    elif result >= 120 and result < 180:
+    elif result >= 20 and result < 70:
+        # print('Q4')
         curr_status_left = 5
 
-    elif result >= 180 and result < 240:
+    elif result >= 70 and result < 110:
+        # print('DOWN')
         curr_status_left = 6
+
+    elif result >= 110 and result < 160:
+        # print('Q3')
+        curr_status_left = 7
+
+    elif result >= 160 and result < 200:
+        # print('LEFT')
+        curr_status_left = 8
+
+    elif result >= 200 and result < 250:
+        # print('Q2')
+        curr_status_left = 9
 
     if curr_status_left != prev_status_left:
         cv2.circle(black_img, (x, y), 2, (0, 0, 255), 2)
@@ -226,38 +244,56 @@ def point_track_right(x, y):
     prev_right = curr_right
 
     ########################################
-    #          240    UP    300            #
+    #          250    UP    290            #
     #                                      #
+    #      Q2                   Q1         #
     #                                      #
-    #     Q2                        Q1     #
+    #   200                        340     #
     #                                      #
+    # LEFT          ORIGIN           RIGHT #
     #                                      #
-    # 180           ORIGIN            000  #
+    #   160                        020     #
     #                                      #
+    #      Q3                   Q4         #
     #                                      #
-    #     Q3                        Q4     #
-    #                                      #
-    #                                      #
-    #          120   DOWN    60            #
+    #          110   DOWN   70             #
     ########################################
 
-    if result >= 240 and result < 300:
+    if result >= 250 and result < 290:
+        # print('UP')
         curr_status_right = 1
 
-    elif result >= 300 and result < 360:
+    elif result >= 290 and result < 340:
+        # print('Q1')
         curr_status_right = 2
 
-    elif result >= 0 and result < 60:
+    elif result >= 340 and result < 360:
+        # print('RIGHT')
         curr_status_right = 3
 
-    elif result >= 60 and result < 120:
-        curr_status_right = 4
+    elif result >= 0 and result < 20:
+        # print('RIGHT')
+        curr_status_right = 3
 
-    elif result >= 120 and result < 180:
+    elif result >= 20 and result < 70:
+        # print('Q4')
         curr_status_right = 5
 
-    elif result >= 180 and result < 240:
+    elif result >= 70 and result < 110:
+        # print('DOWN')
         curr_status_right = 6
+
+    elif result >= 110 and result < 160:
+        # print('Q3')
+        curr_status_right = 7
+
+    elif result >= 160 and result < 200:
+        # print('LEFT')
+        curr_status_right = 8
+
+    elif result >= 200 and result < 250:
+        # print('Q2')
+        curr_status_right = 9
 
     if curr_status_right != prev_status_right:
         cv2.circle(black_img, (x, y), 2, (0, 255, 255), 2)
@@ -429,8 +465,8 @@ def calculate_area():
 if __name__ == "__main__":
 
     # Capturing video through webcam
-    webcam = cv2.VideoCapture(file_name)
-    #webcam = cv2.VideoCapture(1)
+    #webcam = cv2.VideoCapture(file_name)
+    webcam = cv2.VideoCapture(1)
     while True:
         # Receive stream image from camera
         _, imageFrame = webcam.read()

@@ -27,6 +27,7 @@ class GuiController(threading.Thread):
         self.show_image_type = 0
         self.left_or_right_color = -1
         self.mark_area_status = -1
+        self.is_learning = False
 
         # draw instance
         self.transparent_image_detect = None
@@ -55,9 +56,10 @@ class GuiController(threading.Thread):
 
     def widget_setting(self):
         # Setting widget and event
+        # setting button to call function
         self.ui.open_camera_button.clicked.connect(self.open_camera_button)
-        self.ui.setting_button.clicked.connect(self.go_to_setting_page_button)
-        self.ui.back_to_main_button.clicked.connect(self.go_to_main_page_button)
+        self.ui.setting_button.clicked.connect(self.go_to_setting_button)
+        self.ui.back_to_main_button.clicked.connect(self.go_to_main_button)
         self.ui.exit_button.clicked.connect(self.exit_button)
         self.ui.select_left_color_button.clicked.connect(self.select_left_color_button)
         self.ui.select_right_color_button.clicked.connect(self.select_right_color_button)
@@ -67,48 +69,80 @@ class GuiController(threading.Thread):
         self.ui.display_mark_button.clicked.connect(self.toggle_display_mark_area_frame_button)
         self.ui.display_track_button.clicked.connect(self.toggle_display_track_frame_button)
         self.ui.display_detect_button.clicked.connect(self.toggle_display_detect_frame_button)
-        self.ui.mark_input_button.clicked.connect(self.mark_input_button)
+        self.ui.mark_input1_button.clicked.connect(self.mark_input1_button)
+        self.ui.mark_input2_button.clicked.connect(self.mark_input2_button)
         self.ui.mark_output_button.clicked.connect(self.mark_output_button)
         self.ui.mark_working_button.clicked.connect(self.mark_working_button)
+        self.ui.learn_button.clicked.connect(self.toggle_learning_button)
+
+        # set mark area frame to transparent
         self.ui.display_mark_area_frame.setStyleSheet("background:transparent")
+
+        # set mouse event function
         self.ui.display_camera_frame.mousePressEvent = self.get_position_from_camera_frame
         self.ui.display_mark_area_frame.mousePressEvent = self.get_position_from_mark_area_frame
+
+        # set status of button and frame
         self.ui.display_mark_area_frame.setVisible(False)
-        self.ui.mark_input_button.setEnabled(False)
+        self.ui.mark_input1_button.setEnabled(False)
+        self.ui.mark_input2_button.setEnabled(False)
         self.ui.mark_output_button.setEnabled(False)
         self.ui.mark_working_button.setEnabled(False)
-        self.ui.undo_button.setEnabled(False)
+
+        # set text value for dial
+        self.ui.text_dial_camera_number.setText(str(self.ui.dial_camera_number.value()))
+        self.ui.text_dial_detect_area.setText(str(self.ui.dial_detect_area.value()))
+        self.ui.text_dial_learning_points.setText(str(self.ui.dial_learning_points.value()))
+        self.ui.text_dial_average_reducer.setText(str(self.ui.dial_average_reducer.value()))
+        self.ui.text_dial_boundary_extender.setText(str(self.ui.dial_boundary_extender.value()))
+
+    def toggle_learning_button(self):
+        if self.is_learning:
+            self.ui.text_learn.setText('Not Ready')
+            self.ui.text_learn.setStyleSheet('color:red')
+            self.is_learning = False
+        else:
+            self.ui.text_learn.setText('Learning')
+            self.ui.text_learn.setStyleSheet('color:lime')
+            self.is_learning = True
 
     def toggle_display_mark_area_frame_button(self):
         if self.toggle_mark_area_status:
             self.ui.text_mark_area.setText('Mark is off')
             self.ui.text_mark_area.setStyleSheet('color:red')
             self.ui.display_mark_area_frame.setVisible(False)
-            self.ui.mark_input_button.setEnabled(False)
+            self.ui.mark_input1_button.setEnabled(False)
+            self.ui.mark_input2_button.setEnabled(False)
             self.ui.mark_output_button.setEnabled(False)
             self.ui.mark_working_button.setEnabled(False)
-            self.ui.undo_button.setEnabled(False)
             self.toggle_mark_area_status = False
         else:
             self.ui.text_mark_area.setText('Mark is on')
             self.ui.text_mark_area.setStyleSheet('color:lime')
             self.ui.display_mark_area_frame.setVisible(True)
-            self.ui.mark_input_button.setEnabled(True)
+            self.ui.mark_input1_button.setEnabled(True)
+            self.ui.mark_input2_button.setEnabled(True)
             self.ui.mark_output_button.setEnabled(True)
             self.ui.mark_working_button.setEnabled(True)
-            self.ui.undo_button.setEnabled(True)
             self.toggle_mark_area_status = True
 
-    def mark_input_button(self):
+    def mark_input1_button(self):
         self.mark_area_status = 0
 
-    def mark_output_button(self):
+    def mark_input2_button(self):
         self.mark_area_status = 1
 
-    def mark_working_button(self):
+    def mark_output_button(self):
         self.mark_area_status = 2
 
+    def mark_working_button(self):
+        self.mark_area_status = 3
+
     def draw_mark_area(self, x, y):
+        # padding text on displayed point
+        x_padding_text = 30
+        y_padding_text = 15
+
         if self.mark_area_status == 0:
             # set point color and thickness
             self.pen_point = QtGui.QPen(QtCore.Qt.red)
@@ -116,30 +150,50 @@ class GuiController(threading.Thread):
             # draw rectangle on painter
             self.painter_instance.setPen(self.pen_point)
             self.painter_instance.drawPoint(x, y)
-            self.painter_instance.drawText(x - 10, y - 10, 'Input area')
+            self.painter_instance.drawText(x - x_padding_text, y - y_padding_text, 'Input1 area')
             # set pixmap onto the label widget
             self.ui.display_mark_area_frame.setPixmap(self.transparent_image_detect)
+            # disable button
+            self.ui.mark_input1_button.setEnabled(False)
 
         elif self.mark_area_status == 1:
-            # set point color and thickness
-            self.pen_point = QtGui.QPen(QtCore.Qt.green)
-            self.pen_point.setWidth(6)
-            # draw rectangle on painter
-            self.painter_instance.setPen(self.pen_point)
-            self.painter_instance.drawPoint(x, y)
-            self.painter_instance.drawText(x - 10, y - 10, 'Output area')
-            # set pixmap onto the label widget
-            self.ui.display_mark_area_frame.setPixmap(self.transparent_image_detect)
-        elif self.mark_area_status == 2:
             # set point color and thickness
             self.pen_point = QtGui.QPen(QtCore.Qt.yellow)
             self.pen_point.setWidth(6)
             # draw rectangle on painter
             self.painter_instance.setPen(self.pen_point)
             self.painter_instance.drawPoint(x, y)
-            self.painter_instance.drawText(x - 10, y - 10, 'Working area')
+            self.painter_instance.drawText(x - x_padding_text, y - y_padding_text, 'Input2 area')
             # set pixmap onto the label widget
             self.ui.display_mark_area_frame.setPixmap(self.transparent_image_detect)
+            # disable button
+            self.ui.mark_input2_button.setEnabled(False)
+
+        elif self.mark_area_status == 2:
+            # set point color and thickness
+            self.pen_point = QtGui.QPen(QtCore.Qt.green)
+            self.pen_point.setWidth(6)
+            # draw rectangle on painter
+            self.painter_instance.setPen(self.pen_point)
+            self.painter_instance.drawPoint(x, y)
+            self.painter_instance.drawText(x - x_padding_text, y - y_padding_text, 'Output area')
+            # set pixmap onto the label widget
+            self.ui.display_mark_area_frame.setPixmap(self.transparent_image_detect)
+            # disable button
+            self.ui.mark_output_button.setEnabled(False)
+
+        elif self.mark_area_status == 3:
+            # set point color and thickness
+            self.pen_point = QtGui.QPen(QtCore.Qt.lightGray)
+            self.pen_point.setWidth(6)
+            # draw rectangle on painter
+            self.painter_instance.setPen(self.pen_point)
+            self.painter_instance.drawPoint(x, y)
+            self.painter_instance.drawText(x - x_padding_text, y - y_padding_text, 'Work area')
+            # set pixmap onto the label widget
+            self.ui.display_mark_area_frame.setPixmap(self.transparent_image_detect)
+            # disable button
+            self.ui.mark_working_button.setEnabled(False)
 
     # Select Left Color Button
     def select_left_color_button(self):
@@ -208,7 +262,7 @@ class GuiController(threading.Thread):
         self.ui.text_image_type.setStyleSheet('color:gold')
 
         # Create Thread for input_video
-        self.thread_input_video = GuiInputVideo(self.image_storage)
+        self.thread_input_video = GuiInputVideo(self,self.image_storage)
         self.thread_input_video.start()
 
         # Create Thread for output_video
@@ -229,11 +283,11 @@ class GuiController(threading.Thread):
         sys.exit(0)
 
     # Go to setting page from main page button
-    def go_to_setting_page_button(self):
+    def go_to_setting_button(self):
         self.ui.stackedWidget.setCurrentIndex(1)
 
     # Back to main page from setting page button
-    def go_to_main_page_button(self):
+    def go_to_main_button(self):
         self.ui.stackedWidget.setCurrentIndex(0)
 
     # Get x,y from mouse clicked method
@@ -290,6 +344,11 @@ class GuiController(threading.Thread):
                 self.draw_mark_area(x_position, y_position)
 
         elif self.mark_area_status == 2:
+            # check which mouse button is clicked
+            if event.buttons() == QtCore.Qt.LeftButton:
+                self.draw_mark_area(x_position, y_position)
+
+        elif self.mark_area_status == 3:
             # check which mouse button is clicked
             if event.buttons() == QtCore.Qt.LeftButton:
                 self.draw_mark_area(x_position, y_position)
