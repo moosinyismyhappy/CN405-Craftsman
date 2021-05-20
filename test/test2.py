@@ -124,52 +124,7 @@ def degree(x):
     return int(degree)
 
 
-def tracking(x, y):
-    global prev, curr, image_frame, prev_status, curr_status
-    global input1_position, input2_position, output_position, work_position
-    global prev_distance_input1, curr_distance_input1
-    global prev_distance_input2, curr_distance_input2
-    global prev_distance_output, curr_distance_output
-    global prev_distance_work, curr_distance_work
-    global prev_direction_input1, curr_direction_input1
-    global prev_direction_input2, curr_direction_input2
-    global prev_direction_output, curr_direction_output
-    global prev_direction_work, curr_direction_work
-    global count_approach_input1, count_approach_input2, count_approach_output, count_approach_work
-    global input1_list, input2_list, output_list, work_list
-    global is_input1_ready,is_input2_ready,is_output_ready,is_work_ready
-
-    # Calculate distance to all area
-    prev_distance_input1 = curr_distance_input1
-    prev_distance_input2 = curr_distance_input2
-    prev_distance_output = curr_distance_output
-    prev_distance_work = curr_distance_work
-
-    curr_distance_input1 = get_distance(input1_position, (x, y))
-    curr_distance_input2 = get_distance(input2_position, (x, y))
-    curr_distance_output = get_distance(output_position, (x, y))
-    curr_distance_work = get_distance(work_position, (x, y))
-
-    # Calculate direction to all area
-    direction_input1 = degree(math.atan2(input1_position[1] - y, input1_position[0] - x))
-    direction_input2 = degree(math.atan2(input2_position[1] - y, input2_position[0] - x))
-    direction_output = degree(math.atan2(output_position[1] - y, output_position[0] - x))
-    direction_work = degree(math.atan2(work_position[1] - y, work_position[0] - x))
-
-    prev_direction_input1 = curr_direction_input1
-    prev_direction_input2 = curr_direction_input2
-    prev_direction_output = curr_direction_output
-    prev_direction_work = curr_direction_work
-
-    prev = curr
-    curr = x, y
-    prev_status = curr_status
-
-    diff_x = curr[0] - prev[0]
-    diff_y = curr[1] - prev[1]
-
-    result = degree(math.atan2(diff_y, diff_x))
-
+def find_direction_degree(degree):
     ########################################
     #          240    UP    300            #
     #                                      #
@@ -185,101 +140,99 @@ def tracking(x, y):
     #                                      #
     #          120   DOWN    60            #
     ########################################
+    if 240 <= degree < 300:
+        return 1
+    elif 300 <= degree < 360:
+        return 2
+    elif 0 <= degree < 60:
+        return 3
+    elif 60 <= degree < 120:
+        return 4
+    elif 120 <= degree < 180:
+        return 5
+    elif 180 <= degree < 240:
+        return 6
 
-    # direction of point
-    if 240 <= result < 300:
-        curr_status = 1
 
-    elif 300 <= result < 360:
-        curr_status = 2
+def find_average_point(list):
+    sum_x = 0
+    sum_y = 0
+    for i in list:
+        sum_x += i[0]
+        sum_y += i[1]
+    average_x = int(sum_x / len(list))
+    average_y = int(sum_y / len(list))
+    return average_x, average_y
 
-    elif 0 <= result < 60:
-        curr_status = 3
 
-    elif 60 <= result < 120:
-        curr_status = 4
+def find_max_min(list):
+    min_x = list[0][0]
+    min_y = list[0][1]
+    max_x = list[0][0]
+    max_y = list[0][1]
+    for i in range(len(list)):
+        if list[i][0] <= min_x:
+            min_x = list[i][0]
+        if list[i][0] >= max_x:
+            max_x = list[i][0]
+        if list[i][1] <= min_y:
+            min_y =list[i][1]
+        if list[i][1] >= max_y:
+            max_y = list[i][1]
+    return min_x, max_x, min_y, max_y
 
-    elif 120 <= result < 180:
-        curr_status = 5
 
-    elif 180 <= result < 240:
-        curr_status = 6
+def tracking(x, y):
+    global image_frame, prev_status, curr_status, curr, prev,boundary_extender
+    global input1_position, input2_position, output_position, work_position
+    global prev_distance_input1, curr_distance_input1
+    global prev_distance_input2, curr_distance_input2
+    global prev_distance_output, curr_distance_output
+    global prev_distance_work, curr_distance_work
+    global prev_direction_input1, curr_direction_input1
+    global prev_direction_input2, curr_direction_input2
+    global prev_direction_output, curr_direction_output
+    global prev_direction_work, curr_direction_work
+    global count_approach_input1, count_approach_input2, count_approach_output, count_approach_work
+    global input1_list, input2_list, output_list, work_list
+    global is_input1_ready, is_input2_ready, is_output_ready, is_work_ready
 
-    # direction of input1
-    if 240 <= direction_input1 < 300:
-        curr_direction_input1 = 1
+    # Calculate distance to all area
+    prev_distance_input1 = curr_distance_input1
+    prev_distance_input2 = curr_distance_input2
+    prev_distance_output = curr_distance_output
+    prev_distance_work = curr_distance_work
 
-    elif 300 <= direction_input1 < 360:
-        curr_direction_input1 = 2
+    curr_distance_input1 = get_distance(input1_position, (x, y))
+    curr_distance_input2 = get_distance(input2_position, (x, y))
+    curr_distance_output = get_distance(output_position, (x, y))
+    curr_distance_work = get_distance(work_position, (x, y))
 
-    elif 0 <= direction_input1 < 60:
-        curr_direction_input1 = 3
+    # Calculate direction to all area
+    direction_input1_degree = degree(math.atan2(input1_position[1] - y, input1_position[0] - x))
+    direction_input2_degree = degree(math.atan2(input2_position[1] - y, input2_position[0] - x))
+    direction_output_degree = degree(math.atan2(output_position[1] - y, output_position[0] - x))
+    direction_work_degree = degree(math.atan2(work_position[1] - y, work_position[0] - x))
 
-    elif 60 <= direction_input1 < 120:
-        curr_direction_input1 = 4
+    prev_direction_input1 = curr_direction_input1
+    prev_direction_input2 = curr_direction_input2
+    prev_direction_output = curr_direction_output
+    prev_direction_work = curr_direction_work
 
-    elif 120 <= direction_input1 < 180:
-        curr_direction_input1 = 5
+    prev = curr
+    curr = x, y
+    prev_status = curr_status
 
-    elif 180 <= direction_input1 < 240:
-        curr_direction_input1 = 6
+    diff_x = curr[0] - prev[0]
+    diff_y = curr[1] - prev[1]
 
-    # direction of input2
-    if 240 <= direction_input2 < 300:
-        curr_direction_input2 = 1
+    point_direction_degree = degree(math.atan2(diff_y, diff_x))
 
-    elif 300 <= direction_input2 < 360:
-        curr_direction_input2 = 2
-
-    elif 0 <= direction_input2 < 60:
-        curr_direction_input2 = 3
-
-    elif 60 <= direction_input2 < 120:
-        curr_direction_input2 = 4
-
-    elif 120 <= direction_input1 < 180:
-        curr_direction_input2 = 5
-
-    elif 180 <= direction_input1 < 240:
-        curr_direction_input2 = 6
-
-    # direction of output
-    if 240 <= direction_output < 300:
-        curr_direction_output = 1
-
-    elif 300 <= direction_output < 360:
-        curr_direction_output = 2
-
-    elif 0 <= direction_output < 60:
-        curr_direction_output = 3
-
-    elif 60 <= direction_output < 120:
-        curr_direction_output = 4
-
-    elif 120 <= direction_output < 180:
-        curr_direction_output = 5
-
-    elif 180 <= direction_output < 240:
-        curr_direction_output = 6
-
-    # direction of work
-    if 240 <= direction_work < 300:
-        curr_direction_work = 1
-
-    elif 300 <= direction_work < 360:
-        curr_direction_work = 2
-
-    elif 0 <= direction_work < 60:
-        curr_direction_work = 3
-
-    elif 60 <= direction_work < 120:
-        curr_direction_work = 4
-
-    elif 120 <= direction_work < 180:
-        curr_direction_work = 5
-
-    elif 180 <= direction_work < 240:
-        curr_direction_work = 6
+    curr_status = find_direction_degree(point_direction_degree)
+    curr_direction_input1 = find_direction_degree(direction_input1_degree)
+    curr_direction_input2 = find_direction_degree(direction_input2_degree)
+    curr_direction_output = find_direction_degree(direction_output_degree)
+    curr_direction_work = find_direction_degree(direction_work_degree)
 
     # increase counter when approach and same direction that area
     if prev_distance_input1 > curr_distance_input1 and curr_direction_input1 == curr_status:
@@ -303,96 +256,97 @@ def tracking(x, y):
         max_temp = temp.index(max(temp))
 
         if max_temp == 0:
-            cv2.circle(image_frame, (x, y), 2, (255, 255, 0), 2)
-            cv2.putText(image_frame, str((x, y, 'input1')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
-                        (255, 255, 0))
-            if is_input1_ready == 0:
-                if len(input1_list) < 10:
-                    input1_list.append((x, y))
-                else:
-                    is_input1_ready = 1
-            elif is_input1_ready == 1:
-                print('draw rectangle input1')
-                temp_sum_x = 0
-                temp_sum_y = 0
-                for i in input1_list:
-                    temp_sum_x += i[0]
-                    temp_sum_y += i[1]
-                temp_sum_x = int(temp_sum_x/len(input1_list))
-                temp_sum_y = int(temp_sum_y / len(input1_list))
-                cv2.rectangle(image_frame, (temp_sum_x-50, temp_sum_y-50), (temp_sum_x+50, temp_sum_y+50), (0, 0, 255), 2)
-                is_input1_ready = -1
-
+            if curr_distance_input1 <= 80:
+                cv2.circle(image_frame, (x, y), 2, (0, 0, 255), 2)
+                cv2.putText(image_frame, str((x, y, 'input1')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
+                            (0, 0, 255))
+                if is_input1_ready == 0:
+                    if len(input1_list) < 10:
+                        input1_list.append((x, y))
+                    else:
+                        is_input1_ready = 1
+                elif is_input1_ready == 1:
+                    print('draw input1 area')
+                    average_x, average_y = find_average_point(input1_list)
+                    min_x, max_x, min_y, max_y = find_max_min(input1_list)
+                    x1 = average_x - (average_x - min_x)
+                    y1 = average_y - (average_y - min_y)
+                    x2 = average_x + (max_x - average_x)
+                    y2 = average_y + (max_y - average_y)
+                    cv2.rectangle(image_frame, (x1, y1), (x2, y2),
+                                  (0, 0, 255), 2)
+                    is_input1_ready = -1
 
         elif max_temp == 1:
-            cv2.circle(image_frame, (x, y), 2, (255, 255, 0), 2)
-            cv2.putText(image_frame, str((x, y, 'input2')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
-                        (255, 255, 0))
-            if is_input2_ready == 0:
-                if len(input2_list) < 10:
-                    input2_list.append((x, y))
-                else:
-                    is_input2_ready = 1
-            elif is_input2_ready == 1:
-                temp_sum_x = 0
-                temp_sum_y = 0
-                for i in input2_list:
-                    temp_sum_x += i[0]
-                    temp_sum_y += i[1]
-                temp_sum_x = int(temp_sum_x / len(input2_list))
-                temp_sum_y = int(temp_sum_y / len(input2_list))
-                cv2.rectangle(image_frame, (temp_sum_x - 50, temp_sum_y - 50), (temp_sum_x + 50, temp_sum_y + 50),
-                              (0, 150, 255), 2)
-                is_input2_ready = -1
+            if curr_distance_input2 <= 80:
+                cv2.circle(image_frame, (x, y), 2, (0, 150, 255), 2)
+                cv2.putText(image_frame, str((x, y, 'input2')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
+                            (0, 150, 255))
+                if is_input2_ready == 0:
+                    if len(input2_list) < 10:
+                        input2_list.append((x, y))
+                    else:
+                        is_input2_ready = 1
+                elif is_input2_ready == 1:
+                    average_x, average_y = find_average_point(input2_list)
+                    min_x, max_x, min_y, max_y = find_max_min(input2_list)
+                    x1 = average_x - (average_x - min_x)
+                    y1 = average_y - (average_y - min_y)
+                    x2 = average_x + (max_x - average_x)
+                    y2 = average_y + (max_y - average_y)
+                    cv2.rectangle(image_frame, (x1, y1), (x2, y2),
+                                  (0, 150, 255), 2)
+                    is_input2_ready = -1
 
         elif max_temp == 2:
-            cv2.circle(image_frame, (x, y), 2, (255, 255, 0), 2)
-            cv2.putText(image_frame, str((x, y, 'output')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
-                        (255, 255, 0))
-            if is_output_ready == 0:
-                if len(output_list) < 10:
-                    output_list.append((x, y))
-                else:
-                    is_output_ready = 1
-            elif is_output_ready == 1:
-                print('draw rectangle output')
-                temp_sum_x = 0
-                temp_sum_y = 0
-                for i in output_list:
-                    temp_sum_x += i[0]
-                    temp_sum_y += i[1]
-                temp_sum_x = int(temp_sum_x / len(output_list))
-                temp_sum_y = int(temp_sum_y / len(output_list))
-                cv2.rectangle(image_frame, (temp_sum_x - 50, temp_sum_y - 50), (temp_sum_x + 50, temp_sum_y + 50),
-                              (0, 80, 255), 2)
-                is_output_ready = -1
+            if curr_distance_output <= 80:
+                cv2.circle(image_frame, (x, y), 2, (0, 80, 255), 2)
+                cv2.putText(image_frame, str((x, y, 'output')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
+                            (0, 80, 255))
+                if is_output_ready == 0:
+                    if len(output_list) < 10:
+                        output_list.append((x, y))
+                    else:
+                        is_output_ready = 1
+                elif is_output_ready == 1:
+                    print('draw output area')
+                    average_x, average_y = find_average_point(output_list)
+                    min_x, max_x, min_y, max_y = find_max_min(output_list)
+                    x1 = average_x - (average_x - min_x)
+                    y1 = average_y - (average_y - min_y)
+                    x2 = average_x + (max_x - average_x)
+                    y2 = average_y + (max_y - average_y)
+                    cv2.rectangle(image_frame, (x1, y1), (x2, y2),
+                                  (0, 80, 255), 2)
+                    is_output_ready = -1
 
         elif max_temp == 3:
-            cv2.circle(image_frame, (x, y), 2, (255, 255, 0), 2)
-            cv2.putText(image_frame, str((x, y, 'work')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
-                        (255, 255, 0))
-            if is_work_ready == 0:
-                if len(work_list) < 10:
-                    work_list.append((x, y))
-                else:
-                    is_work_ready = 1
-            elif is_work_ready == 1:
-                print('draw rectangle work')
-                temp_sum_x = 0
-                temp_sum_y = 0
-                for i in work_list:
-                    temp_sum_x += i[0]
-                    temp_sum_y += i[1]
-                temp_sum_x = int(temp_sum_x / len(work_list))
-                temp_sum_y = int(temp_sum_y / len(work_list))
-                cv2.rectangle(image_frame, (temp_sum_x - 50, temp_sum_y - 50), (temp_sum_x + 50, temp_sum_y + 50),
-                              (80, 150, 255), 2)
-                is_work_ready = -1
+            if curr_distance_work <= 80:
+                cv2.circle(image_frame, (x, y), 2, (150, 80, 255), 2)
+                cv2.putText(image_frame, str((x, y, 'work')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
+                            (150, 80, 255))
+                if is_work_ready == 0:
+                    if len(work_list) < 10:
+                        work_list.append((x, y))
+                    else:
+                        is_work_ready = 1
+                elif is_work_ready == 1:
+                    print('draw work area')
+                    average_x, average_y = find_average_point(work_list)
+                    min_x, max_x, min_y, max_y = find_max_min(work_list)
+                    x1 = average_x - (average_x - min_x)
+                    y1 = average_y - (average_y - min_y)
+                    x2 = average_x + (max_x - average_x)
+                    y2 = average_y + (max_y - average_y)
+                    cv2.rectangle(image_frame, (x1, y1), (x2, y2),
+                                  (150, 80, 255), 2)
+                    is_work_ready = -1
 
         count_approach_input1 = 0
         count_approach_input2 = 0
         count_approach_output = 0
         count_approach_work = 0
+
 
 if __name__ == "__main__":
     while True:

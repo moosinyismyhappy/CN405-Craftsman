@@ -4,28 +4,54 @@ import numpy as np
 import math
 
 # Configuration
-file_name = '../resources/videos/Full_Working1.mp4'
+file_name = '../resources/videos/Full_Working2.mp4'
 black_img = cv2.imread('../resources/images/transparent.png')
 detect_area = 1000
 lower_value = 0.7
 upper_value = 1.3
-imageFrame = None
+image_frame = None
 hsvFrame = None
 click_state = 0
-point_list = []
-distance_input1 = []
-distance_input2 = []
-distance_output = []
-distance_work = []
+boundary_detect_reducer = 15
+boundary_extender = 1.2
+min_val = 120
 input1_position = (-1, -1)
 input2_position = (-1, -1)
 output_position = (-1, -1)
 work_position = (-1, -1)
 is_learning = True
-number_of_learning = 120
-average_reducer = 0.6
-rectangle_extender = 1.15
-boundary_detect_reducer = 15
+prev_distance_input1 = -1
+curr_distance_input1 = -1
+prev_distance_input2 = -1
+curr_distance_input2 = -1
+prev_distance_output = -1
+curr_distance_output = -1
+prev_distance_work = -1
+curr_distance_work = -1
+prev_direction_input1 = -1
+curr_direction_input1 = -1
+prev_direction_input2 = -1
+curr_direction_input2 = -1
+prev_direction_output = -1
+curr_direction_output = -1
+prev_direction_work = -1
+curr_direction_work = -1
+input1_list = []
+input2_list = []
+output_list = []
+work_list = []
+is_input1_ready = 0
+is_input2_ready = 0
+is_output_ready = 0
+is_work_ready = 0
+count_approach_input1_left = 0
+count_approach_input2_left = 0
+count_approach_output_left = 0
+count_approach_work_left = 0
+count_approach_input1_right = 0
+count_approach_input2_right = 0
+count_approach_output_right = 0
+count_approach_work_right = 0
 
 # For left hand
 hsv_lower_left = [-1, -1, -1, -1]
@@ -121,14 +147,89 @@ def mouse_click(event, x, y, flags, param):
             hsv_upper_right = adjust_upper_hsv(hsvFrame[y, x])
 
 
+def get_distance(origin, points):
+    return int(math.sqrt(((points[0] - origin[0]) ** 2) + ((points[1] - origin[1]) ** 2)))
+
+
 def degree(x):
     pi = math.pi
     degree = ((x * 180) / pi) % 360
     return int(degree)
 
 
+def find_direction_degree(degree):
+    ########################################
+    #          250    UP    290            #
+    #                                      #
+    #      Q2                   Q1         #
+    #                                      #
+    #   200                        340     #
+    #                                      #
+    # LEFT          ORIGIN           RIGHT #
+    #                                      #
+    #   160                        020     #
+    #                                      #
+    #      Q3                   Q4         #
+    #                                      #
+    #          110   DOWN   70             #
+    ########################################
+
+    if 250 <= degree < 290:
+        return 1
+
+    elif 290 <= degree < 340:
+        return 2
+
+    elif 340 <= degree < 360:
+        return 3
+
+    elif 0 <= degree < 20:
+        return 3
+
+    elif 20 <= degree < 70:
+        return 5
+
+    elif 70 <= degree < 110:
+        return 6
+
+    elif 110 <= degree < 160:
+        return 7
+
+    elif 160 <= degree < 200:
+        return 8
+
+    elif 200 <= degree < 250:
+        return 9
+
+
+def find_average_point(list):
+    sum_x = 0
+    sum_y = 0
+    for i in list:
+        sum_x += i[0]
+        sum_y += i[1]
+    average_x = int(sum_x / len(list))
+    average_y = int(sum_y / len(list))
+    return average_x, average_y
+
+def find_max_min(list):
+    min_x = list[0][0]
+    min_y = list[0][1]
+    max_x = list[0][0]
+    max_y = list[0][1]
+    for i in range(len(list)):
+        if list[i][0] <= min_x:
+            min_x = list[i][0]
+        if list[i][0] >= max_x:
+            max_x = list[i][0]
+        if list[i][1] <= min_y:
+            min_y =list[i][1]
+        if list[i][1] >= max_y:
+            max_y = list[i][1]
+    return min_x, max_x, min_y, max_y
+
 def tracking_left(new_center):
-    global imageFrame, center_bound_left, is_first_detect_left, prev_left, curr_left, is_out_left
+    global image_frame, center_bound_left, is_first_detect_left, prev_left, curr_left, is_out_left
     # x,y of center
     x_center, y_center = new_center[0], new_center[1]
 
@@ -143,63 +244,154 @@ def tracking_left(new_center):
 
 
 def point_track_left(x, y):
-    global prev_left, curr_left, image_frame, prev_status_left, curr_status_left, black_img, is_learning, number_of_learning
+    global image_frame, prev_status_left, curr_status_left, curr_left, prev_left
+    global input1_position, input2_position, output_position, work_position
+    global prev_distance_input1, curr_distance_input1
+    global prev_distance_input2, curr_distance_input2
+    global prev_distance_output, curr_distance_output
+    global prev_distance_work, curr_distance_work
+    global prev_direction_input1, curr_direction_input1
+    global prev_direction_input2, curr_direction_input2
+    global prev_direction_output, curr_direction_output
+    global prev_direction_work, curr_direction_work
+    global count_approach_input1_left, count_approach_input2_left, count_approach_output_left, count_approach_work_left
+    global input1_list, input2_list, output_list, work_list
+    global is_input1_ready, is_input2_ready, is_output_ready, is_work_ready
+
+    # Calculate distance to all area
+    prev_distance_input1 = curr_distance_input1
+    prev_distance_input2 = curr_distance_input2
+    prev_distance_output = curr_distance_output
+    prev_distance_work = curr_distance_work
+
+    curr_distance_input1 = get_distance(input1_position, (x, y))
+    curr_distance_input2 = get_distance(input2_position, (x, y))
+    curr_distance_output = get_distance(output_position, (x, y))
+    curr_distance_work = get_distance(work_position, (x, y))
+
+    # Calculate direction to all area
+    direction_input1_degree = degree(math.atan2(input1_position[1] - y, input1_position[0] - x))
+    direction_input2_degree = degree(math.atan2(input2_position[1] - y, input2_position[0] - x))
+    direction_output_degree = degree(math.atan2(output_position[1] - y, output_position[0] - x))
+    direction_work_degree = degree(math.atan2(work_position[1] - y, work_position[0] - x))
+
+    prev_direction_input1 = curr_direction_input1
+    prev_direction_input2 = curr_direction_input2
+    prev_direction_output = curr_direction_output
+    prev_direction_work = curr_direction_work
+
+    prev_left = curr_left
     curr_left = x, y
     prev_status_left = curr_status_left
 
     diff_x = curr_left[0] - prev_left[0]
     diff_y = curr_left[1] - prev_left[1]
 
-    result = degree(math.atan2(diff_y, diff_x))
+    point_direction_degree = degree(math.atan2(diff_y, diff_x))
 
-    prev_left = curr_left
+    curr_status_left = find_direction_degree(point_direction_degree)
+    curr_direction_input1 = find_direction_degree(direction_input1_degree)
+    curr_direction_input2 = find_direction_degree(direction_input2_degree)
+    curr_direction_output = find_direction_degree(direction_output_degree)
+    curr_direction_work = find_direction_degree(direction_work_degree)
 
-    ########################################
-    #          240    UP    300            #
-    #                                      #
-    #                                      #
-    #     Q2                        Q1     #
-    #                                      #
-    #                                      #
-    # 180           ORIGIN            000  #
-    #                                      #
-    #                                      #
-    #     Q3                        Q4     #
-    #                                      #
-    #                                      #
-    #          120   DOWN    60            #
-    ########################################
+    # increase counter when approach and same direction that area
+    if prev_distance_input1 > curr_distance_input1 and curr_direction_input1 == curr_status_left:
+        # print('approach input1', prev_direction_input1, curr_direction_input1)
+        count_approach_input1_left += 1
 
-    if result >= 240 and result < 300:
-        curr_status_left = 1
+    if prev_distance_input2 > curr_distance_input2 and curr_direction_input2 == curr_status_left:
+        # print('approach input2', prev_direction_input2, curr_direction_input2)
+        count_approach_input2_left += 1
 
-    elif result >= 300 and result < 360:
-        curr_status_left = 2
+    if prev_distance_output > curr_distance_output and curr_direction_output == curr_status_left:
+        # print('approach output', prev_direction_output, curr_direction_output)
+        count_approach_output_left += 1
 
-    elif result >= 0 and result < 60:
-        curr_status_left = 3
-
-    elif result >= 60 and result < 120:
-        curr_status_left = 4
-
-    elif result >= 120 and result < 180:
-        curr_status_left = 5
-
-    elif result >= 180 and result < 240:
-        curr_status_left = 6
+    if prev_distance_work > curr_distance_work and curr_direction_work == curr_status_left:
+        # print('approach work', prev_direction_work, curr_direction_work)
+        count_approach_work_left += 1
 
     if curr_status_left != prev_status_left:
-        cv2.circle(black_img, (x, y), 2, (0, 0, 255), 2)
-        if not len(point_list) == number_of_learning:
-            point_list.append((x, y))
-        elif is_learning:
-            calculate_area()
-            print('finished calculate')
-            is_learning = False
+        temp = [count_approach_input1_left, count_approach_input2_left, count_approach_output_left,
+                count_approach_work_left]
+        max_temp = temp.index(max(temp))
+
+        if max_temp == 0:
+            if curr_distance_input1 <= min_val:
+                cv2.circle(black_img, (x, y), 2, (0, 0, 255), 2)
+                cv2.putText(black_img, str((x, y, 'input1')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
+                            (0, 0, 255))
+                if is_input1_ready == 0:
+                    if len(input1_list) < 10:
+                        input1_list.append((x, y))
+                    else:
+                        is_input1_ready = 1
+                elif is_input1_ready == 1:
+                    print('draw input1 area')
+                    average_x, average_y = find_average_point(input1_list)
+                    cv2.rectangle(image_frame, (average_x - 50, average_y - 50), (average_x + 50, average_y + 50),
+                                  (0, 0, 255), 2)
+                    is_input1_ready = -1
+
+        elif max_temp == 1:
+            if curr_distance_input2 <= min_val:
+                cv2.circle(black_img, (x, y), 2, (0, 150, 255), 2)
+                cv2.putText(black_img, str((x, y, 'input2')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
+                            (0, 150, 255))
+                if is_input2_ready == 0:
+                    if len(input2_list) < 10:
+                        input2_list.append((x, y))
+                    else:
+                        is_input2_ready = 1
+                elif is_input2_ready == 1:
+                    average_x, average_y = find_average_point(input2_list)
+                    cv2.rectangle(image_frame, (average_x - 50, average_y - 50), (average_x + 50, average_y + 50),
+                                  (0, 150, 255), 2)
+                    is_input2_ready = -1
+
+        elif max_temp == 2:
+            if curr_distance_output <= min_val:
+                cv2.circle(black_img, (x, y), 2, (0, 80, 255), 2)
+                cv2.putText(black_img, str((x, y, 'output')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
+                            (0, 80, 255))
+                if is_output_ready == 0:
+                    if len(output_list) < 10:
+                        output_list.append((x, y))
+                    else:
+                        is_output_ready = 1
+                elif is_output_ready == 1:
+                    print('draw output area')
+                    average_x, average_y = find_average_point(output_list)
+                    cv2.rectangle(image_frame, (average_x - 50, average_y - 50), (average_x + 50, average_y + 50),
+                                  (0, 80, 255), 2)
+                    is_output_ready = -1
+
+        elif max_temp == 3:
+            if curr_distance_work <= min_val:
+                cv2.circle(black_img, (x, y), 2, (150, 80, 255), 2)
+                cv2.putText(black_img, str((x, y, 'work')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
+                            (150, 80, 255))
+                if is_work_ready == 0:
+                    if len(work_list) < 10:
+                        work_list.append((x, y))
+                    else:
+                        is_work_ready = 1
+                elif is_work_ready == 1:
+                    print('draw work area')
+                    average_x, average_y = find_average_point(work_list)
+                    cv2.rectangle(image_frame, (average_x - 50, average_y - 50), (average_x + 50, average_y + 50),
+                                  (150, 80, 255), 2)
+                    is_work_ready = -1
+
+        count_approach_input1_left = 0
+        count_approach_input2_left = 0
+        count_approach_output_left = 0
+        count_approach_work_left = 0
 
 
 def tracking_right(new_center):
-    global imageFrame, center_bound_right, is_first_detect_right, prev_right, curr_right, is_out_right
+    global image_frame, center_bound_right, is_first_detect_right, prev_right, curr_right, is_out_right
     # x,y of center
     x_center, y_center = new_center[0], new_center[1]
 
@@ -214,231 +406,185 @@ def tracking_right(new_center):
 
 
 def point_track_right(x, y):
-    global prev_right, curr_right, image_frame, prev_status_right, curr_status_right, black_img, is_learning, number_of_learning
+    global image_frame, prev_status_right, curr_status_right, curr_right, prev_right
+    global input1_position, input2_position, output_position, work_position
+    global prev_distance_input1, curr_distance_input1
+    global prev_distance_input2, curr_distance_input2
+    global prev_distance_output, curr_distance_output
+    global prev_distance_work, curr_distance_work
+    global prev_direction_input1, curr_direction_input1
+    global prev_direction_input2, curr_direction_input2
+    global prev_direction_output, curr_direction_output
+    global prev_direction_work, curr_direction_work
+    global count_approach_input1_right, count_approach_input2_right, count_approach_output_right, count_approach_work_right
+    global input1_list, input2_list, output_list, work_list
+    global is_input1_ready, is_input2_ready, is_output_ready, is_work_ready
+
+    # Calculate distance to all area
+    prev_distance_input1 = curr_distance_input1
+    prev_distance_input2 = curr_distance_input2
+    prev_distance_output = curr_distance_output
+    prev_distance_work = curr_distance_work
+
+    curr_distance_input1 = get_distance(input1_position, (x, y))
+    curr_distance_input2 = get_distance(input2_position, (x, y))
+    curr_distance_output = get_distance(output_position, (x, y))
+    curr_distance_work = get_distance(work_position, (x, y))
+
+    # Calculate direction to all area
+    direction_input1_degree = degree(math.atan2(input1_position[1] - y, input1_position[0] - x))
+    direction_input2_degree = degree(math.atan2(input2_position[1] - y, input2_position[0] - x))
+    direction_output_degree = degree(math.atan2(output_position[1] - y, output_position[0] - x))
+    direction_work_degree = degree(math.atan2(work_position[1] - y, work_position[0] - x))
+
+    prev_direction_input1 = curr_direction_input1
+    prev_direction_input2 = curr_direction_input2
+    prev_direction_output = curr_direction_output
+    prev_direction_work = curr_direction_work
+
+    prev_right = curr_right
     curr_right = x, y
     prev_status_right = curr_status_right
 
     diff_x = curr_right[0] - prev_right[0]
     diff_y = curr_right[1] - prev_right[1]
 
-    result = degree(math.atan2(diff_y, diff_x))
+    point_direction_degree = degree(math.atan2(diff_y, diff_x))
 
-    prev_right = curr_right
+    curr_status_right = find_direction_degree(point_direction_degree)
+    curr_direction_input1 = find_direction_degree(direction_input1_degree)
+    curr_direction_input2 = find_direction_degree(direction_input2_degree)
+    curr_direction_output = find_direction_degree(direction_output_degree)
+    curr_direction_work = find_direction_degree(direction_work_degree)
 
-    ########################################
-    #          240    UP    300            #
-    #                                      #
-    #                                      #
-    #     Q2                        Q1     #
-    #                                      #
-    #                                      #
-    # 180           ORIGIN            000  #
-    #                                      #
-    #                                      #
-    #     Q3                        Q4     #
-    #                                      #
-    #                                      #
-    #          120   DOWN    60            #
-    ########################################
+    # increase counter when approach and same direction that area
+    if prev_distance_input1 > curr_distance_input1 and curr_direction_input1 == curr_status_right:
+        # print('approach input1', prev_direction_input1, curr_direction_input1)
+        count_approach_input1_right += 1
 
-    if result >= 240 and result < 300:
-        curr_status_right = 1
+    if prev_distance_input2 > curr_distance_input2 and curr_direction_input2 == curr_status_right:
+        # print('approach input2', prev_direction_input2, curr_direction_input2)
+        count_approach_input2_right += 1
 
-    elif result >= 300 and result < 360:
-        curr_status_right = 2
+    if prev_distance_output > curr_distance_output and curr_direction_output == curr_status_right:
+        # print('approach output', prev_direction_output, curr_direction_output)
+        count_approach_output_right += 1
 
-    elif result >= 0 and result < 60:
-        curr_status_right = 3
-
-    elif result >= 60 and result < 120:
-        curr_status_right = 4
-
-    elif result >= 120 and result < 180:
-        curr_status_right = 5
-
-    elif result >= 180 and result < 240:
-        curr_status_right = 6
+    if prev_distance_work > curr_distance_work and curr_direction_work == curr_status_right:
+        # print('approach work', prev_direction_work, curr_direction_work)
+        count_approach_work_right += 1
 
     if curr_status_right != prev_status_right:
-        cv2.circle(black_img, (x, y), 2, (0, 255, 255), 2)
-        if not len(point_list) == number_of_learning:
-            point_list.append((x, y))
-        elif is_learning:
-            calculate_area()
-            print('finished calculate')
-            is_learning = False
+        temp = [count_approach_input1_right, count_approach_input2_right, count_approach_output_right,
+                count_approach_work_right]
+        max_temp = temp.index(max(temp))
 
+        if max_temp == 0:
+            if curr_distance_input1 <= min_val:
+                cv2.circle(black_img, (x, y), 2, (0, 0, 255), 2)
+                cv2.putText(black_img, str((x, y, 'input1')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
+                            (0, 0, 255))
+                if is_input1_ready == 0:
+                    if len(input1_list) < 10:
+                        input1_list.append((x, y))
+                    else:
+                        is_input1_ready = 1
+                elif is_input1_ready == 1:
+                    print('draw input1 area')
+                    average_x, average_y = find_average_point(input1_list)
+                    min_x, max_x, min_y, max_y = find_max_min(input1_list)
+                    x1 = int((average_x - (average_x - min_x)) * (1 - boundary_extender))
+                    y1 = int((average_y - (average_y - min_y)) * (1 - boundary_extender))
+                    x2 = int((average_x + (max_x - average_x)) * boundary_extender)
+                    y2 = int((average_y + (max_y - average_y)) * boundary_extender)
+                    cv2.rectangle(image_frame, (x1, y1), (x2, y2),
+                                  (255, 255, 255), 2)
+                    is_input1_ready = -1
 
-def get_distance(origin, points):
-    return int(math.sqrt(((points[0] - origin[0]) ** 2) + ((points[1] - origin[1]) ** 2)))
+        elif max_temp == 1:
+            if curr_distance_input2 <= min_val:
+                cv2.circle(black_img, (x, y), 2, (0, 150, 255), 2)
+                cv2.putText(black_img, str((x, y, 'input2')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
+                            (0, 150, 255))
+                if is_input2_ready == 0:
+                    if len(input2_list) < 10:
+                        input2_list.append((x, y))
+                    else:
+                        is_input2_ready = 1
+                elif is_input2_ready == 1:
+                    average_x, average_y = find_average_point(input2_list)
+                    min_x, max_x, min_y, max_y = find_max_min(input2_list)
+                    x1 = int((average_x - (average_x - min_x)) * (1 - boundary_extender))
+                    y1 = int((average_y - (average_y - min_y)) * (1 - boundary_extender))
+                    x2 = int((average_x + (max_x - average_x)) * boundary_extender)
+                    y2 = int((average_y + (max_y - average_y)) * boundary_extender)
+                    cv2.rectangle(image_frame, (x1, y1), (x2, y2),
+                                  (255, 255, 255), 2)
+                    is_input2_ready = -1
 
+        elif max_temp == 2:
+            if curr_distance_output <= min_val:
+                cv2.circle(black_img, (x, y), 2, (0, 80, 255), 2)
+                cv2.putText(black_img, str((x, y, 'output')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
+                            (0, 80, 255))
+                if is_output_ready == 0:
+                    if len(output_list) < 10:
+                        output_list.append((x, y))
+                    else:
+                        is_output_ready = 1
+                elif is_output_ready == 1:
+                    print('draw output area')
+                    average_x, average_y = find_average_point(output_list)
+                    min_x, max_x, min_y, max_y = find_max_min(output_list)
+                    x1 = int((average_x - (average_x - min_x)) * (1 - boundary_extender))
+                    y1 = int((average_y - (average_y - min_y)) * (1 - boundary_extender))
+                    x2 = int((average_x + (max_x - average_x)) * boundary_extender)
+                    y2 = int((average_y + (max_y - average_y)) * boundary_extender)
+                    cv2.rectangle(image_frame, (x1, y1), (x2, y2),
+                                  (255, 255, 255), 2)
+                    is_output_ready = -1
 
-def calculate_area():
-    global image_frame, average_reducer
-    global point_list, distance_input1, distance_input2, distance_work, distance_output
-    global input1_position, input2_position, output_position, work_position
+        elif max_temp == 3:
+            if curr_distance_work <= min_val:
+                cv2.circle(black_img, (x, y), 2, (150, 80, 255), 2)
+                cv2.putText(black_img, str((x, y, 'work')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
+                            (150, 80, 255))
+                if is_work_ready == 0:
+                    if len(work_list) < 20:
+                        work_list.append((x, y))
+                    else:
+                        is_work_ready = 1
+                elif is_work_ready == 1:
+                    print('draw work area')
+                    average_x, average_y = find_average_point(work_list)
+                    min_x, max_x, min_y, max_y = find_max_min(work_list)
+                    x1 = int((average_x - (average_x - min_x))*(1-boundary_extender))
+                    y1 = int((average_y - (average_y - min_y))*(1-boundary_extender))
+                    x2 = int((average_x + (max_x - average_x))*boundary_extender)
+                    y2 = int((average_y + (max_y - average_y))*boundary_extender)
+                    cv2.rectangle(image_frame, (x1, y1), (x2, y2),
+                                  (255, 255, 255), 2)
+                    is_work_ready = -1
 
-    # calculate distance for all points with marked area
-    for i in range(len(point_list)):
-        distance_input1.append((get_distance(input1_position, point_list[i]), i))
-        distance_input2.append((get_distance(input2_position, point_list[i]), i))
-        distance_output.append((get_distance(output_position, point_list[i]), i))
-        distance_work.append((get_distance(work_position, point_list[i]), i))
-
-    # calculate average distance
-    average_distance_input1 = 0
-    average_distance_input2 = 0
-    average_distance_output = 0
-    average_distance_work = 0
-    for i in range(len(point_list)):
-        average_distance_input1 += distance_input1[i][0]
-        average_distance_input2 += distance_input2[i][0]
-        average_distance_output += distance_output[i][0]
-        average_distance_work += distance_work[i][0]
-    average_distance_input1 = int(average_distance_input1 / len(distance_input1))
-    average_distance_input2 = int(average_distance_input2 / len(distance_input2))
-    average_distance_output = int(average_distance_output / len(distance_output))
-    average_distance_work = int(average_distance_work / len(distance_work))
-
-    # find close range of marked area
-    temp_input1 = []
-    temp_input2 = []
-    temp_output = []
-    temp_work = []
-    for i in range(len(point_list)):
-        if distance_input1[i][0] < average_distance_input1 * average_reducer:
-            temp_input1.append(point_list[distance_input1[i][1]])
-        if distance_input2[i][0] < average_distance_input2 * average_reducer:
-            temp_input2.append(point_list[distance_input2[i][1]])
-        if distance_output[i][0] < average_distance_output * average_reducer:
-            temp_output.append(point_list[distance_output[i][1]])
-        if distance_work[i][0] < average_distance_work * average_reducer:
-            temp_work.append(point_list[distance_work[i][1]])
-
-    print(temp_input1, temp_input2, temp_output, temp_work)
-
-    # find average point around area input1
-    sum_x = 0
-    sum_y = 0
-    temp_min_x = temp_input1[0][0]
-    temp_max_x = temp_input1[0][0]
-    temp_min_y = temp_input1[0][1]
-    temp_max_y = temp_input1[0][1]
-
-    for i in range(len(temp_input1)):
-        sum_x += temp_input1[i][0]
-        sum_y += temp_input1[i][1]
-        if temp_input1[i][0] >= temp_max_x:
-            temp_max_x = temp_input1[i][0]
-        if temp_input1[i][0] <= temp_min_x:
-            temp_min_x = temp_input1[i][0]
-        if temp_input1[i][1] >= temp_max_y:
-            temp_max_y = temp_input1[i][1]
-        if temp_input1[i][1] <= temp_min_y:
-            temp_min_y = temp_input1[i][1]
-    center_input1 = (int(sum_x / len(temp_input1)), int(sum_y / len(temp_input1)))
-    x1 = int(center_input1[0] - (center_input1[0] - temp_min_x) * rectangle_extender)
-    y1 = int(center_input1[1] - (center_input1[1] - temp_min_y) * rectangle_extender)
-    x2 = int(center_input1[0] + (temp_max_x - center_input1[0]) * rectangle_extender)
-    y2 = int(center_input1[1] + (temp_max_y - center_input1[1]) * rectangle_extender)
-    cv2.circle(black_img, center_input1, 2, (0, 0, 255), 5)
-    cv2.rectangle(black_img, (x1, y1), (x2, y2), (0, 0, 255), 2)
-
-    # find average point around area input2
-    sum_x = 0
-    sum_y = 0
-    temp_min_x = temp_input2[0][0]
-    temp_max_x = temp_input2[0][0]
-    temp_min_y = temp_input2[0][1]
-    temp_max_y = temp_input2[0][1]
-
-    for i in range(len(temp_input2)):
-        sum_x += temp_input2[i][0]
-        sum_y += temp_input2[i][1]
-        if temp_input2[i][0] >= temp_max_x:
-            temp_max_x = temp_input2[i][0]
-        if temp_input2[i][0] <= temp_min_x:
-            temp_min_x = temp_input2[i][0]
-        if temp_input2[i][1] >= temp_max_y:
-            temp_max_y = temp_input2[i][1]
-        if temp_input2[i][1] <= temp_min_y:
-            temp_min_y = temp_input2[i][1]
-    center_input2 = (int(sum_x / len(temp_input2)), int(sum_y / len(temp_input2)))
-    x1 = int(center_input2[0] - (center_input2[0] - temp_min_x) * rectangle_extender)
-    y1 = int(center_input2[1] - (center_input2[1] - temp_min_y) * rectangle_extender)
-    x2 = int(center_input2[0] + (temp_max_x - center_input2[0]) * rectangle_extender)
-    y2 = int(center_input2[1] + (temp_max_y - center_input2[1]) * rectangle_extender)
-    cv2.circle(black_img, center_input2, 2, (0, 150, 255), 5)
-    cv2.rectangle(black_img, (x1, y1), (x2, y2), (0, 150, 255), 2)
-
-    # find average point around area output
-    sum_x = 0
-    sum_y = 0
-    temp_min_x = temp_output[0][0]
-    temp_max_x = temp_output[0][0]
-    temp_min_y = temp_output[0][1]
-    temp_max_y = temp_output[0][1]
-    for i in range(len(temp_output)):
-        sum_x += temp_output[i][0]
-        sum_y += temp_output[i][1]
-        if temp_output[i][0] >= temp_max_x:
-            temp_max_x = temp_output[i][0]
-        if temp_output[i][0] <= temp_min_x:
-            temp_min_x = temp_output[i][0]
-        if temp_output[i][1] >= temp_max_y:
-            temp_max_y = temp_output[i][1]
-        if temp_output[i][1] <= temp_min_y:
-            temp_min_y = temp_output[i][1]
-    center_output = (int(sum_x / len(temp_output)), int(sum_y / len(temp_output)))
-    x1 = int(center_output[0] - (center_output[0] - temp_min_x) * rectangle_extender)
-    y1 = int(center_output[1] - (center_output[1] - temp_min_y) * rectangle_extender)
-    x2 = int(center_output[0] + (temp_max_x - center_output[0]) * rectangle_extender)
-    y2 = int(center_output[1] + (temp_max_y - center_output[1]) * rectangle_extender)
-    cv2.circle(black_img, center_output, 2, (0, 80, 255), 5)
-    cv2.rectangle(black_img, (x1, y1), (x2, y2), (0, 80, 255), 2)
-
-    # find average point around area work
-    sum_x = 0
-    sum_y = 0
-    temp_min_x = temp_work[0][0]
-    temp_max_x = temp_work[0][0]
-    temp_min_y = temp_work[0][1]
-    temp_max_y = temp_work[0][1]
-    for i in range(len(temp_work)):
-        sum_x += temp_work[i][0]
-        sum_y += temp_work[i][1]
-        if temp_work[i][0] >= temp_max_x:
-            temp_max_x = temp_work[i][0]
-        if temp_work[i][0] <= temp_min_x:
-            temp_min_x = temp_work[i][0]
-        if temp_work[i][1] >= temp_max_y:
-            temp_max_y = temp_work[i][1]
-        if temp_work[i][1] <= temp_min_y:
-            temp_min_y = temp_work[i][1]
-    center_work = (int(sum_x / len(temp_work)), int(sum_y / len(temp_work)))
-    x1 = int(center_work[0] - (center_work[0] - temp_min_x) * rectangle_extender)
-    y1 = int(center_work[1] - (center_work[1] - temp_min_y) * rectangle_extender)
-    x2 = int(center_work[0] + (temp_max_x - center_work[0]) * rectangle_extender)
-    y2 = int(center_work[1] + (temp_max_y - center_work[1]) * rectangle_extender)
-    cv2.circle(black_img, center_work, 2, (150, 80, 255), 8)
-    cv2.rectangle(black_img, (x1, y1), (x2, y2), (150, 80, 255), 2)
-
-    print('End of calculate')
+        count_approach_input1_right = 0
+        count_approach_input2_right = 0
+        count_approach_output_right = 0
+        count_approach_work_right = 0
 
 
 if __name__ == "__main__":
 
     # Capturing video through webcam
     webcam = cv2.VideoCapture(file_name)
-    #webcam = cv2.VideoCapture(1)
+    # webcam = cv2.VideoCapture(1)
     while True:
         # Receive stream image from camera
-        _, imageFrame = webcam.read()
-        imageFrame = cv2.resize(imageFrame, (640, 480))
-        # imageFrame = cv2.flip(imageFrame, 1)
+        _, image_frame = webcam.read()
+        image_frame = cv2.resize(image_frame, (640, 480))
+        # image_frame = cv2.flip(image_frame, 1)
 
         # Change color space from RGB to HSV
-        hsvFrame = cv2.cvtColor(imageFrame, cv2.COLOR_BGR2HSV)
+        hsvFrame = cv2.cvtColor(image_frame, cv2.COLOR_BGR2HSV)
 
         color_lower1 = np.array([hsv_lower_left[0], hsv_lower_left[1], hsv_lower_left[2]], np.uint8)
         color_upper1 = np.array([hsv_upper_left[0], hsv_upper_left[1], hsv_upper_left[2]], np.uint8)
@@ -463,10 +609,10 @@ if __name__ == "__main__":
 
                 # step one : draw static rectangle over first detect area
                 if is_first_detect_left == 0:
-                    center_bound_left[0] = x+boundary_detect_reducer
-                    center_bound_left[1] = y+boundary_detect_reducer
-                    center_bound_left[2] = x+w-boundary_detect_reducer
-                    center_bound_left[3] = y+h-boundary_detect_reducer
+                    center_bound_left[0] = x + boundary_detect_reducer
+                    center_bound_left[1] = y + boundary_detect_reducer
+                    center_bound_left[2] = x + w - boundary_detect_reducer
+                    center_bound_left[3] = y + h - boundary_detect_reducer
                     curr_left = center
                     prev_left = center
                     prev_status_left = -1
@@ -475,21 +621,21 @@ if __name__ == "__main__":
                 elif is_first_detect_left == 1:
                     tracking_left(center)
                     if is_out_left:
-                        center_bound_left[0] = x+boundary_detect_reducer
-                        center_bound_left[1] = y+boundary_detect_reducer
-                        center_bound_left[2] = x+w-boundary_detect_reducer
-                        center_bound_left[3] = y+h-boundary_detect_reducer
+                        center_bound_left[0] = x + boundary_detect_reducer
+                        center_bound_left[1] = y + boundary_detect_reducer
+                        center_bound_left[2] = x + w - boundary_detect_reducer
+                        center_bound_left[3] = y + h - boundary_detect_reducer
 
-                imageFrame = cv2.rectangle(imageFrame, (center_bound_left[0], center_bound_left[1]),
-                                           (center_bound_left[2], center_bound_left[3]),
-                                           (0, 255, 0), 2)
-                imageFrame = cv2.circle(imageFrame, center, 2, (0, 0, 255), 2)
-                cv2.putText(imageFrame, str(center), center,
-                            cv2.FONT_HERSHEY_SIMPLEX, 1.0,
-                            (255, 255, 255))
-                imageFrame = cv2.rectangle(imageFrame, (x, y),
-                                           (x + w, y + h),
-                                           (0, 0, 255), 2)
+                image_frame = cv2.rectangle(image_frame, (center_bound_left[0], center_bound_left[1]),
+                                            (center_bound_left[2], center_bound_left[3]),
+                                            (180, 180, 180), 2)
+                image_frame = cv2.circle(image_frame, center, 2, (0, 0, 255), 2)
+                cv2.putText(image_frame, str(center), center,
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                            (180, 180, 180))
+                image_frame = cv2.rectangle(image_frame, (x, y),
+                                            (x + w, y + h),
+                                            (0, 0, 255), 2)
 
         color_mask2 = cv2.dilate(color_mask2, kernal)
         resultColor2 = cv2.bitwise_and(hsvFrame, hsvFrame,
@@ -507,10 +653,10 @@ if __name__ == "__main__":
 
                 # step one : draw static rectangle over first detect area
                 if is_first_detect_right == 0:
-                    center_bound_right[0] = x+boundary_detect_reducer
-                    center_bound_right[1] = y+boundary_detect_reducer
-                    center_bound_right[2] = x+w-boundary_detect_reducer
-                    center_bound_right[3] = y+h-boundary_detect_reducer
+                    center_bound_right[0] = x + boundary_detect_reducer
+                    center_bound_right[1] = y + boundary_detect_reducer
+                    center_bound_right[2] = x + w - boundary_detect_reducer
+                    center_bound_right[3] = y + h - boundary_detect_reducer
                     curr_right = center
                     prev_right = center
                     prev_status_right = -1
@@ -519,23 +665,60 @@ if __name__ == "__main__":
                 elif is_first_detect_right == 1:
                     tracking_right(center)
                     if is_out_right:
-                        center_bound_right[0] = x+boundary_detect_reducer
-                        center_bound_right[1] = y+boundary_detect_reducer
-                        center_bound_right[2] = x+w-boundary_detect_reducer
-                        center_bound_right[3] = y+h-boundary_detect_reducer
+                        center_bound_right[0] = x + boundary_detect_reducer
+                        center_bound_right[1] = y + boundary_detect_reducer
+                        center_bound_right[2] = x + w - boundary_detect_reducer
+                        center_bound_right[3] = y + h - boundary_detect_reducer
 
-                imageFrame = cv2.rectangle(imageFrame, (center_bound_right[0], center_bound_right[1]),
-                                           (center_bound_right[2], center_bound_right[3]),
-                                           (0, 255, 0), 2)
-                imageFrame = cv2.circle(imageFrame, center, 2, (0, 0, 255), 2)
-                cv2.putText(imageFrame, str(center), center,
-                            cv2.FONT_HERSHEY_SIMPLEX, 1.0,
-                            (255, 255, 255))
-                imageFrame = cv2.rectangle(imageFrame, (x, y),
-                                           (x + w, y + h),
-                                           (0, 255, 255), 2)
+                image_frame = cv2.rectangle(image_frame, (center_bound_right[0], center_bound_right[1]),
+                                            (center_bound_right[2], center_bound_right[3]),
+                                            (180, 180, 180), 2)
+                image_frame = cv2.circle(image_frame, center, 2, (0, 0, 255), 2)
+                cv2.putText(image_frame, str(center), center,
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                            (180, 180, 180))
+                image_frame = cv2.rectangle(image_frame, (x, y),
+                                            (x + w, y + h),
+                                            (0, 255, 255), 2)
 
-        final_image = cv2.addWeighted(imageFrame, 1.0, black_img, 1.0, 0)
+        if is_input1_ready == -1:
+            average_x, average_y = find_average_point(input1_list)
+            min_x, max_x, min_y, max_y = find_max_min(input1_list)
+            x1 = average_x - (average_x - min_x)
+            y1 = average_y - (average_y - min_y)
+            x2 = average_x + (max_x - average_x)
+            y2 = average_y + (max_y - average_y)
+            cv2.rectangle(image_frame, (x1, y1), (x2, y2),
+                          (0, 0, 255), 2)
+        if is_input2_ready == -1:
+            average_x, average_y = find_average_point(input2_list)
+            min_x, max_x, min_y, max_y = find_max_min(input2_list)
+            x1 = average_x - (average_x - min_x)
+            y1 = average_y - (average_y - min_y)
+            x2 = average_x + (max_x - average_x)
+            y2 = average_y + (max_y - average_y)
+            cv2.rectangle(image_frame, (x1, y1), (x2, y2),
+                          (0, 150, 255), 2)
+        if is_output_ready == -1:
+            average_x, average_y = find_average_point(output_list)
+            min_x, max_x, min_y, max_y = find_max_min(output_list)
+            x1 = average_x - (average_x - min_x)
+            y1 = average_y - (average_y - min_y)
+            x2 = average_x + (max_x - average_x)
+            y2 = average_y + (max_y - average_y)
+            cv2.rectangle(image_frame, (x1, y1), (x2, y2),
+                          (0, 80, 255), 2)
+        if is_work_ready == -1:
+            average_x, average_y = find_average_point(work_list)
+            min_x, max_x, min_y, max_y = find_max_min(work_list)
+            x1 = average_x - (average_x - min_x)
+            y1 = average_y - (average_y - min_y)
+            x2 = average_x + (max_x - average_x)
+            y2 = average_y + (max_y - average_y)
+            cv2.rectangle(image_frame, (x1, y1), (x2, y2),
+                          (150, 80, 255), 2)
+
+        final_image = cv2.addWeighted(image_frame, 1.0, black_img, 1.0, 0)
         cv2.imshow("Multiple color Detection", final_image)
         cv2.setMouseCallback("Multiple color Detection", mouse_click)
 
