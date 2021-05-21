@@ -17,9 +17,6 @@ class GuiColorDetection(Thread):
         self.h = -1
         self.x = -1
         self.y = -1
-        self.r = -1
-        self.g = -1
-        self.b = -1
         self.hsv_range = 0.2
         self.hsv_list = None
         self.hsv_lower = None
@@ -34,12 +31,6 @@ class GuiColorDetection(Thread):
     def set_hsv(self):
         temp_x = self.get_position()[0]
         temp_y = self.get_position()[1]
-
-        # set bgr color
-        bgr_color = self.image_storage.get_input_image()[temp_y,temp_x]
-        self.b = int(bgr_color[0])
-        self.g = int(bgr_color[1])
-        self.r = int(bgr_color[2])
 
         # set get hsv to process lower and upper
         self.hsv_list = list(self.image_storage.get_hsv_image_for_detection()[temp_y, temp_x])
@@ -71,15 +62,6 @@ class GuiColorDetection(Thread):
 
         # combine hsv separate value to list
         self.hsv_lower = [h_lower, s_lower, v_lower]
-
-    def get_r(self):
-        return self.r
-
-    def get_g(self):
-        return self.g
-
-    def get_b(self):
-        return self.b
 
     def set_position(self, x, y):
         self.x_position = x
@@ -133,10 +115,10 @@ class GuiColorDetection(Thread):
                                           (self.x + self.w, self.y + self.h), (0, 255, 0), 2)
 
                         # Draw center point on detect rectangle
-                        #cv2.circle(self.image_storage.get_input_image(), center_position, 2, (0, 0, 255), 2)
+                        cv2.circle(self.image_storage.get_input_image(), center_position, 2, (0, 0, 255), 2)
 
                         # Draw rectangle boundary over detect
-                        """cv2.rectangle(self.image_storage.get_input_image(), (
+                        cv2.rectangle(self.image_storage.get_input_image(), (
                             self.tracking.get_center_boundary()[0], self.tracking.get_center_boundary()[1]),
                                       (self.tracking.get_center_boundary()[2], self.tracking.get_center_boundary()[3]),
-                                      (0, 255, 255), 2)"""
+                                      (0, 255, 255), 2)

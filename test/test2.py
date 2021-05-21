@@ -208,6 +208,8 @@ def tracking(x, y):
     curr_distance_output = get_distance(output_position, (x, y))
     curr_distance_work = get_distance(work_position, (x, y))
 
+
+
     # Calculate direction to all area
     direction_input1_degree = degree(math.atan2(input1_position[1] - y, input1_position[0] - x))
     direction_input2_degree = degree(math.atan2(input2_position[1] - y, input2_position[0] - x))
@@ -234,6 +236,8 @@ def tracking(x, y):
     curr_direction_output = find_direction_degree(direction_output_degree)
     curr_direction_work = find_direction_degree(direction_work_degree)
 
+    print(direction_input1_degree, direction_input2_degree, direction_output_degree, direction_work_degree)
+
     # increase counter when approach and same direction that area
     if prev_distance_input1 > curr_distance_input1 and curr_direction_input1 == curr_status:
         # print('approach input1', prev_direction_input1, curr_direction_input1)
@@ -257,9 +261,9 @@ def tracking(x, y):
 
         if max_temp == 0:
             if curr_distance_input1 <= 80:
-                cv2.circle(image_frame, (x, y), 2, (0, 0, 255), 2)
+                cv2.circle(image_frame, (x, y), 2, (255, 255, 255), 2)
                 cv2.putText(image_frame, str((x, y, 'input1')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
-                            (0, 0, 255))
+                            (255, 255, 255))
                 if is_input1_ready == 0:
                     if len(input1_list) < 10:
                         input1_list.append((x, y))

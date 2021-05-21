@@ -4,7 +4,7 @@ import numpy as np
 import math
 
 # Configuration
-file_name = '../resources/videos/Full_Working2.mp4'
+file_name = '../resources/videos/Full_Working1.mp4'
 black_img = cv2.imread('../resources/images/transparent.png')
 detect_area = 1000
 lower_value = 0.7
@@ -14,7 +14,7 @@ hsvFrame = None
 click_state = 0
 boundary_detect_reducer = 15
 boundary_extender = 1.2
-min_val = 120
+min_val = 200
 input1_position = (-1, -1)
 input2_position = (-1, -1)
 output_position = (-1, -1)
@@ -187,19 +187,19 @@ def find_direction_degree(degree):
         return 3
 
     elif 20 <= degree < 70:
-        return 5
+        return 4
 
     elif 70 <= degree < 110:
-        return 6
+        return 5
 
     elif 110 <= degree < 160:
-        return 7
+        return 6
 
     elif 160 <= degree < 200:
-        return 8
+        return 7
 
     elif 200 <= degree < 250:
-        return 9
+        return 8
 
 
 def find_average_point(list):
@@ -481,9 +481,9 @@ def point_track_right(x, y):
 
         if max_temp == 0:
             if curr_distance_input1 <= min_val:
-                cv2.circle(black_img, (x, y), 2, (0, 0, 255), 2)
+                cv2.circle(black_img, (x, y), 2, (255, 255, 255), 2)
                 cv2.putText(black_img, str((x, y, 'input1')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
-                            (0, 0, 255))
+                            (255, 255, 255))
                 if is_input1_ready == 0:
                     if len(input1_list) < 10:
                         input1_list.append((x, y))
