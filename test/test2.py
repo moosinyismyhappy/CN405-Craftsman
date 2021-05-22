@@ -6,7 +6,7 @@ import math
 # load image file
 image_frame = cv2.imread('../resources/images/black_background.png')
 
-boundary = [-1, -1, -1, -1]
+boundary = None
 click_counter = 0
 calibrate_area_status = True
 minimum_distance = 120
@@ -32,10 +32,10 @@ count_approaching_input2 = 0
 count_approaching_output = 0
 count_approaching_work = 0
 
-input1_calibrate_status = 0
-input2_calibrate_status = 0
-output_calibrate_status = 0
-work_calibrate_status = 0
+input1_calibrate_status = True
+input2_calibrate_status = True
+output_calibrate_status = True
+work_calibrate_status = True
 
 # previous and current of distance and direction
 prev_position = -1
@@ -301,11 +301,8 @@ def tracking(x, y):
                 cv2.putText(image_frame, str((x, y, 'Input1')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
                             (0, 0, 255))
                 if calibrate_area_status:
-                    if input1_calibrate_status == 0:
-                        if len(input1_list) < input1_calibrate_time:
-                            input1_list.append((x, y))
-                        else:
-                            input1_calibrate_status = 1
+                    if input1_calibrate_status:
+                        input1_list.append((x, y))
 
         # approached input2
         elif max_approaching == 1:
@@ -314,11 +311,8 @@ def tracking(x, y):
                 cv2.putText(image_frame, str((x, y, 'Input2')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
                             (0, 150, 255))
                 if calibrate_area_status:
-                    if input2_calibrate_status == 0:
-                        if len(input2_list) < input2_calibrate_time:
-                            input2_list.append((x, y))
-                        else:
-                            input2_calibrate_status = 1
+                    if input2_calibrate_status:
+                        input2_list.append((x, y))
 
         # approached output
         elif max_approaching == 2:
@@ -327,11 +321,8 @@ def tracking(x, y):
                 cv2.putText(image_frame, str((x, y, 'output')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
                             (0, 80, 255))
                 if calibrate_area_status:
-                    if output_calibrate_status == 0:
-                        if len(output_list) < output_calibrate_time:
-                            output_list.append((x, y))
-                        else:
-                            output_calibrate_status = 1
+                    if output_calibrate_status:
+                        output_list.append((x, y))
 
         # approached work
         elif max_approaching == 3:
@@ -340,41 +331,38 @@ def tracking(x, y):
                 cv2.putText(image_frame, str((x, y, 'work')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
                             (150, 80, 255))
                 if calibrate_area_status:
-                    if work_calibrate_status == 0:
-                        if len(work_list) < work_calibrate_time:
-                            work_list.append((x, y))
-                        else:
-                            work_calibrate_status = 1
+                    if work_calibrate_status:
+                        work_list.append((x, y))
 
         # reset approach counter after change direction
         count_approaching_input1 = count_approaching_input2 = count_approaching_output = count_approaching_work = 0
 
-    if input1_calibrate_status == 1:
+    if len(input1_list) == input1_calibrate_time:
         x1, y1, x2, y2 = process_rectangle(input1_list)
         cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
         # stop calibrate and clear list
-        input1_calibrate_status = -1
+        input1_calibrate_status = False
         input1_list.clear()
 
-    if input2_calibrate_status == 1:
+    if len(input2_list) == input2_calibrate_time:
         x1, y1, x2, y2 = process_rectangle(input2_list)
         cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 150, 255), 2)
         # stop calibrate and clear list
-        input2_calibrate_status = -1
+        input2_calibrate_status = False
         input2_list.clear()
 
-    if output_calibrate_status == 1:
+    if len(output_list) == output_calibrate_time:
         x1, y1, x2, y2 = process_rectangle(output_list)
         cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 80, 255), 2)
         # stop calibrate and clear list
-        output_calibrate_status = -1
+        output_calibrate_status = False
         output_list.clear()
 
-    if work_calibrate_status == 1:
+    if len(work_list) == work_calibrate_time:
         x1, y1, x2, y2 = process_rectangle(work_list)
         cv2.rectangle(image_frame, (x1, y1), (x2, y2), (150, 80, 255), 2)
         # stop calibrate and clear list
-        work_calibrate_status = -1
+        work_calibrate_status = False
         work_list.clear()
 
     # check if all area is finished calibrate set calibrate status to False and reset each area to prepare new calibrate
