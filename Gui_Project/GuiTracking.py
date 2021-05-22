@@ -15,6 +15,76 @@ class GuiTracking():
         self.center_boundary = None
         self.is_position_out_of_boundary = False
 
+    def find_direction_degree(self,degree):
+        ########################################
+        #          250    UP    290            #
+        #                                      #
+        #      Q2                   Q1         #
+        #                                      #
+        #   200                        340     #
+        #                                      #
+        # LEFT          ORIGIN           RIGHT #
+        #                                      #
+        #   160                        020     #
+        #                                      #
+        #      Q3                   Q4         #
+        #                                      #
+        #          110   DOWN   70             #
+        ########################################
+
+        if 250 <= degree < 290:
+            return 1
+
+        elif 290 <= degree < 340:
+            return 2
+
+        elif 340 <= degree < 360:
+            return 3
+
+        elif 0 <= degree < 20:
+            return 3
+
+        elif 20 <= degree < 70:
+            return 4
+
+        elif 70 <= degree < 110:
+            return 5
+
+        elif 110 <= degree < 160:
+            return 6
+
+        elif 160 <= degree < 200:
+            return 7
+
+        elif 200 <= degree < 250:
+            return 8
+
+    def find_average_point(self,list):
+        sum_x = 0
+        sum_y = 0
+        for i in list:
+            sum_x += i[0]
+            sum_y += i[1]
+        average_x = int(sum_x / len(list))
+        average_y = int(sum_y / len(list))
+        return average_x, average_y
+
+    def find_max_min(self,list):
+        min_x = list[0][0]
+        min_y = list[0][1]
+        max_x = list[0][0]
+        max_y = list[0][1]
+        for i in range(len(list)):
+            if list[i][0] <= min_x:
+                min_x = list[i][0]
+            if list[i][0] >= max_x:
+                max_x = list[i][0]
+            if list[i][1] <= min_y:
+                min_y = list[i][1]
+            if list[i][1] >= max_y:
+                max_y = list[i][1]
+        return min_x, max_x, min_y, max_y
+
     # set current position
     def set_current_position(self, new_position):
         self.current_position = new_position
@@ -86,64 +156,13 @@ class GuiTracking():
 
         diff_x = self.current_position[0] - self.previous_position[0]
         diff_y = self.current_position[1] - self.previous_position[1]
-        result = self.degree(math.atan2(diff_y, diff_x))
+        direction_degree = self.degree(math.atan2(diff_y, diff_x))
 
         # Set current position to previous position for prepare new round
         self.previous_position = self.current_position
 
-        ########################################
-        #           Tracking Chart             #
-        ########################################
-        #          250    UP    290            #
-        #                                      #
-        #      Q2                   Q1         #
-        #                                      #
-        #   200                        340     #
-        #                                      #
-        # LEFT          ORIGIN           RIGHT #
-        #                                      #
-        #   160                        020     #
-        #                                      #
-        #      Q3                   Q4         #
-        #                                      #
-        #          110   DOWN   70             #
-        ########################################
-
-        if result >= 250 and result < 290:
-            # print('UP')
-            self.current_direction = 1
-
-        elif result >= 290 and result < 340:
-            # print('Q1')
-            self.current_direction = 2
-
-        elif result >= 340 and result < 360:
-            # print('RIGHT')
-            self.current_direction = 3
-
-        elif result >= 0 and result < 20:
-            # print('RIGHT')
-            self.current_direction = 3
-
-        elif result >= 20 and result < 70:
-            # print('Q4')
-            self.current_direction = 5
-
-        elif result >= 70 and result < 110:
-            # print('DOWN')
-            self.current_direction = 6
-
-        elif result >= 110 and result < 160:
-            # print('Q3')
-            self.current_direction = 7
-
-        elif result >= 160 and result < 200:
-            # print('LEFT')
-            self.current_direction = 8
-
-        elif result >= 200 and result < 250:
-            # print('Q2')
-            self.current_direction = 9
+        # find direction from previous to current position
+        self.current_direction = self.find_direction_degree(direction_degree)
 
         if self.current_direction != self.previous_direction:
             cv2.circle(self.image_storage.get_background_image_for_track(), center_position, 2, (0, 0, 255), 2)

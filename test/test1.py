@@ -4,7 +4,7 @@ import numpy as np
 import math
 
 # Configuration
-file_name = '../resources/videos/Full_Working1.mp4'
+file_name = '../resources/videos/Full_Working2.mp4'
 black_img = cv2.imread('../resources/images/transparent.png')
 detect_area = 1000
 lower_value = 0.7
@@ -14,7 +14,7 @@ hsvFrame = None
 click_state = 0
 boundary_detect_reducer = 15
 boundary_extender = 1.2
-min_val = 200
+min_val = 120
 input1_position = (-1, -1)
 input2_position = (-1, -1)
 output_position = (-1, -1)
@@ -159,46 +159,45 @@ def degree(x):
 
 def find_direction_degree(degree):
     ########################################
-    #          250    UP    290            #
+    #          260    UP    280            #
     #                                      #
     #      Q2                   Q1         #
     #                                      #
-    #   200                        340     #
+    #   190                        350     #
     #                                      #
     # LEFT          ORIGIN           RIGHT #
     #                                      #
-    #   160                        020     #
+    #   170                        010     #
     #                                      #
     #      Q3                   Q4         #
     #                                      #
-    #          110   DOWN   70             #
+    #          100   DOWN   80             #
     ########################################
-
-    if 250 <= degree < 290:
+    if 260 <= degree < 280:
         return 1
 
-    elif 290 <= degree < 340:
+    elif 280 <= degree < 350:
         return 2
 
-    elif 340 <= degree < 360:
+    elif 350 <= degree < 360:
         return 3
 
-    elif 0 <= degree < 20:
+    elif 0 <= degree < 10:
         return 3
 
-    elif 20 <= degree < 70:
+    elif 10 <= degree < 80:
         return 4
 
-    elif 70 <= degree < 110:
+    elif 80 <= degree < 100:
         return 5
 
-    elif 110 <= degree < 160:
+    elif 100 <= degree < 170:
         return 6
 
-    elif 160 <= degree < 200:
+    elif 170 <= degree < 190:
         return 7
 
-    elif 200 <= degree < 250:
+    elif 190 <= degree < 260:
         return 8
 
 
@@ -323,7 +322,7 @@ def point_track_left(x, y):
                 cv2.putText(black_img, str((x, y, 'input1')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
                             (0, 0, 255))
                 if is_input1_ready == 0:
-                    if len(input1_list) < 10:
+                    if len(input1_list) < 20:
                         input1_list.append((x, y))
                     else:
                         is_input1_ready = 1
@@ -340,7 +339,7 @@ def point_track_left(x, y):
                 cv2.putText(black_img, str((x, y, 'input2')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
                             (0, 150, 255))
                 if is_input2_ready == 0:
-                    if len(input2_list) < 10:
+                    if len(input2_list) < 20:
                         input2_list.append((x, y))
                     else:
                         is_input2_ready = 1
@@ -356,7 +355,7 @@ def point_track_left(x, y):
                 cv2.putText(black_img, str((x, y, 'output')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
                             (0, 80, 255))
                 if is_output_ready == 0:
-                    if len(output_list) < 10:
+                    if len(output_list) < 20:
                         output_list.append((x, y))
                     else:
                         is_output_ready = 1
@@ -373,7 +372,7 @@ def point_track_left(x, y):
                 cv2.putText(black_img, str((x, y, 'work')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
                             (150, 80, 255))
                 if is_work_ready == 0:
-                    if len(work_list) < 10:
+                    if len(work_list) < 20:
                         work_list.append((x, y))
                     else:
                         is_work_ready = 1
@@ -470,7 +469,7 @@ def point_track_right(x, y):
         # print('approach output', prev_direction_output, curr_direction_output)
         count_approach_output_right += 1
 
-    if prev_distance_work > curr_distance_work and curr_direction_work == curr_status_right:
+    if prev_distance_work > curr_distance_work:
         # print('approach work', prev_direction_work, curr_direction_work)
         count_approach_work_right += 1
 

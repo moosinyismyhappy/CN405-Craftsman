@@ -26,7 +26,6 @@ class GuiInputVideo(Thread):
         while True:
             ret,input_image = self.webcam.read()
             if ret:
-                time.sleep(0.01)
                 input_image = cv2.resize(input_image,(640,480))
                 self.image_storage.set_input_image(input_image)
             else:

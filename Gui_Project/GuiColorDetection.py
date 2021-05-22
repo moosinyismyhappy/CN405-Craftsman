@@ -22,11 +22,18 @@ class GuiColorDetection(Thread):
         self.hsv_lower = None
         self.hsv_upper = None
         self.is_first_detect = True
+        self.bgr = [-1,-1,-1]
 
     def run(self):
         # Display Thread and Process ID
         print(threading.current_thread())
         self.detect_color()
+
+    def set_color(self,bgr):
+        self.bgr = bgr
+
+    def get_color(self):
+        return self.bgr
 
     def set_hsv(self):
         temp_x = self.get_position()[0]

@@ -3,6 +3,9 @@ import threading
 import time
 
 from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtGui import QImage, QPixmap
+
 from Gui_Project.GuiColorDetection import GuiColorDetection
 from Gui_Project.GuiImageStorage import GuiImageStorage
 from Gui_Project.GuiInputVideo import GuiInputVideo
@@ -24,6 +27,7 @@ class GuiController(threading.Thread):
         self.toggle_track_status = False
         self.toggle_mark_area_status = False
         self.toggle_detect_status = False
+        self.toggle_learning_status = False
         self.show_image_type = 0
         self.left_or_right_color = -1
         self.mark_area_status = -1
@@ -53,6 +57,7 @@ class GuiController(threading.Thread):
         self.transparent_image_detect = QtGui.QPixmap(self.image_file)
         # create painter instance with pixmap
         self.painter_instance = QtGui.QPainter(self.transparent_image_detect)
+
 
     def widget_setting(self):
         # Setting widget and event
@@ -92,17 +97,19 @@ class GuiController(threading.Thread):
         # set text value for dial
         self.ui.text_dial_camera_number.setText(str(self.ui.dial_camera_number.value()))
         self.ui.text_dial_detect_area.setText(str(self.ui.dial_detect_area.value()))
-        self.ui.text_dial_learning_points.setText(str(self.ui.dial_learning_points.value()))
-        self.ui.text_dial_average_reducer.setText(str(self.ui.dial_average_reducer.value()))
-        self.ui.text_dial_boundary_extender.setText(str(self.ui.dial_boundary_extender.value()))
+        self.ui.text_dial_hsv_range.setText(str(self.ui.dial_hsv_range.value()))
+        self.ui.text_dial_learning_input1.setText(str(self.ui.dial_learning_input1.value()))
+        self.ui.text_dial_learning_input2.setText(str(self.ui.dial_learning_input2.value()))
+        self.ui.text_dial_learning_output.setText(str(self.ui.dial_learning_output.value()))
+        self.ui.text_dial_learning_work.setText(str(self.ui.dial_learning_work.value()))
 
     def toggle_learning_button(self):
         if self.is_learning:
-            self.ui.text_learn.setText('Not Ready')
+            self.ui.text_learn.setText('Learning is off')
             self.ui.text_learn.setStyleSheet('color:red')
             self.is_learning = False
         else:
-            self.ui.text_learn.setText('Learning')
+            self.ui.text_learn.setText('Learning is on')
             self.ui.text_learn.setStyleSheet('color:lime')
             self.is_learning = True
 
@@ -144,10 +151,8 @@ class GuiController(threading.Thread):
         y_padding_text = 15
 
         if self.mark_area_status == 0:
-            # set point color and thickness
             self.pen_point = QtGui.QPen(QtCore.Qt.red)
             self.pen_point.setWidth(6)
-            # draw rectangle on painter
             self.painter_instance.setPen(self.pen_point)
             self.painter_instance.drawPoint(x, y)
             self.painter_instance.drawText(x - x_padding_text, y - y_padding_text, 'Input1 area')
@@ -157,10 +162,8 @@ class GuiController(threading.Thread):
             self.ui.mark_input1_button.setEnabled(False)
 
         elif self.mark_area_status == 1:
-            # set point color and thickness
             self.pen_point = QtGui.QPen(QtCore.Qt.yellow)
             self.pen_point.setWidth(6)
-            # draw rectangle on painter
             self.painter_instance.setPen(self.pen_point)
             self.painter_instance.drawPoint(x, y)
             self.painter_instance.drawText(x - x_padding_text, y - y_padding_text, 'Input2 area')
@@ -170,10 +173,8 @@ class GuiController(threading.Thread):
             self.ui.mark_input2_button.setEnabled(False)
 
         elif self.mark_area_status == 2:
-            # set point color and thickness
-            self.pen_point = QtGui.QPen(QtCore.Qt.green)
+            self.pen_point = QtGui.QPen(QtCore.Qt.blue)
             self.pen_point.setWidth(6)
-            # draw rectangle on painter
             self.painter_instance.setPen(self.pen_point)
             self.painter_instance.drawPoint(x, y)
             self.painter_instance.drawText(x - x_padding_text, y - y_padding_text, 'Output area')
@@ -183,10 +184,8 @@ class GuiController(threading.Thread):
             self.ui.mark_output_button.setEnabled(False)
 
         elif self.mark_area_status == 3:
-            # set point color and thickness
-            self.pen_point = QtGui.QPen(QtCore.Qt.lightGray)
+            self.pen_point = QtGui.QPen(QtCore.Qt.darkMagenta)
             self.pen_point.setWidth(6)
-            # draw rectangle on painter
             self.painter_instance.setPen(self.pen_point)
             self.painter_instance.drawPoint(x, y)
             self.painter_instance.drawText(x - x_padding_text, y - y_padding_text, 'Work area')
@@ -257,9 +256,27 @@ class GuiController(threading.Thread):
     # Open Camera Button
     def open_camera_button(self):
         print('Open Camera Button Clicked...')
-        # Set new display text
+        # setup displayed text and button when camera open
         self.ui.text_image_type.setText('RGB Mode')
         self.ui.text_image_type.setStyleSheet('color:gold')
+        self.ui.text_track.setText('Tracking is on')
+        self.ui.text_track.setStyleSheet('color:lime')
+        self.ui.text_mark_area.setText('Mark is on')
+        self.ui.text_mark_area.setStyleSheet('color:lime')
+        self.ui.text_detect.setText('Detection is on')
+        self.ui.text_detect.setStyleSheet('color:lime')
+        self.ui.text_learn.setText('Learning is on')
+        self.ui.text_learn.setStyleSheet('color:lime')
+        self.toggle_learning_status = True
+        self.toggle_detect_status = True
+        self.toggle_track_status = True
+        self.toggle_mark_area_status = True
+        self.ui.display_mark_area_frame.setVisible(True)
+        self.ui.mark_input1_button.setEnabled(True)
+        self.ui.mark_input2_button.setEnabled(True)
+        self.ui.mark_output_button.setEnabled(True)
+        self.ui.mark_working_button.setEnabled(True)
+
 
         # Create Thread for input_video
         self.thread_input_video = GuiInputVideo(self,self.image_storage)
@@ -275,7 +292,7 @@ class GuiController(threading.Thread):
     # Receive image from other class and display to gui
     def display_image_to_camera_zone(self, receive_image):
         time.sleep(0.000001)
-        self.ui.display_camera_frame.setPixmap(QtGui.QPixmap.fromImage(receive_image))
+        self.ui.display_camera_frame.setPixmap(QPixmap.fromImage(receive_image))
 
     # Exit program Button
     def exit_button(self):
@@ -305,11 +322,13 @@ class GuiController(threading.Thread):
                     self.left_color_detection.start()
                     self.left_color_detection.set_position(x_position, y_position)
                     self.left_color_detection.set_hsv()
+                    self.left_color_detection.set_color(self.image_storage.get_input_image()[y_position,x_position])
                     self.is_first_left_click = False
                 # set new color without start thread
                 else:
                     self.left_color_detection.set_position(x_position, y_position)
                     self.left_color_detection.set_hsv()
+                    self.left_color_detection.set_color(self.image_storage.get_input_image()[y_position, x_position])
 
         # select right color button is pressed
         elif self.left_or_right_color == 1:
@@ -321,11 +340,13 @@ class GuiController(threading.Thread):
                     self.right_color_detection.start()
                     self.right_color_detection.set_position(x_position, y_position)
                     self.right_color_detection.set_hsv()
+                    self.right_color_detection.set_color(self.image_storage.get_input_image()[y_position, x_position])
                     self.is_first_right_click = False
                 # set new color without start thread
                 else:
                     self.right_color_detection.set_position(x_position, y_position)
                     self.right_color_detection.set_hsv()
+                    self.right_color_detection.set_color(self.image_storage.get_input_image()[y_position, x_position])
 
         # set state to -1 to not allow select color without select color button
         self.left_or_right_color = -1

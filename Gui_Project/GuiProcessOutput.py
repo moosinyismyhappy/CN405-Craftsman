@@ -4,6 +4,7 @@ from threading import Thread
 from PyQt5 import QtGui
 
 
+
 class GuiProcessOutput(Thread):
     def __init__(self, gui, image_storage):
         super().__init__()
@@ -71,3 +72,4 @@ class GuiProcessOutput(Thread):
 
             # Send image to gui for display image
             self.gui.display_image_to_camera_zone(self.converted_image)
+
