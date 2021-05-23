@@ -6,6 +6,7 @@ class GuiImageStorage():
         self.input_image = None
         self.hsv_image_for_detection = None
         self.background_image_for_track = cv2.imread('../resources/images/transparent.png')
+        self.background_image_for_mark = cv2.imread('../resources/images/transparent.png')
 
     def set_hsv_image_for_detection(self, new_image):
         self.hsv_image_for_detection = new_image.copy()
@@ -21,3 +22,6 @@ class GuiImageStorage():
 
     def get_background_image_for_track(self):
         return self.background_image_for_track
+
+    def get_background_image_for_mark(self):
+        return self.background_image_for_mark

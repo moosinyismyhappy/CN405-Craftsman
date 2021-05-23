@@ -2,9 +2,9 @@ import sys
 import threading
 import time
 
-from PyQt5 import QtCore, QtWidgets, QtGui
-from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtGui import QImage, QPixmap
+import cv2
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtGui import QPixmap
 
 from Gui_Project.GuiColorDetection import GuiColorDetection
 from Gui_Project.GuiImageStorage import GuiImageStorage
@@ -27,15 +27,17 @@ class GuiController(threading.Thread):
         self.toggle_track_status = False
         self.toggle_mark_area_status = False
         self.toggle_detect_status = False
-        self.toggle_learning_status = False
+        self.toggle_calibrate_status = False
         self.show_image_type = 0
         self.left_or_right_color = -1
-        self.mark_area_status = -1
-        self.is_learning = False
+        self.which_marked_area = -1
+        self.is_calibrate = False
 
-        # draw instance
-        self.transparent_image_detect = None
-        self.painter_instance = None
+        # area position
+        self.input1_position = None
+        self.input2_position = None
+        self.output_position = None
+        self.work_position = None
 
     def run(self):
         # Display Thread and Process ID
@@ -46,18 +48,8 @@ class GuiController(threading.Thread):
         MainWindow = QtWidgets.QMainWindow()
         self.ui = Ui_MainWindow(MainWindow)
         self.widget_setting()
-        self.draw_instance()
         MainWindow.show()
         sys.exit(app.exec_())
-
-    def draw_instance(self):
-        # Transparent image Location
-        self.image_file = '../resources/images/transparent.png'
-        # convert image file into pixmap
-        self.transparent_image_detect = QtGui.QPixmap(self.image_file)
-        # create painter instance with pixmap
-        self.painter_instance = QtGui.QPainter(self.transparent_image_detect)
-
 
     def widget_setting(self):
         # Setting widget and event
@@ -71,24 +63,20 @@ class GuiController(threading.Thread):
         self.ui.display_rgb_image_button.clicked.connect(self.display_rgb_image_button)
         self.ui.display_hsv_image_button.clicked.connect(self.display_hsv_image_button)
         self.ui.display_gray_image_button.clicked.connect(self.display_gray_image_button)
-        self.ui.display_mark_button.clicked.connect(self.toggle_display_mark_area_frame_button)
-        self.ui.display_track_button.clicked.connect(self.toggle_display_track_frame_button)
-        self.ui.display_detect_button.clicked.connect(self.toggle_display_detect_frame_button)
+        self.ui.display_mark_button.clicked.connect(self.toggle_display_mark_area)
+        self.ui.display_track_button.clicked.connect(self.toggle_display_track_button)
+        self.ui.display_detect_button.clicked.connect(self.toggle_display_detect_button)
         self.ui.mark_input1_button.clicked.connect(self.mark_input1_button)
         self.ui.mark_input2_button.clicked.connect(self.mark_input2_button)
         self.ui.mark_output_button.clicked.connect(self.mark_output_button)
         self.ui.mark_working_button.clicked.connect(self.mark_working_button)
-        self.ui.learn_button.clicked.connect(self.toggle_learning_button)
-
-        # set mark area frame to transparent
-        self.ui.display_mark_area_frame.setStyleSheet("background:transparent")
+        self.ui.calibrate_button.clicked.connect(self.toggle_calibrate_button)
 
         # set mouse event function
-        self.ui.display_camera_frame.mousePressEvent = self.get_position_from_camera_frame
-        self.ui.display_mark_area_frame.mousePressEvent = self.get_position_from_mark_area_frame
+        self.ui.display_camera_frame.mousePressEvent = self.camera_frame_mouse_event
 
         # set status of button and frame
-        self.ui.display_mark_area_frame.setVisible(False)
+        # self.ui.display_mark_area_frame.setVisible(False)
         self.ui.mark_input1_button.setEnabled(False)
         self.ui.mark_input2_button.setEnabled(False)
         self.ui.mark_output_button.setEnabled(False)
@@ -98,26 +86,27 @@ class GuiController(threading.Thread):
         self.ui.text_dial_camera_number.setText(str(self.ui.dial_camera_number.value()))
         self.ui.text_dial_detect_area.setText(str(self.ui.dial_detect_area.value()))
         self.ui.text_dial_hsv_range.setText(str(self.ui.dial_hsv_range.value()))
-        self.ui.text_dial_learning_input1.setText(str(self.ui.dial_learning_input1.value()))
-        self.ui.text_dial_learning_input2.setText(str(self.ui.dial_learning_input2.value()))
-        self.ui.text_dial_learning_output.setText(str(self.ui.dial_learning_output.value()))
-        self.ui.text_dial_learning_work.setText(str(self.ui.dial_learning_work.value()))
+        self.ui.text_dial_calibrate_input1.setText(str(self.ui.dial_calibrate_input1.value()))
+        self.ui.text_dial_calibrate_input2.setText(str(self.ui.dial_calibrate_input2.value()))
+        self.ui.text_dial_calibrate_output.setText(str(self.ui.dial_calibrate_output.value()))
+        self.ui.text_dial_calibrate_work.setText(str(self.ui.dial_calibrate_work.value()))
+        self.ui.text_dial_center_point_boundary.setText(str(self.ui.dial_center_point_boundary.value()))
 
-    def toggle_learning_button(self):
-        if self.is_learning:
-            self.ui.text_learn.setText('Learning is off')
-            self.ui.text_learn.setStyleSheet('color:red')
-            self.is_learning = False
+    def toggle_calibrate_button(self):
+        if self.is_calibrate:
+            self.ui.text_calibrate.setText('Calibrate is off')
+            self.ui.text_calibrate.setStyleSheet('color:red')
+            self.is_calibrate = False
         else:
-            self.ui.text_learn.setText('Learning is on')
-            self.ui.text_learn.setStyleSheet('color:lime')
-            self.is_learning = True
+            self.ui.text_calibrate.setText('Calibrate is on')
+            self.ui.text_calibrate.setStyleSheet('color:lime')
+            self.is_calibrate = True
 
-    def toggle_display_mark_area_frame_button(self):
+    def toggle_display_mark_area(self):
         if self.toggle_mark_area_status:
             self.ui.text_mark_area.setText('Mark is off')
             self.ui.text_mark_area.setStyleSheet('color:red')
-            self.ui.display_mark_area_frame.setVisible(False)
+            # self.ui.display_mark_area_frame.setVisible(False)
             self.ui.mark_input1_button.setEnabled(False)
             self.ui.mark_input2_button.setEnabled(False)
             self.ui.mark_output_button.setEnabled(False)
@@ -126,73 +115,14 @@ class GuiController(threading.Thread):
         else:
             self.ui.text_mark_area.setText('Mark is on')
             self.ui.text_mark_area.setStyleSheet('color:lime')
-            self.ui.display_mark_area_frame.setVisible(True)
             self.ui.mark_input1_button.setEnabled(True)
             self.ui.mark_input2_button.setEnabled(True)
             self.ui.mark_output_button.setEnabled(True)
             self.ui.mark_working_button.setEnabled(True)
             self.toggle_mark_area_status = True
 
-    def mark_input1_button(self):
-        self.mark_area_status = 0
-
-    def mark_input2_button(self):
-        self.mark_area_status = 1
-
-    def mark_output_button(self):
-        self.mark_area_status = 2
-
-    def mark_working_button(self):
-        self.mark_area_status = 3
-
-    def draw_mark_area(self, x, y):
-        # padding text on displayed point
-        x_padding_text = 30
-        y_padding_text = 15
-
-        if self.mark_area_status == 0:
-            self.pen_point = QtGui.QPen(QtCore.Qt.red)
-            self.pen_point.setWidth(6)
-            self.painter_instance.setPen(self.pen_point)
-            self.painter_instance.drawPoint(x, y)
-            self.painter_instance.drawText(x - x_padding_text, y - y_padding_text, 'Input1 area')
-            # set pixmap onto the label widget
-            self.ui.display_mark_area_frame.setPixmap(self.transparent_image_detect)
-            # disable button
-            self.ui.mark_input1_button.setEnabled(False)
-
-        elif self.mark_area_status == 1:
-            self.pen_point = QtGui.QPen(QtCore.Qt.yellow)
-            self.pen_point.setWidth(6)
-            self.painter_instance.setPen(self.pen_point)
-            self.painter_instance.drawPoint(x, y)
-            self.painter_instance.drawText(x - x_padding_text, y - y_padding_text, 'Input2 area')
-            # set pixmap onto the label widget
-            self.ui.display_mark_area_frame.setPixmap(self.transparent_image_detect)
-            # disable button
-            self.ui.mark_input2_button.setEnabled(False)
-
-        elif self.mark_area_status == 2:
-            self.pen_point = QtGui.QPen(QtCore.Qt.blue)
-            self.pen_point.setWidth(6)
-            self.painter_instance.setPen(self.pen_point)
-            self.painter_instance.drawPoint(x, y)
-            self.painter_instance.drawText(x - x_padding_text, y - y_padding_text, 'Output area')
-            # set pixmap onto the label widget
-            self.ui.display_mark_area_frame.setPixmap(self.transparent_image_detect)
-            # disable button
-            self.ui.mark_output_button.setEnabled(False)
-
-        elif self.mark_area_status == 3:
-            self.pen_point = QtGui.QPen(QtCore.Qt.darkMagenta)
-            self.pen_point.setWidth(6)
-            self.painter_instance.setPen(self.pen_point)
-            self.painter_instance.drawPoint(x, y)
-            self.painter_instance.drawText(x - x_padding_text, y - y_padding_text, 'Work area')
-            # set pixmap onto the label widget
-            self.ui.display_mark_area_frame.setPixmap(self.transparent_image_detect)
-            # disable button
-            self.ui.mark_working_button.setEnabled(False)
+    def get_toggle_mark_status(self):
+        return self.toggle_mark_area_status
 
     # Select Left Color Button
     def select_left_color_button(self):
@@ -218,6 +148,18 @@ class GuiController(threading.Thread):
         print('display gray')
         self.set_show_image_type(2)
 
+    def mark_input1_button(self):
+        self.mark_area_status = 0
+
+    def mark_input2_button(self):
+        self.mark_area_status = 1
+
+    def mark_output_button(self):
+        self.mark_area_status = 2
+
+    def mark_working_button(self):
+        self.mark_area_status = 3
+
     # Set which type of image (RGB,HSV,GRAYSCALE)
     def set_show_image_type(self, new_type):
         self.show_image_type = new_type
@@ -225,8 +167,21 @@ class GuiController(threading.Thread):
     def get_show_image_type(self):
         return self.show_image_type
 
+    # Exit program Button
+    def exit_button(self):
+        print('Exit Button Clicked...')
+        sys.exit(0)
+
+    # Go to setting page from main page button
+    def go_to_setting_button(self):
+        self.ui.stackedWidget.setCurrentIndex(1)
+
+    # Back to main page from setting page button
+    def go_to_main_button(self):
+        self.ui.stackedWidget.setCurrentIndex(0)
+
     # Toggle display detect area Button
-    def toggle_display_detect_frame_button(self):
+    def toggle_display_detect_button(self):
         if self.toggle_detect_status:
             self.ui.text_detect.setText('Detection is off')
             self.ui.text_detect.setStyleSheet('color:red')
@@ -240,7 +195,7 @@ class GuiController(threading.Thread):
         return self.toggle_detect_status
 
     # Toggle display track area Button
-    def toggle_display_track_frame_button(self):
+    def toggle_display_track_button(self):
         if self.toggle_track_status:
             self.ui.text_track.setText('Tracking is off')
             self.ui.text_track.setStyleSheet('color:red')
@@ -265,21 +220,20 @@ class GuiController(threading.Thread):
         self.ui.text_mark_area.setStyleSheet('color:lime')
         self.ui.text_detect.setText('Detection is on')
         self.ui.text_detect.setStyleSheet('color:lime')
-        self.ui.text_learn.setText('Learning is on')
-        self.ui.text_learn.setStyleSheet('color:lime')
-        self.toggle_learning_status = True
+        self.ui.text_calibrate.setText('calibrate is on')
+        self.ui.text_calibrate.setStyleSheet('color:lime')
+        self.toggle_calibrate_status = True
         self.toggle_detect_status = True
         self.toggle_track_status = True
         self.toggle_mark_area_status = True
-        self.ui.display_mark_area_frame.setVisible(True)
+        # self.ui.display_mark_area_frame.setVisible(True)
         self.ui.mark_input1_button.setEnabled(True)
         self.ui.mark_input2_button.setEnabled(True)
         self.ui.mark_output_button.setEnabled(True)
         self.ui.mark_working_button.setEnabled(True)
 
-
         # Create Thread for input_video
-        self.thread_input_video = GuiInputVideo(self,self.image_storage)
+        self.thread_input_video = GuiInputVideo(self, self.image_storage)
         self.thread_input_video.start()
 
         # Create Thread for output_video
@@ -291,26 +245,13 @@ class GuiController(threading.Thread):
 
     # Receive image from other class and display to gui
     def display_image_to_camera_zone(self, receive_image):
-        time.sleep(0.000001)
+        time.sleep(0.01)
         self.ui.display_camera_frame.setPixmap(QPixmap.fromImage(receive_image))
 
-    # Exit program Button
-    def exit_button(self):
-        print('Exit Button Clicked...')
-        sys.exit(0)
-
-    # Go to setting page from main page button
-    def go_to_setting_button(self):
-        self.ui.stackedWidget.setCurrentIndex(1)
-
-    # Back to main page from setting page button
-    def go_to_main_button(self):
-        self.ui.stackedWidget.setCurrentIndex(0)
-
     # Get x,y from mouse clicked method
-    def get_position_from_camera_frame(self, event):
-        x_position = event.pos().x()
-        y_position = event.pos().y()
+    def camera_frame_mouse_event(self, event):
+        x = event.pos().x()
+        y = event.pos().y()
         # check which select color button is pressed
         # select left color button is pressed
         if self.left_or_right_color == 0:
@@ -320,15 +261,15 @@ class GuiController(threading.Thread):
                 if self.is_first_left_click:
                     self.left_color_detection = GuiColorDetection(self, self.image_storage)
                     self.left_color_detection.start()
-                    self.left_color_detection.set_position(x_position, y_position)
+                    self.left_color_detection.set_position(x, y)
                     self.left_color_detection.set_hsv()
-                    self.left_color_detection.set_color(self.image_storage.get_input_image()[y_position,x_position])
+                    self.left_color_detection.set_color(self.image_storage.get_input_image()[y, x])
                     self.is_first_left_click = False
                 # set new color without start thread
                 else:
-                    self.left_color_detection.set_position(x_position, y_position)
+                    self.left_color_detection.set_position(x, y)
                     self.left_color_detection.set_hsv()
-                    self.left_color_detection.set_color(self.image_storage.get_input_image()[y_position, x_position])
+                    self.left_color_detection.set_color(self.image_storage.get_input_image()[y, x])
 
         # select right color button is pressed
         elif self.left_or_right_color == 1:
@@ -338,41 +279,70 @@ class GuiController(threading.Thread):
                 if self.is_first_right_click:
                     self.right_color_detection = GuiColorDetection(self, self.image_storage)
                     self.right_color_detection.start()
-                    self.right_color_detection.set_position(x_position, y_position)
+                    self.right_color_detection.set_position(x, y)
                     self.right_color_detection.set_hsv()
-                    self.right_color_detection.set_color(self.image_storage.get_input_image()[y_position, x_position])
+                    self.right_color_detection.set_color(self.image_storage.get_input_image()[y, x])
                     self.is_first_right_click = False
                 # set new color without start thread
                 else:
-                    self.right_color_detection.set_position(x_position, y_position)
+                    self.right_color_detection.set_position(x, y)
                     self.right_color_detection.set_hsv()
-                    self.right_color_detection.set_color(self.image_storage.get_input_image()[y_position, x_position])
+                    self.right_color_detection.set_color(self.image_storage.get_input_image()[y, x])
 
         # set state to -1 to not allow select color without select color button
         self.left_or_right_color = -1
 
-    def get_position_from_mark_area_frame(self, event):
-        x_position = event.pos().x()
-        y_position = event.pos().y()
-        if self.mark_area_status == 0:
-            # check which mouse button is clicked
-            if event.buttons() == QtCore.Qt.LeftButton:
-                self.draw_mark_area(x_position, y_position)
+        # create temp variable to load image due to long command
+        background_image = self.image_storage.get_background_image_for_mark()
+        if self.which_marked_area == 0:
+            cv2.putText(background_image, 'Input1' + str((x, y)), (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                        (0, 150, 255))
+            cv2.circle(background_image, (x, y), 2, (0, 0, 255), 2)
+            self.input2_position = x, y
+            self.which_marked_area = 1
 
-        elif self.mark_area_status == 1:
-            # check which mouse button is clicked
-            if event.buttons() == QtCore.Qt.LeftButton:
-                self.draw_mark_area(x_position, y_position)
+    def set_input1_position(self, position):
+        self.input1_position = position
 
-        elif self.mark_area_status == 2:
-            # check which mouse button is clicked
-            if event.buttons() == QtCore.Qt.LeftButton:
-                self.draw_mark_area(x_position, y_position)
+    def set_input2_position(self, position):
+        self.input2_position = position
 
-        elif self.mark_area_status == 3:
-            # check which mouse button is clicked
-            if event.buttons() == QtCore.Qt.LeftButton:
-                self.draw_mark_area(x_position, y_position)
+    def set_output_position(self, position):
+        self.output_position = position
 
-        # set state to -1 restate of select area
-        self.mark_area_status = -1
+    def set_work_position(self, position):
+        self.work_position = position
+
+    def get_input1_position(self):
+        return self.input1_position
+
+    def get_input2_position(self):
+        return self.input2_position
+
+    def get_output_position(self):
+        return self.output_position
+
+    def get_work_position(self):
+        return self.work_position
+
+    def get_input1_calibrate_time(self):
+        return self.ui.dial_calibrate_input1.value()
+
+    def get_input2_calibrate_time(self):
+        return self.ui.dial_calibrate_input2.value()
+
+    def get_output_calibrate_time(self):
+        return self.ui.dial_calibrate_output.value()
+
+    def get_work_calibrate_time(self):
+        return self.ui.dial_calibrate_work.value()
+
+    def get_dial_detect_area(self):
+        return self.ui.dial_detect_area.value()
+
+    def get_dial_center_point_boundary(self):
+        return self.ui.dial_center_point_boundary.value()
+
+    def get_dial_hsv_range(self):
+        # hsv_range dial value is 0-100 so divided by 100 convert it to percent
+        return self.ui.dial_hsv_range.value() / 100

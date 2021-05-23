@@ -17,7 +17,6 @@ class GuiColorDetection(Thread):
         self.h = -1
         self.x = -1
         self.y = -1
-        self.hsv_range = 0.2
         self.hsv_list = None
         self.hsv_lower = None
         self.hsv_upper = None
@@ -33,7 +32,10 @@ class GuiColorDetection(Thread):
         self.bgr = bgr
 
     def get_color(self):
-        return self.bgr
+        b = int(self.bgr[0]+50)
+        g = int(self.bgr[1]+50)
+        r = int(self.bgr[2]+50)
+        return b,g,r
 
     def set_hsv(self):
         temp_x = self.get_position()[0]
@@ -45,9 +47,9 @@ class GuiColorDetection(Thread):
         self.__hsv_upper_process()
 
     def __hsv_upper_process(self):
-        h_upper = int(self.hsv_list[0] * (1 + self.hsv_range))
-        s_upper = int(self.hsv_list[1] * (1 + self.hsv_range))
-        v_upper = int(self.hsv_list[2] * (1 + self.hsv_range))
+        h_upper = int(self.hsv_list[0] * (1 + self.gui.get_dial_hsv_range()))
+        s_upper = int(self.hsv_list[1] * (1 + self.gui.get_dial_hsv_range()))
+        v_upper = int(self.hsv_list[2] * (1 + self.gui.get_dial_hsv_range()))
 
         # Set limit maximum of hsv value not more than 255
         if h_upper >= 255: h_upper = 255
@@ -58,9 +60,9 @@ class GuiColorDetection(Thread):
         self.hsv_upper = [h_upper, s_upper, v_upper]
 
     def __hsv_lower_process(self):
-        h_lower = int(self.hsv_list[0] * (1 - self.hsv_range))
-        s_lower = int(self.hsv_list[1] * (1 - self.hsv_range))
-        v_lower = int(self.hsv_list[2] * (1 - self.hsv_range))
+        h_lower = int(self.hsv_list[0] * (1 - self.gui.get_dial_hsv_range()))
+        s_lower = int(self.hsv_list[1] * (1 - self.gui.get_dial_hsv_range()))
+        v_lower = int(self.hsv_list[2] * (1 - self.gui.get_dial_hsv_range()))
 
         # Set limit minimum of hsv value not more than 255
         if h_lower >= 255: h_lower = 255
@@ -98,34 +100,35 @@ class GuiColorDetection(Thread):
                                                    cv2.CHAIN_APPROX_SIMPLE)
             for pic, contour in enumerate(contours):
                 area = cv2.contourArea(contour)
-                if area > 3000:
+                # get detect area from dial setting
+                if area > self.gui.get_dial_detect_area():
                     self.x, self.y, self.w, self.h = cv2.boundingRect(contour)
                     center_position = int((2 * self.x + self.w) / 2), int((2 * self.y + self.h) / 2)
                     if self.is_first_detect:
-                        center_boundary = [self.x, self.y, self.x + self.w, self.y + self.h]
-                        self.tracking.set_center_boundary(center_boundary)
-                        self.tracking.set_current_position(center_position)
-                        self.tracking.set_previous_position(center_position)
+                        center_point_boundary = [self.x, self.y, self.x + self.w, self.y + self.h]
+                        self.tracking.set_center_point_boundary(center_point_boundary)
+                        self.tracking.set_current_position(center_point_boundary)
+                        self.tracking.set_previous_position(center_point_boundary)
                         self.tracking.set_current_direction(-1)
                         self.tracking.set_previous_direction(-1)
                         self.is_first_detect = False
                     else:
-                        self.tracking.is_center_in_boundary(center_position)
+                        self.tracking.is_center_point_in_boundary(center_position)
                         if self.tracking.get_is_position_out_of_boundary():
-                            center_boundary = [self.x, self.y, self.x + self.w, self.y + self.h]
-                            self.tracking.set_center_boundary(center_boundary)
+                            center_point_boundary = [self.x, self.y, self.x + self.w, self.y + self.h]
+                            self.tracking.set_center_point_boundary(center_point_boundary)
 
                     # check detect button is active
                     if self.gui.get_toggle_detect_status():
                         # Draw rectangle over detect color
                         cv2.rectangle(self.image_storage.get_input_image(), (self.x, self.y),
-                                          (self.x + self.w, self.y + self.h), (0, 255, 0), 2)
+                                          (self.x + self.w, self.y + self.h), (self.get_color()), 2)
 
                         # Draw center point on detect rectangle
                         cv2.circle(self.image_storage.get_input_image(), center_position, 2, (0, 0, 255), 2)
 
                         # Draw rectangle boundary over detect
                         cv2.rectangle(self.image_storage.get_input_image(), (
-                            self.tracking.get_center_boundary()[0], self.tracking.get_center_boundary()[1]),
-                                      (self.tracking.get_center_boundary()[2], self.tracking.get_center_boundary()[3]),
+                            self.tracking.get_center_point_boundary()[0], self.tracking.get_center_point_boundary()[1]),
+                                      (self.tracking.get_center_point_boundary()[2], self.tracking.get_center_point_boundary()[3]),
                                       (0, 255, 255), 2)

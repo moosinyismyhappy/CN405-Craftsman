@@ -4,7 +4,6 @@ from threading import Thread
 from PyQt5 import QtGui
 
 
-
 class GuiProcessOutput(Thread):
     def __init__(self, gui, image_storage):
         super().__init__()
@@ -27,8 +26,10 @@ class GuiProcessOutput(Thread):
                 hsv_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2HSV)
 
                 if self.gui.get_toggle_track_status():
-                    input_image = cv2.addWeighted(input_image, 1.0, self.image_storage.get_background_image_for_track(),
-                                                1.0,0)
+                    input_image = cv2.addWeighted(input_image, 0.5, self.image_storage.get_background_image_for_track(),
+                                                  1.0, 0)
+
+                if self.gui.ge
 
                 # Send to image storage for color detection
                 self.image_storage.set_hsv_image_for_detection(hsv_image)
@@ -72,4 +73,3 @@ class GuiProcessOutput(Thread):
 
             # Send image to gui for display image
             self.gui.display_image_to_camera_zone(self.converted_image)
-

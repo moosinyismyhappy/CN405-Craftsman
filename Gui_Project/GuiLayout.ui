@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1024</width>
+    <width>1025</width>
     <height>768</height>
    </rect>
   </property>
@@ -33,7 +33,7 @@
      <widget class="QPushButton" name="setting_button">
       <property name="geometry">
        <rect>
-        <x>780</x>
+        <x>790</x>
         <y>700</y>
         <width>101</width>
         <height>41</height>
@@ -74,22 +74,6 @@
         <string/>
        </property>
       </widget>
-      <widget class="QLabel" name="display_mark_area_frame">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>10</y>
-         <width>640</width>
-         <height>480</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
      </widget>
      <widget class="QPushButton" name="exit_button">
       <property name="geometry">
@@ -111,7 +95,7 @@
       <property name="geometry">
        <rect>
         <x>50</x>
-        <y>140</y>
+        <y>110</y>
         <width>101</width>
         <height>51</height>
        </rect>
@@ -169,7 +153,7 @@
       <property name="geometry">
        <rect>
         <x>50</x>
-        <y>200</y>
+        <y>170</y>
         <width>101</width>
         <height>51</height>
        </rect>
@@ -185,7 +169,7 @@
       <property name="geometry">
        <rect>
         <x>50</x>
-        <y>260</y>
+        <y>230</y>
         <width>101</width>
         <height>51</height>
        </rect>
@@ -201,7 +185,7 @@
       <property name="geometry">
        <rect>
         <x>50</x>
-        <y>470</y>
+        <y>490</y>
         <width>101</width>
         <height>51</height>
        </rect>
@@ -216,8 +200,8 @@
      <widget class="QPushButton" name="open_camera_button">
       <property name="geometry">
        <rect>
-        <x>50</x>
-        <y>550</y>
+        <x>480</x>
+        <y>620</y>
         <width>101</width>
         <height>51</height>
        </rect>
@@ -280,7 +264,7 @@
      <widget class="QPushButton" name="select_left_color_button">
       <property name="geometry">
        <rect>
-        <x>360</x>
+        <x>240</x>
         <y>620</y>
         <width>111</width>
         <height>51</height>
@@ -296,7 +280,7 @@
      <widget class="QPushButton" name="select_right_color_button">
       <property name="geometry">
        <rect>
-        <x>560</x>
+        <x>690</x>
         <y>620</y>
         <width>111</width>
         <height>51</height>
@@ -330,7 +314,7 @@
        <string>Tracking is off</string>
       </property>
      </widget>
-     <widget class="QLabel" name="text_learn">
+     <widget class="QLabel" name="text_calibrate">
       <property name="geometry">
        <rect>
         <x>880</x>
@@ -348,7 +332,7 @@
        <string notr="true">color: rgb(255, 0, 0);</string>
       </property>
       <property name="text">
-       <string>Learning is off</string>
+       <string>Calibrate is off</string>
       </property>
      </widget>
      <widget class="QPushButton" name="start_button">
@@ -644,7 +628,7 @@
      <widget class="QPushButton" name="export_button">
       <property name="geometry">
        <rect>
-        <x>660</x>
+        <x>670</x>
         <y>700</y>
         <width>101</width>
         <height>41</height>
@@ -661,7 +645,7 @@
       <property name="geometry">
        <rect>
         <x>50</x>
-        <y>350</y>
+        <y>370</y>
         <width>101</width>
         <height>51</height>
        </rect>
@@ -677,7 +661,7 @@
       <property name="geometry">
        <rect>
         <x>50</x>
-        <y>410</y>
+        <y>310</y>
         <width>101</width>
         <height>51</height>
        </rect>
@@ -726,7 +710,7 @@
        <string>Mark Input2</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="learn_button">
+     <widget class="QPushButton" name="calibrate_button">
       <property name="geometry">
        <rect>
         <x>890</x>
@@ -739,7 +723,39 @@
        <string notr="true"/>
       </property>
       <property name="text">
-       <string>Learn</string>
+       <string>Calibrate</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="clear_mark_button">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>430</y>
+        <width>101</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string>Clear Mark</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="clear_track_button">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>550</y>
+        <width>101</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string>Clear Track</string>
       </property>
      </widget>
      <zorder>widget_display</zorder>
@@ -758,7 +774,7 @@
      <zorder>select_left_color_button</zorder>
      <zorder>select_right_color_button</zorder>
      <zorder>text_track</zorder>
-     <zorder>text_learn</zorder>
+     <zorder>text_calibrate</zorder>
      <zorder>start_button</zorder>
      <zorder>pause_button</zorder>
      <zorder>stop_button</zorder>
@@ -779,7 +795,9 @@
      <zorder>display_detect_button</zorder>
      <zorder>text_mark_area</zorder>
      <zorder>mark_input2_button</zorder>
-     <zorder>learn_button</zorder>
+     <zorder>calibrate_button</zorder>
+     <zorder>clear_mark_button</zorder>
+     <zorder>clear_track_button</zorder>
     </widget>
     <widget class="QWidget" name="page_2">
      <widget class="QFrame" name="frame">
@@ -788,7 +806,7 @@
         <x>0</x>
         <y>0</y>
         <width>1031</width>
-        <height>751</height>
+        <height>768</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -884,7 +902,7 @@
         <string>Detect area</string>
        </property>
       </widget>
-      <widget class="QLabel" name="text_learning_input1">
+      <widget class="QLabel" name="text_calibrate_input1">
        <property name="geometry">
         <rect>
          <x>80</x>
@@ -903,7 +921,7 @@
 </string>
        </property>
        <property name="text">
-        <string>Learning Input1</string>
+        <string>Calibrate Input1</string>
        </property>
       </widget>
       <widget class="QDial" name="dial_camera_number">
@@ -938,10 +956,10 @@
         <number>5000</number>
        </property>
        <property name="value">
-        <number>3000</number>
+        <number>1000</number>
        </property>
       </widget>
-      <widget class="QLabel" name="text_learning_input2">
+      <widget class="QLabel" name="text_calibrate_input2">
        <property name="geometry">
         <rect>
          <x>320</x>
@@ -959,10 +977,10 @@
         <string notr="true">color: rgb(255, 170, 0);</string>
        </property>
        <property name="text">
-        <string>Learning Input2</string>
+        <string>Calibrate Input2</string>
        </property>
       </widget>
-      <widget class="QLabel" name="text_learning_output">
+      <widget class="QLabel" name="text_calibrate_output">
        <property name="geometry">
         <rect>
          <x>570</x>
@@ -980,10 +998,10 @@
         <string notr="true">color: rgb(255, 170, 0);</string>
        </property>
        <property name="text">
-        <string>Learning output</string>
+        <string>Calibrate Output</string>
        </property>
       </widget>
-      <widget class="QLabel" name="text_learning_work">
+      <widget class="QLabel" name="text_calibrate_work">
        <property name="geometry">
         <rect>
          <x>810</x>
@@ -1001,10 +1019,10 @@
         <string notr="true">color: rgb(255, 170, 0);</string>
        </property>
        <property name="text">
-        <string>Learning output</string>
+        <string>Calibrate Work</string>
        </property>
       </widget>
-      <widget class="QDial" name="dial_learning_input2">
+      <widget class="QDial" name="dial_calibrate_input2">
        <property name="geometry">
         <rect>
          <x>340</x>
@@ -1023,7 +1041,7 @@
         <number>10</number>
        </property>
       </widget>
-      <widget class="QDial" name="dial_learning_output">
+      <widget class="QDial" name="dial_calibrate_output">
        <property name="geometry">
         <rect>
          <x>580</x>
@@ -1042,7 +1060,7 @@
         <number>10</number>
        </property>
       </widget>
-      <widget class="QDial" name="dial_learning_work">
+      <widget class="QDial" name="dial_calibrate_work">
        <property name="geometry">
         <rect>
          <x>820</x>
@@ -1058,10 +1076,10 @@
         <number>20</number>
        </property>
        <property name="value">
-        <number>10</number>
+        <number>15</number>
        </property>
       </widget>
-      <widget class="QLabel" name="text_dial_learning_input2">
+      <widget class="QLabel" name="text_dial_calibrate_input2">
        <property name="geometry">
         <rect>
          <x>390</x>
@@ -1087,7 +1105,7 @@ font: 16pt &quot;Monaco&quot;;</string>
         <string/>
        </property>
       </widget>
-      <widget class="QLabel" name="text_dial_learning_output">
+      <widget class="QLabel" name="text_dial_calibrate_output">
        <property name="geometry">
         <rect>
          <x>630</x>
@@ -1113,7 +1131,7 @@ font: 16pt &quot;Monaco&quot;;</string>
         <string/>
        </property>
       </widget>
-      <widget class="QLabel" name="text_dial_learning_work">
+      <widget class="QLabel" name="text_dial_calibrate_work">
        <property name="geometry">
         <rect>
          <x>870</x>
@@ -1234,8 +1252,53 @@ font: 16pt &quot;Monaco&quot;;</string>
       <widget class="QLabel" name="text_dial_hsv_range">
        <property name="geometry">
         <rect>
-         <x>620</x>
+         <x>610</x>
          <y>270</y>
+         <width>41</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Monaco</family>
+         <pointsize>16</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 85, 0);
+font: 16pt &quot;Monaco&quot;;</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QDial" name="dial_calibrate_input1">
+       <property name="geometry">
+        <rect>
+         <x>100</x>
+         <y>460</y>
+         <width>120</width>
+         <height>100</height>
+        </rect>
+       </property>
+       <property name="minimum">
+        <number>5</number>
+       </property>
+       <property name="maximum">
+        <number>20</number>
+       </property>
+       <property name="value">
+        <number>10</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="text_dial_calibrate_input1">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>560</y>
          <width>31</width>
          <height>41</height>
         </rect>
@@ -1257,30 +1320,53 @@ font: 16pt &quot;Monaco&quot;;</string>
         <string/>
        </property>
       </widget>
-      <widget class="QDial" name="dial_learning_input1">
+      <widget class="QLabel" name="text_center_point_boundary">
        <property name="geometry">
         <rect>
-         <x>100</x>
-         <y>460</y>
+         <x>740</x>
+         <y>130</y>
+         <width>271</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 170, 0);</string>
+       </property>
+       <property name="text">
+        <string>Center Point Boundary Reducer</string>
+       </property>
+      </widget>
+      <widget class="QDial" name="dial_center_point_boundary">
+       <property name="geometry">
+        <rect>
+         <x>810</x>
+         <y>170</y>
          <width>120</width>
          <height>100</height>
         </rect>
        </property>
        <property name="minimum">
-        <number>5</number>
+        <number>0</number>
        </property>
        <property name="maximum">
-        <number>20</number>
+        <number>50</number>
        </property>
        <property name="value">
         <number>10</number>
        </property>
       </widget>
-      <widget class="QLabel" name="text_dial_learning_input1">
+      <widget class="QLabel" name="text_dial_center_point_boundary">
        <property name="geometry">
         <rect>
-         <x>150</x>
-         <y>560</y>
+         <x>860</x>
+         <y>270</y>
          <width>31</width>
          <height>41</height>
         </rect>
@@ -1359,9 +1445,9 @@ font: 16pt &quot;Monaco&quot;;</string>
    </hints>
   </connection>
   <connection>
-   <sender>dial_learning_input2</sender>
+   <sender>dial_calibrate_input2</sender>
    <signal>sliderMoved(int)</signal>
-   <receiver>text_dial_learning_input2</receiver>
+   <receiver>text_dial_calibrate_input2</receiver>
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1375,9 +1461,9 @@ font: 16pt &quot;Monaco&quot;;</string>
    </hints>
   </connection>
   <connection>
-   <sender>dial_learning_output</sender>
+   <sender>dial_calibrate_output</sender>
    <signal>sliderMoved(int)</signal>
-   <receiver>text_dial_learning_output</receiver>
+   <receiver>text_dial_calibrate_output</receiver>
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1391,9 +1477,9 @@ font: 16pt &quot;Monaco&quot;;</string>
    </hints>
   </connection>
   <connection>
-   <sender>dial_learning_work</sender>
+   <sender>dial_calibrate_work</sender>
    <signal>sliderMoved(int)</signal>
-   <receiver>text_dial_learning_work</receiver>
+   <receiver>text_dial_calibrate_work</receiver>
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1407,9 +1493,9 @@ font: 16pt &quot;Monaco&quot;;</string>
    </hints>
   </connection>
   <connection>
-   <sender>dial_learning_input1</sender>
+   <sender>dial_calibrate_input1</sender>
    <signal>sliderMoved(int)</signal>
-   <receiver>text_dial_learning_input1</receiver>
+   <receiver>text_dial_calibrate_input1</receiver>
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1419,6 +1505,22 @@ font: 16pt &quot;Monaco&quot;;</string>
     <hint type="destinationlabel">
      <x>155</x>
      <y>579</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dial_center_point_boundary</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>text_dial_center_point_boundary</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>876</x>
+     <y>235</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>873</x>
+     <y>284</y>
     </hint>
    </hints>
   </connection>

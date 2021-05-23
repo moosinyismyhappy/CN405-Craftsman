@@ -5,7 +5,7 @@ import numpy as np
 import math
 
 # load image file and video
-file_name = '../resources/videos/Full_Working2.mp4'
+file_name = '../resources/videos/Full_Working1.mp4'
 background_image = cv2.imread('../resources/images/transparent.png')
 image_frame = None
 hsv_frame = None
@@ -19,10 +19,10 @@ calibrate_area_status = True
 minimum_distance = 120
 rectangle_extender = 10
 
-input1_calibrate_time = 15
-input2_calibrate_time = 15
-output_calibrate_time = 15
-work_calibrate_time = 15
+input1_calibrate_time = 8
+input2_calibrate_time = 8
+output_calibrate_time = 8
+work_calibrate_time = 8
 
 input1_position = (-1, -1)
 input2_position = (-1, -1)
