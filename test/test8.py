@@ -52,6 +52,8 @@ def mouse_click(event, x, y, flags, param):
                                 (0, 0, 255))
                     cv2.circle(image_frame, (x2, y2), 2, (0, 0, 255), 2)
                     cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 150, 255), 2)
+                    # add no overlap rectangle to list
+                    rectangle_list.append((x1, y1, x2, y2))
                 else:
                     print('overlap , Calculating solution ')
                     result = where_rectangle_overlap(rectangle1, rectangle2)
@@ -64,6 +66,9 @@ def mouse_click(event, x, y, flags, param):
                                 (0, 0, 255))
                     cv2.circle(image_frame, (x2, y2), 2, (0, 0, 255), 2)
                     cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 150, 255), 2)
+
+                    # add no overlap rectangle to list
+                    rectangle_list.append((x1, y1, x2, y2))
 
             # reset counter to get x1,y1
             click_counter = 0
@@ -94,7 +99,6 @@ def overlap_resolution(overlap_status, reference_rect):
             x1 = reference_rect[2] + 1
         else:
             y2 = reference_rect[1] - 1
-
 
 def is_rectangle_overlap(rect1, rect2):
     if (rect1[0] >= rect2[2]) or (rect1[2] <= rect2[0]) or (rect1[3] <= rect2[1]) or (rect1[1] >= rect2[3]):
@@ -179,6 +183,7 @@ def where_rectangle_overlap(rect1, rect2):
 
 if __name__ == "__main__":
     while True:
+        print(len(rectangle_list))
         cv2.imshow("Multiple color Detection", image_frame)
         cv2.setMouseCallback("Multiple color Detection", mouse_click)
         if cv2.waitKey(1) & 0xFF == ord('q'):
