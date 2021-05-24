@@ -3,7 +3,7 @@
 import cv2
 
 # load image file
-image_frame = cv2.imread('../resources/images/black_background.png')
+image_frame = cv2.imread('../resources/images/craftsman_hand.png')
 click_counter = 0
 x1 = -1
 y1 = -1
@@ -11,6 +11,7 @@ x2 = -1
 y2 = -1
 rectangle_list = []
 is_first_rectangle = True
+is_overlap = False
 
 
 def mouse_click(event, x, y, flags, param):
@@ -25,6 +26,9 @@ def mouse_click(event, x, y, flags, param):
                 x1, y1 = x, y
             else:
                 x1, y1 = x, y
+                cv2.putText(image_frame, str((x1, y1)), (x1 - 15, y1 - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                            (0, 0, 255))
+                cv2.circle(image_frame, (x1, y1), 2, (0, 0, 255), 2)
             # set new counter to get x2,y2
             click_counter = 1
 
@@ -38,40 +42,33 @@ def mouse_click(event, x, y, flags, param):
                 cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 150, 255), 2)
                 rectangle_list.append((x1, y1, x2, y2))
                 is_first_rectangle = False
+
+            # check overlap of new rectangle to exist rectangle
             else:
-                rectangle1 = rectangle_list[0]
                 x2, y2 = x, y
-                rectangle2 = [x1, y1, x2, y2]
-                result = is_rectangle_overlap(rectangle1, rectangle2)
-                if not result:
-                    print('No overlap , Rectangle created ...')
-                    cv2.putText(image_frame, str((x1, y1)), (x1 - 15, y1 - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-                                (0, 0, 255))
-                    cv2.circle(image_frame, (x1, y1), 2, (0, 0, 255), 2)
-                    cv2.putText(image_frame, str((x2, y2)), (x2 - 15, y2 - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-                                (0, 0, 255))
-                    cv2.circle(image_frame, (x2, y2), 2, (0, 0, 255), 2)
-                    cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 150, 255), 2)
-                    # add no overlap rectangle to list
-                    rectangle_list.append((x1, y1, x2, y2))
-                else:
-                    print('overlap , Calculating solution ')
-                    result = where_rectangle_overlap(rectangle1, rectangle2)
-                    overlap_resolution(result, rectangle1)
+                for i in range(len(rectangle_list)):
+                    new_rectangle = [x1, y1, x2, y2]
+                    result = is_rectangle_overlap(rectangle_list[i], new_rectangle)
+                    if not result:
+                        print('No overlap , Rectangle created ...')
+                        # add no overlap rectangle to list
+                        rectangle_list.append((x1, y1, x2, y2))
+                    else:
+                        result = where_rectangle_overlap(rectangle_list[i], new_rectangle)
+                        overlap_resolution(result, rectangle_list[i])
+                        # add no overlap rectangle to list
+                        rectangle_list.append((x1, y1, x2, y2))
 
-                    cv2.putText(image_frame, str((x1, y1)), (x1 - 15, y1 - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-                                (0, 0, 255))
-                    cv2.circle(image_frame, (x1, y1), 2, (0, 0, 255), 2)
-                    cv2.putText(image_frame, str((x2, y2)), (x2 - 15, y2 - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-                                (0, 0, 255))
-                    cv2.circle(image_frame, (x2, y2), 2, (0, 0, 255), 2)
-                    cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 150, 255), 2)
-
-                    # add no overlap rectangle to list
-                    rectangle_list.append((x1, y1, x2, y2))
+                cv2.putText(image_frame, str((x2, y2)), (x2 - 15, y2 - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                            (0, 0, 255))
+                cv2.circle(image_frame, (x2, y2), 2, (0, 0, 255), 2)
+                cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 150, 255), 2)
 
             # reset counter to get x1,y1
             click_counter = 0
+
+            print('End of add rectangle and current in list', rectangle_list)
+            print('')
 
     if event == cv2.EVENT_RBUTTONDOWN:
         image_frame = cv2.imread('../resources/images/black_background.png')
@@ -89,16 +86,47 @@ def overlap_resolution(overlap_status, reference_rect):
         y2 = reference_rect[1] - 1
     elif overlap_status == 3:
         y1 = reference_rect[3] + 1
+
     elif overlap_status == 4:
         if x2 - x1 > y2 - y1:
             x2 = reference_rect[0] - 1
         else:
             y2 = reference_rect[1] - 1
     elif overlap_status == 5:
-        if x1 - x2 > y1 - y2:
+        if x2 - x1 > y2 - y1:
             x1 = reference_rect[2] + 1
         else:
             y2 = reference_rect[1] - 1
+    elif overlap_status == 6:
+        if x2 - x1 > y2 - y1:
+            x2 = reference_rect[0] - 1
+        else:
+            y1 = reference_rect[3] + 1
+    elif overlap_status == 7:
+        if x2 - x1 > y2 - y1:
+            x1 = reference_rect[2] - 1
+        else:
+            y1 = reference_rect[3] + 1
+
+    elif overlap_status == 8:
+        x2 = reference_rect[0] - 1
+    elif overlap_status == 9:
+        pass
+    elif overlap_status == 10:
+        x1 = reference_rect[2] + 1
+
+    elif overlap_status == 11:
+        y2 = reference_rect[1] - 1
+    elif overlap_status == 12:
+        pass
+    elif overlap_status == 13:
+        y1 = reference_rect[3] + 1
+
+    elif overlap_status == 14:
+        raise Exception('No solution. Recalibrate ...')
+    elif overlap_status == 15:
+        raise Exception('No solution. Recalibrate ...')
+
 
 def is_rectangle_overlap(rect1, rect2):
     if (rect1[0] >= rect2[2]) or (rect1[2] <= rect2[0]) or (rect1[3] <= rect2[1]) or (rect1[1] >= rect2[3]):
@@ -175,15 +203,14 @@ def where_rectangle_overlap(rect1, rect2):
     # overlap inside and outside
     # overlap inside other rectangle
     elif u1 < x1 < u2 and v1 < y1 < v2 and u1 < x2 < u2 and v1 < y2 < v2:
-        return 14
+        raise Exception('No solution for overlap inside other rectangle')
     # overlap outside other rectangle
     elif x1 < u1 < u2 and y1 < v1 < v2 and u1 < u2 < x2 and v1 < v2 < y2:
-        return 15
+        raise Exception('No solution for overlap outside other rectangle')
 
 
 if __name__ == "__main__":
     while True:
-        print(len(rectangle_list))
         cv2.imshow("Multiple color Detection", image_frame)
         cv2.setMouseCallback("Multiple color Detection", mouse_click)
         if cv2.waitKey(1) & 0xFF == ord('q'):
