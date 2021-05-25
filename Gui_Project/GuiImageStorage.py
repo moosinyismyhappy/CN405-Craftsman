@@ -1,5 +1,6 @@
 import cv2
 
+
 class GuiImageStorage():
     def __init__(self):
         # Instance variable for images
@@ -20,8 +21,14 @@ class GuiImageStorage():
     def get_input_image(self):
         return self.input_image
 
+    def reset_background_image_for_track(self):
+        self.background_image_for_track = cv2.imread('../resources/images/transparent.png')
+
     def get_background_image_for_track(self):
         return self.background_image_for_track
+
+    def reset_background_image_for_mark(self):
+        self.background_image_for_mark = cv2.imread('../resources/images/transparent.png')
 
     def get_background_image_for_mark(self):
         return self.background_image_for_mark

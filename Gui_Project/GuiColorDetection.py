@@ -10,7 +10,7 @@ class GuiColorDetection(Thread):
         super().__init__()
         self.gui = gui
         self.image_storage = input_storage
-        self.tracking = GuiTracking(self.gui, self.image_storage,self)
+        self.tracking = GuiTracking(self.gui, self.image_storage, self)
         self.x_position = -1
         self.y_position = -1
         self.w = -1
@@ -21,21 +21,21 @@ class GuiColorDetection(Thread):
         self.hsv_lower = None
         self.hsv_upper = None
         self.is_first_detect = True
-        self.bgr = [-1,-1,-1]
+        self.bgr = [-1, -1, -1]
 
     def run(self):
         # Display Thread and Process ID
         print(threading.current_thread())
         self.detect_color()
 
-    def set_color(self,bgr):
+    def set_color(self, bgr):
         self.bgr = bgr
 
     def get_color(self):
-        b = int(self.bgr[0]+50)
-        g = int(self.bgr[1]+50)
-        r = int(self.bgr[2]+50)
-        return b,g,r
+        b = int(self.bgr[0] + 50)
+        g = int(self.bgr[1] + 50)
+        r = int(self.bgr[2] + 50)
+        return b, g, r
 
     def set_hsv(self):
         temp_x = self.get_position()[0]
@@ -122,7 +122,7 @@ class GuiColorDetection(Thread):
                     if self.gui.get_toggle_detect_status():
                         # Draw rectangle over detect color
                         cv2.rectangle(self.image_storage.get_input_image(), (self.x, self.y),
-                                          (self.x + self.w, self.y + self.h), (self.get_color()), 2)
+                                      (self.x + self.w, self.y + self.h), (self.get_color()), 2)
 
                         # Draw center point on detect rectangle
                         cv2.circle(self.image_storage.get_input_image(), center_position, 2, (0, 0, 255), 2)
@@ -130,5 +130,36 @@ class GuiColorDetection(Thread):
                         # Draw rectangle boundary over detect
                         cv2.rectangle(self.image_storage.get_input_image(), (
                             self.tracking.get_center_point_boundary()[0], self.tracking.get_center_point_boundary()[1]),
-                                      (self.tracking.get_center_point_boundary()[2], self.tracking.get_center_point_boundary()[3]),
-                                      (0, 255, 255), 2)
+                                      (self.tracking.get_center_point_boundary()[2],
+                                       self.tracking.get_center_point_boundary()[3]),
+                                      (150, 150, 150), 2)
+
+            # draw calibrate area
+            image_frame = self.image_storage.get_input_image()
+            if self.tracking.display_input1_area:
+                x1 = self.tracking.input1_calibrate_area[0]
+                y1 = self.tracking.input1_calibrate_area[1]
+                x2 = self.tracking.input1_calibrate_area[2]
+                y2 = self.tracking.input1_calibrate_area[3]
+                cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
+
+            if self.tracking.display_input2_area:
+                x1 = self.tracking.input2_calibrate_area[0]
+                y1 = self.tracking.input2_calibrate_area[1]
+                x2 = self.tracking.input2_calibrate_area[2]
+                y2 = self.tracking.input2_calibrate_area[3]
+                cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 150, 255), 2)
+
+            if self.tracking.display_output_area:
+                x1 = self.tracking.output_calibrate_area[0]
+                y1 = self.tracking.output_calibrate_area[1]
+                x2 = self.tracking.output_calibrate_area[2]
+                y2 = self.tracking.output_calibrate_area[3]
+                cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 80, 255), 2)
+
+            if self.tracking.display_work_area:
+                x1 = self.tracking.work_calibrate_area[0]
+                y1 = self.tracking.work_calibrate_area[1]
+                x2 = self.tracking.work_calibrate_area[2]
+                y2 = self.tracking.work_calibrate_area[3]
+                cv2.rectangle(image_frame, (x1, y1), (x2, y2), (150, 80, 255), 2)

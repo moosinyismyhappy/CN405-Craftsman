@@ -23,6 +23,12 @@
       <height>768</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
     <property name="styleSheet">
      <string notr="true"/>
     </property>
@@ -38,6 +44,12 @@
         <width>101</width>
         <height>41</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
       </property>
       <property name="styleSheet">
        <string notr="true"/>
@@ -55,6 +67,12 @@
         <height>501</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true">background-color: rgb(170, 170, 255);</string>
       </property>
@@ -67,8 +85,208 @@
          <height>480</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
        <property name="styleSheet">
         <string notr="true">background-color: rgb(0, 0, 0);</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="text_input1_on_camera">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>450</y>
+         <width>51</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 0, 0);</string>
+       </property>
+       <property name="text">
+        <string>Input1</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="text_calibrate_input1_on_camera">
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>450</y>
+         <width>41</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 0, 0);</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="text_input2_on_camera">
+       <property name="geometry">
+        <rect>
+         <x>190</x>
+         <y>450</y>
+         <width>51</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 150, 0);</string>
+       </property>
+       <property name="text">
+        <string>Input2</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="text_calibrate_input2_on_camera">
+       <property name="geometry">
+        <rect>
+         <x>250</x>
+         <y>450</y>
+         <width>41</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 150, 0);</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="text_output_on_camera">
+       <property name="geometry">
+        <rect>
+         <x>370</x>
+         <y>450</y>
+         <width>61</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 80, 0);</string>
+       </property>
+       <property name="text">
+        <string>Output</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="text_calibrate_output_on_camera">
+       <property name="geometry">
+        <rect>
+         <x>440</x>
+         <y>450</y>
+         <width>41</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 80, 0);</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="text_work_on_camera">
+       <property name="geometry">
+        <rect>
+         <x>540</x>
+         <y>450</y>
+         <width>51</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 80, 150);</string>
+       </property>
+       <property name="text">
+        <string>Work</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="text_calibrate_work_on_camera">
+       <property name="geometry">
+        <rect>
+         <x>600</x>
+         <y>450</y>
+         <width>41</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 80, 150);</string>
        </property>
        <property name="text">
         <string/>
@@ -83,6 +301,12 @@
         <width>101</width>
         <height>41</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
       </property>
       <property name="styleSheet">
        <string notr="true">background-color: rgb(255, 0, 0);</string>
@@ -100,6 +324,12 @@
         <height>51</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
@@ -110,15 +340,16 @@
      <widget class="QLabel" name="text_image_type">
       <property name="geometry">
        <rect>
-        <x>190</x>
+        <x>250</x>
         <y>70</y>
-        <width>161</width>
+        <width>121</width>
         <height>31</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
        </font>
       </property>
       <property name="styleSheet">
@@ -131,15 +362,16 @@
      <widget class="QLabel" name="text_detect">
       <property name="geometry">
        <rect>
-        <x>510</x>
+        <x>550</x>
         <y>70</y>
-        <width>161</width>
+        <width>121</width>
         <height>31</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
        </font>
       </property>
       <property name="styleSheet">
@@ -158,6 +390,12 @@
         <height>51</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
@@ -173,6 +411,12 @@
         <width>101</width>
         <height>51</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
       </property>
       <property name="styleSheet">
        <string notr="true"/>
@@ -190,6 +434,12 @@
         <height>51</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
@@ -205,6 +455,12 @@
         <width>101</width>
         <height>51</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
       </property>
       <property name="styleSheet">
        <string notr="true"/>
@@ -222,6 +478,12 @@
         <height>51</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
@@ -237,6 +499,12 @@
         <width>101</width>
         <height>51</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
       </property>
       <property name="styleSheet">
        <string notr="true"/>
@@ -254,6 +522,12 @@
         <height>51</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
@@ -269,6 +543,12 @@
         <width>111</width>
         <height>51</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
       </property>
       <property name="styleSheet">
        <string notr="true"/>
@@ -286,6 +566,12 @@
         <height>51</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
@@ -296,15 +582,16 @@
      <widget class="QLabel" name="text_track">
       <property name="geometry">
        <rect>
-        <x>690</x>
+        <x>720</x>
         <y>70</y>
-        <width>151</width>
+        <width>111</width>
         <height>31</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
        </font>
       </property>
       <property name="styleSheet">
@@ -325,7 +612,8 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
        </font>
       </property>
       <property name="styleSheet">
@@ -344,6 +632,12 @@
         <height>51</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
@@ -359,6 +653,12 @@
         <width>101</width>
         <height>51</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
       </property>
       <property name="styleSheet">
        <string notr="true"/>
@@ -376,6 +676,12 @@
         <height>51</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
@@ -391,6 +697,12 @@
         <width>101</width>
         <height>41</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
       </property>
       <property name="styleSheet">
        <string notr="true"/>
@@ -408,6 +720,12 @@
         <height>41</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
@@ -420,13 +738,14 @@
        <rect>
         <x>230</x>
         <y>10</y>
-        <width>171</width>
+        <width>131</width>
         <height>31</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
        </font>
       </property>
       <property name="styleSheet">
@@ -439,15 +758,16 @@
      <widget class="QLabel" name="text_avg_input">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>20</x>
         <y>690</y>
-        <width>101</width>
+        <width>81</width>
         <height>31</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
        </font>
       </property>
       <property name="styleSheet">
@@ -468,7 +788,8 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
        </font>
       </property>
       <property name="styleSheet">
@@ -489,7 +810,8 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
        </font>
       </property>
       <property name="styleSheet">
@@ -510,7 +832,8 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
        </font>
       </property>
       <property name="styleSheet">
@@ -531,7 +854,8 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
        </font>
       </property>
       <property name="styleSheet">
@@ -552,7 +876,8 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
        </font>
       </property>
       <property name="styleSheet">
@@ -573,7 +898,8 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
        </font>
       </property>
       <property name="styleSheet">
@@ -594,7 +920,8 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
        </font>
       </property>
       <property name="styleSheet">
@@ -615,7 +942,8 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
        </font>
       </property>
       <property name="styleSheet">
@@ -634,6 +962,12 @@
         <height>41</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
@@ -649,6 +983,12 @@
         <width>101</width>
         <height>51</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
       </property>
       <property name="styleSheet">
        <string notr="true"/>
@@ -666,6 +1006,12 @@
         <height>51</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
@@ -676,15 +1022,16 @@
      <widget class="QLabel" name="text_mark_area">
       <property name="geometry">
        <rect>
-        <x>370</x>
+        <x>420</x>
         <y>70</y>
-        <width>111</width>
+        <width>81</width>
         <height>31</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
        </font>
       </property>
       <property name="styleSheet">
@@ -703,6 +1050,12 @@
         <height>51</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
@@ -718,6 +1071,12 @@
         <width>101</width>
         <height>51</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
       </property>
       <property name="styleSheet">
        <string notr="true"/>
@@ -735,6 +1094,12 @@
         <height>51</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
@@ -750,6 +1115,12 @@
         <width>101</width>
         <height>51</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+       </font>
       </property>
       <property name="styleSheet">
        <string notr="true"/>
@@ -809,6 +1180,12 @@
         <height>768</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
@@ -829,7 +1206,8 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>28</pointsize>
+         <family>Arial</family>
+         <pointsize>24</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -852,6 +1230,12 @@
          <height>50</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
        <property name="styleSheet">
         <string notr="true">background-color: rgb(255, 0, 0);</string>
        </property>
@@ -862,15 +1246,16 @@
       <widget class="QLabel" name="text_camera_number">
        <property name="geometry">
         <rect>
-         <x>60</x>
+         <x>40</x>
          <y>130</y>
-         <width>221</width>
+         <width>241</width>
          <height>41</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <family>Arial</family>
+         <pointsize>14</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -884,15 +1269,16 @@
       <widget class="QLabel" name="text_detect_area">
        <property name="geometry">
         <rect>
-         <x>350</x>
+         <x>340</x>
          <y>130</y>
-         <width>111</width>
+         <width>121</width>
          <height>41</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <family>Arial</family>
+         <pointsize>14</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -913,7 +1299,8 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <family>Arial</family>
+         <pointsize>14</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -933,6 +1320,12 @@
          <height>100</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
        <property name="styleSheet">
         <string notr="true"/>
        </property>
@@ -948,6 +1341,12 @@
          <width>120</width>
          <height>100</height>
         </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>14</pointsize>
+        </font>
        </property>
        <property name="minimum">
         <number>100</number>
@@ -970,7 +1369,8 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <family>Arial</family>
+         <pointsize>14</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -985,13 +1385,14 @@
         <rect>
          <x>570</x>
          <y>410</y>
-         <width>161</width>
+         <width>171</width>
          <height>41</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <family>Arial</family>
+         <pointsize>14</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -1012,7 +1413,8 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <family>Arial</family>
+         <pointsize>14</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -1031,14 +1433,20 @@
          <height>100</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
        <property name="minimum">
         <number>5</number>
        </property>
        <property name="maximum">
-        <number>20</number>
+        <number>100</number>
        </property>
        <property name="value">
-        <number>10</number>
+        <number>15</number>
        </property>
       </widget>
       <widget class="QDial" name="dial_calibrate_output">
@@ -1050,14 +1458,20 @@
          <height>100</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
        <property name="minimum">
         <number>5</number>
        </property>
        <property name="maximum">
-        <number>20</number>
+        <number>100</number>
        </property>
        <property name="value">
-        <number>10</number>
+        <number>15</number>
        </property>
       </widget>
       <widget class="QDial" name="dial_calibrate_work">
@@ -1069,14 +1483,20 @@
          <height>100</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
        <property name="minimum">
         <number>5</number>
        </property>
        <property name="maximum">
-        <number>20</number>
+        <number>100</number>
        </property>
        <property name="value">
-        <number>15</number>
+        <number>20</number>
        </property>
       </widget>
       <widget class="QLabel" name="text_dial_calibrate_input2">
@@ -1212,15 +1632,16 @@ font: 16pt &quot;Monaco&quot;;</string>
       <widget class="QLabel" name="text_hsv_range">
        <property name="geometry">
         <rect>
-         <x>580</x>
+         <x>570</x>
          <y>130</y>
-         <width>111</width>
+         <width>121</width>
          <height>41</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <family>Arial</family>
+         <pointsize>14</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -1238,6 +1659,12 @@ font: 16pt &quot;Monaco&quot;;</string>
          <width>120</width>
          <height>100</height>
         </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>14</pointsize>
+        </font>
        </property>
        <property name="minimum">
         <number>0</number>
@@ -1284,14 +1711,20 @@ font: 16pt &quot;Monaco&quot;;</string>
          <height>100</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
        <property name="minimum">
         <number>5</number>
        </property>
        <property name="maximum">
-        <number>20</number>
+        <number>100</number>
        </property>
        <property name="value">
-        <number>10</number>
+        <number>15</number>
        </property>
       </widget>
       <widget class="QLabel" name="text_dial_calibrate_input1">
@@ -1331,7 +1764,8 @@ font: 16pt &quot;Monaco&quot;;</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>14</pointsize>
+         <family>Arial</family>
+         <pointsize>11</pointsize>
          <weight>50</weight>
          <bold>false</bold>
         </font>
@@ -1351,6 +1785,12 @@ font: 16pt &quot;Monaco&quot;;</string>
          <width>120</width>
          <height>100</height>
         </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>14</pointsize>
+        </font>
        </property>
        <property name="minimum">
         <number>0</number>

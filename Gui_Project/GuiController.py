@@ -6,6 +6,7 @@ import cv2
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QPixmap
 
+from Gui_Project.GuiCalibrate import GuiCalibrate
 from Gui_Project.GuiColorDetection import GuiColorDetection
 from Gui_Project.GuiImageStorage import GuiImageStorage
 from Gui_Project.GuiInputVideo import GuiInputVideo
@@ -18,6 +19,7 @@ class GuiController(threading.Thread):
         super().__init__()
         # declare instance variable for access other class
         self.image_storage = GuiImageStorage()
+        self.calibrate = GuiCalibrate()
         self.thread_input_video = None
         self.thread_output_video = None
 
@@ -71,16 +73,35 @@ class GuiController(threading.Thread):
         self.ui.mark_output_button.clicked.connect(self.mark_output_button)
         self.ui.mark_working_button.clicked.connect(self.mark_working_button)
         self.ui.calibrate_button.clicked.connect(self.toggle_calibrate_button)
+        self.ui.clear_mark_button.clicked.connect(self.clear_mark_button)
+        self.ui.clear_track_button.clicked.connect(self.clear_track_button)
 
         # set mouse event function
         self.ui.display_camera_frame.mousePressEvent = self.camera_frame_mouse_event
 
         # set status of button and frame
-        # self.ui.display_mark_area_frame.setVisible(False)
         self.ui.mark_input1_button.setEnabled(False)
         self.ui.mark_input2_button.setEnabled(False)
         self.ui.mark_output_button.setEnabled(False)
         self.ui.mark_working_button.setEnabled(False)
+
+        # set stylesheet for text
+        self.ui.text_input1_on_camera.setStyleSheet('background: transparent;color: rgb(255, 0, 0);')
+        self.ui.text_input2_on_camera.setStyleSheet('background: transparent;color: rgb(255, 150, 0);')
+        self.ui.text_output_on_camera.setStyleSheet('background: transparent;color: rgb(255, 80, 0);')
+        self.ui.text_work_on_camera.setStyleSheet('background: transparent;color: rgb(255, 80, 150);')
+        self.ui.text_calibrate_input1_on_camera.setStyleSheet('background: transparent;color: rgb(255, 0, 0);')
+        self.ui.text_calibrate_input2_on_camera.setStyleSheet('background: transparent;color: rgb(255, 150, 0);')
+        self.ui.text_calibrate_output_on_camera.setStyleSheet('background: transparent;color: rgb(255, 80, 0);')
+        self.ui.text_calibrate_work_on_camera.setStyleSheet('background: transparent;color: rgb(255, 80, 150);')
+        self.ui.text_input1_on_camera.setVisible(False)
+        self.ui.text_input2_on_camera.setVisible(False)
+        self.ui.text_output_on_camera.setVisible(False)
+        self.ui.text_work_on_camera.setVisible(False)
+        self.ui.text_calibrate_input1_on_camera.setVisible(False)
+        self.ui.text_calibrate_input2_on_camera.setVisible(False)
+        self.ui.text_calibrate_output_on_camera.setVisible(False)
+        self.ui.text_calibrate_work_on_camera.setVisible(False)
 
         # set text value for dial
         self.ui.text_dial_camera_number.setText(str(self.ui.dial_camera_number.value()))
@@ -124,6 +145,21 @@ class GuiController(threading.Thread):
     def get_toggle_mark_status(self):
         return self.toggle_mark_area_status
 
+    def clear_mark_button(self):
+        self.image_storage.reset_background_image_for_mark()
+        # reset all position
+        self.input1_position = (-1, -1)
+        self.input2_position = (-1, -1)
+        self.output_position = (-1, -1)
+        self.work_position = (-1, -1)
+
+        # enable all mark button
+        self.ui.mark_input1_button.setEnabled(True)
+        self.ui.mark_input2_button.setEnabled(True)
+        self.ui.mark_output_button.setEnabled(True)
+        self.ui.mark_working_button.setEnabled(True)
+        print('clear mark button clicked')
+
     # Select Left Color Button
     def select_left_color_button(self):
         self.left_or_right_color = 0
@@ -149,16 +185,36 @@ class GuiController(threading.Thread):
         self.set_show_image_type(2)
 
     def mark_input1_button(self):
-        self.mark_area_status = 0
+        self.which_marked_area = 0
+        self.ui.mark_input1_button.setEnabled(False)
+        self.ui.text_input1_on_camera.setVisible(True)
+        self.ui.text_calibrate_input1_on_camera.setVisible(True)
+        text = str('0') + str('/') + str(self.ui.dial_calibrate_input1.value())
+        self.ui.text_calibrate_input1_on_camera.setText(text)
 
     def mark_input2_button(self):
-        self.mark_area_status = 1
+        self.which_marked_area = 1
+        self.ui.mark_input2_button.setEnabled(False)
+        self.ui.text_input2_on_camera.setVisible(True)
+        self.ui.text_calibrate_input2_on_camera.setVisible(True)
+        text = str('0') + str('/') + str(self.ui.dial_calibrate_input2.value())
+        self.ui.text_calibrate_input2_on_camera.setText(text)
 
     def mark_output_button(self):
-        self.mark_area_status = 2
+        self.which_marked_area = 2
+        self.ui.mark_output_button.setEnabled(False)
+        self.ui.text_output_on_camera.setVisible(True)
+        self.ui.text_calibrate_output_on_camera.setVisible(True)
+        text = str('0') + str('/') + str(self.ui.dial_calibrate_output.value())
+        self.ui.text_calibrate_output_on_camera.setText(text)
 
     def mark_working_button(self):
-        self.mark_area_status = 3
+        self.which_marked_area = 3
+        self.ui.mark_working_button.setEnabled(False)
+        self.ui.text_work_on_camera.setVisible(True)
+        self.ui.text_calibrate_work_on_camera.setVisible(True)
+        text = str('0') + str('/') + str(self.ui.dial_calibrate_work.value())
+        self.ui.text_calibrate_work_on_camera.setText(text)
 
     # Set which type of image (RGB,HSV,GRAYSCALE)
     def set_show_image_type(self, new_type):
@@ -208,6 +264,10 @@ class GuiController(threading.Thread):
     def get_toggle_track_status(self):
         return self.toggle_track_status
 
+    def clear_track_button(self):
+        self.image_storage.reset_background_image_for_track()
+        print('clear track button clicked')
+
     # Open Camera Button
     def open_camera_button(self):
         print('Open Camera Button Clicked...')
@@ -245,7 +305,7 @@ class GuiController(threading.Thread):
 
     # Receive image from other class and display to gui
     def display_image_to_camera_zone(self, receive_image):
-        time.sleep(0.01)
+        time.sleep(0.025)
         self.ui.display_camera_frame.setPixmap(QPixmap.fromImage(receive_image))
 
     # Get x,y from mouse clicked method
@@ -265,6 +325,9 @@ class GuiController(threading.Thread):
                     self.left_color_detection.set_hsv()
                     self.left_color_detection.set_color(self.image_storage.get_input_image()[y, x])
                     self.is_first_left_click = False
+                    # disable clear mark button
+                    self.ui.clear_mark_button.setEnabled(False)
+
                 # set new color without start thread
                 else:
                     self.left_color_detection.set_position(x, y)
@@ -283,6 +346,8 @@ class GuiController(threading.Thread):
                     self.right_color_detection.set_hsv()
                     self.right_color_detection.set_color(self.image_storage.get_input_image()[y, x])
                     self.is_first_right_click = False
+                    # disable clear mark button
+                    self.ui.clear_mark_button.setEnabled(False)
                 # set new color without start thread
                 else:
                     self.right_color_detection.set_position(x, y)
@@ -295,11 +360,36 @@ class GuiController(threading.Thread):
         # create temp variable to load image due to long command
         background_image = self.image_storage.get_background_image_for_mark()
         if self.which_marked_area == 0:
-            cv2.putText(background_image, 'Input1' + str((x, y)), (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+            cv2.putText(background_image, 'Input1', (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
+                        (0, 0, 255))
+            cv2.circle(background_image, (x, y), 2, (0, 0, 255), 6)
+            self.set_input1_position((x, y))
+            # disable click from input1
+            self.which_marked_area = -1
+
+        elif self.which_marked_area == 1:
+            cv2.putText(background_image, 'Input2', (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
                         (0, 150, 255))
-            cv2.circle(background_image, (x, y), 2, (0, 0, 255), 2)
-            self.input2_position = x, y
-            self.which_marked_area = 1
+            cv2.circle(background_image, (x, y), 2, (0, 150, 255), 6)
+            self.set_input2_position((x, y))
+            # disable click from input1
+            self.which_marked_area = -1
+
+        elif self.which_marked_area == 2:
+            cv2.putText(background_image, 'Output', (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
+                        (0, 80, 255))
+            cv2.circle(background_image, (x, y), 2, (0, 80, 255), 6)
+            self.set_output_position((x, y))
+            # disable click from input1
+            self.which_marked_area = -1
+
+        elif self.which_marked_area == 3:
+            cv2.putText(background_image, 'Work', (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
+                        (150, 80, 255))
+            cv2.circle(background_image, (x, y), 2, (150, 80, 255), 6)
+            self.set_work_position((x, y))
+            # disable click from input1
+            self.which_marked_area = -1
 
     def set_input1_position(self, position):
         self.input1_position = position
@@ -346,3 +436,22 @@ class GuiController(threading.Thread):
     def get_dial_hsv_range(self):
         # hsv_range dial value is 0-100 so divided by 100 convert it to percent
         return self.ui.dial_hsv_range.value() / 100
+
+    def display_calibrated_number_input1(self, number):
+        text = str(number) + str('/') + str(self.ui.dial_calibrate_input1.value())
+        self.ui.text_calibrate_input1_on_camera.setText(text)
+
+    def display_calibrated_number_input2(self, number):
+        text = str(number) + str('/') + str(self.ui.dial_calibrate_input2.value())
+        self.ui.text_calibrate_input2_on_camera.setText(text)
+
+    def display_calibrated_number_output(self, number):
+        text = str(number) + str('/') + str(self.ui.dial_calibrate_output.value())
+        self.ui.text_calibrate_output_on_camera.setText(text)
+
+    def display_calibrated_number_work(self, number):
+        text = str(number) + str('/') + str(self.ui.dial_calibrate_work.value())
+        self.ui.text_calibrate_work_on_camera.setText(text)
+
+    def get_reference_calibrate(self):
+        return self.calibrate

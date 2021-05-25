@@ -3,42 +3,12 @@ import cv2
 
 
 class GuiTracking():
-    input1_list = []
-    input2_list = []
-    output_list = []
-    work_list = []
-
-    calibrate_area_status = True
-
-    input1_calibrate_status = 0
-    input2_calibrate_status = 0
-    output_calibrate_status = 0
-    work_calibrate_status = 0
-
-    display_input1_area = False
-    display_input2_area = False
-    display_output_area = False
-    display_work_area = False
-
-    input1_calibrate_area = [-1, -1, -1, -1]
-    input2_calibrate_area = [-1, -1, -1, -1]
-    output_calibrate_area = [-1, -1, -1, -1]
-    work_calibrate_area = [-1, -1, -1, -1]
 
     def __init__(self, gui, image_storage, color_detect):
         self.gui = gui
         self.image_storage = image_storage
         self.color_detect = color_detect
-        self.center_point_boundary = None
-        self.is_position_out_of_boundary = False
-        self.minimum_distance = 120
-
-        # marked area position
-        self.input1_position = self.gui.get_input1_position()
-        self.input2_position = self.gui.get_input2_position()
-        self.output_position = self.gui.get_output_position()
-        self.work_position = self.gui.get_work_position()
-        print(self.input1_position,self.input2_position,self.output_position,self.work_position)
+        self.calibrate = self.gui.get_reference_calibrate()
 
         # center point
         self.prev_position = -1
@@ -134,12 +104,7 @@ class GuiTracking():
         return min_x, max_x, min_y, max_y
 
     def process_rectangle(self, list):
-        global rectangle_extender
         min_x, max_x, min_y, max_y = self.find_max_min(list)
-        min_x -= rectangle_extender
-        min_y -= rectangle_extender
-        max_x += rectangle_extender
-        max_y += rectangle_extender
         return min_x, min_y, max_x, max_y
 
     # set current position
@@ -243,19 +208,26 @@ class GuiTracking():
         # Calculate direction from current point to all area
         x = center_position[0]
         y = center_position[1]
+
+        # reassign input1 to short due to long command to get value from GuiController
+        input1_position = self.gui.get_input1_position()
+        input2_position = self.gui.get_input2_position()
+        output_position = self.gui.get_output_position()
+        work_position = self.gui.get_work_position()
+
         direction_input1_degree = self.calculate_degree(
-            math.atan2(self.input1_position[1] - y, self.input1_position[0] - x))
+            math.atan2(input1_position[1] - y, input1_position[0] - x))
         direction_input2_degree = self.calculate_degree(
-            math.atan2(self.input2_position[1] - y, self.input2_position[0] - x))
+            math.atan2(input2_position[1] - y, input2_position[0] - x))
         direction_output_degree = self.calculate_degree(
-            math.atan2(self.output_position[1] - y, self.output_position[0] - x))
-        direction_work_degree = self.calculate_degree(math.atan2(self.work_position[1] - y, self.work_position[0] - x))
+            math.atan2(output_position[1] - y, output_position[0] - x))
+        direction_work_degree = self.calculate_degree(math.atan2(work_position[1] - y, work_position[0] - x))
 
         # Calculate distance from current point to all area
-        self.curr_distance_input1 = self.calculate_distance(self.input1_position, (x, y))
-        self.curr_distance_input2 = self.calculate_distance(self.input2_position, (x, y))
-        self.curr_distance_output = self.calculate_distance(self.output_position, (x, y))
-        self.curr_distance_work = self.calculate_distance(self.work_position, (x, y))
+        self.curr_distance_input1 = self.calculate_distance(input1_position, (x, y))
+        self.curr_distance_input2 = self.calculate_distance(input2_position, (x, y))
+        self.curr_distance_output = self.calculate_distance(output_position, (x, y))
+        self.curr_distance_work = self.calculate_distance(work_position, (x, y))
 
         # find direction number
         self.curr_direction = self.find_direction_number(point_direction_degree)
@@ -275,9 +247,6 @@ class GuiTracking():
         if self.prev_distance_output > self.curr_distance_output and self.curr_direction_output == self.curr_direction:
             self.count_approaching_output += 1
 
-        if self.prev_distance_work > self.curr_distance_work:
-            self.count_approaching_work += 1
-
         # do this when direction is changed
         if self.curr_direction != self.prev_direction:
 
@@ -286,51 +255,50 @@ class GuiTracking():
             background_image = self.image_storage.get_background_image_for_track()
             # create temp list to keep counter and find index that has maximum counter that mean maximum approach
             max_approaching_list = [self.count_approaching_input1, self.count_approaching_input2,
-                                    self.count_approaching_output, self.count_approaching_work]
+                                    self.count_approaching_output]
             max_approaching = max_approaching_list.index(max(max_approaching_list))
 
             # approached input1
             if max_approaching == 0:
-                if self.curr_distance_input1 <= self.minimum_distance:
+                if self.curr_distance_input1 < self.minimum_distance:
                     cv2.circle(background_image, (x, y), 2, (0, 0, 255), 2)
                     cv2.putText(background_image, str((x, y, 'Input1')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX,
-                                0.3,
-                                (0, 0, 255))
+                                0.3, (0, 0, 255))
                     if self.calibrate_area_status:
-                        if self.input1_calibrate_status == 0:
+                        if self.input1_calibrate_status:
                             self.input1_list.append((x, y))
+                            self.gui.display_calibrated_number_input1(len(self.input1_list))
 
             # approached input2
             elif max_approaching == 1:
-                if self.curr_distance_input2 <= self.minimum_distance:
+                if self.curr_distance_input2 < self.minimum_distance:
                     cv2.circle(background_image, (x, y), 2, (0, 150, 255), 2)
                     cv2.putText(background_image, str((x, y, 'Input2')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX,
-                                0.3,
-                                (0, 150, 255))
+                                0.3, (0, 150, 255))
                     if self.calibrate_area_status:
-                        if self.input2_calibrate_status == 0:
+                        if self.input2_calibrate_status:
                             self.input2_list.append((x, y))
+                            self.gui.display_calibrated_number_input2(len(self.input2_list))
 
             # approached output
             elif max_approaching == 2:
-                if self.curr_distance_output <= self.minimum_distance:
+                if self.curr_distance_output < self.minimum_distance:
                     cv2.circle(background_image, (x, y), 2, (0, 80, 255), 2)
-                    cv2.putText(background_image, str((x, y, 'output')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX,
-                                0.3,
-                                (0, 80, 255))
+                    cv2.putText(background_image, str((x, y, 'Output')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX,
+                                0.3, (0, 80, 255))
                     if self.calibrate_area_status:
-                        if self.output_calibrate_status == 0:
+                        if self.output_calibrate_status:
                             self.output_list.append((x, y))
+                            self.gui.display_calibrated_number_output(len(self.output_list))
 
-            # approached work
-            elif max_approaching == 3:
-                if self.curr_distance_work <= self.minimum_distance:
-                    cv2.circle(background_image, (x, y), 2, (150, 80, 255), 2)
-                    cv2.putText(background_image, str((x, y, 'work')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
-                                (150, 80, 255))
-                    if self.calibrate_area_status:
-                        if self.work_calibrate_status == 0:
-                            self.work_list.append((x, y))
+            if self.curr_distance_work < self.minimum_distance:
+                cv2.circle(background_image, (x, y), 2, (150, 80, 255), 2)
+                cv2.putText(background_image, str((x, y, 'Work')), (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
+                            (150, 80, 255))
+                if self.calibrate_area_status:
+                    if self.work_calibrate_status:
+                        self.work_list.append((x, y))
+                        self.gui.display_calibrated_number_work(len(self.work_list))
 
             # reset approach counter after change direction
             self.count_approaching_input1_left = 0
@@ -339,39 +307,192 @@ class GuiTracking():
             self.count_approaching_work_left = 0
 
         if len(self.input1_list) == self.gui.get_input1_calibrate_time():
+            # process boundary of rectangle
             x1, y1, x2, y2 = self.process_rectangle(self.input1_list)
+
+            # keep area of rectangle
             self.input1_calibrate_area = [x1, y1, x2, y2]
+
             # stop calibrate and clear list
-            self.input1_calibrate_status = 1
+            self.input1_calibrate_status = False
+            self.input1_list.clear()
+
             # enable display area
             self.display_input1_area = True
 
         if len(self.input2_list) == self.gui.get_input2_calibrate_time():
+            # process boundary of rectangle
             x1, y1, x2, y2 = self.process_rectangle(self.input2_list)
+
+            # keep area of rectangle
             self.input2_calibrate_area = [x1, y1, x2, y2]
+
             # stop calibrate and clear list
-            self.input2_calibrate_status = 1
+            self.input2_calibrate_status = False
+            self.input2_list.clear()
+
             # enable display area
             self.display_input2_area = True
 
         if len(self.output_list) == self.gui.get_output_calibrate_time():
+            # process boundary of rectangle
             x1, y1, x2, y2 = self.process_rectangle(self.output_list)
+
+            # keep area of rectangle
             self.output_calibrate_area = [x1, y1, x2, y2]
+
             # stop calibrate and clear list
-            self.output_calibrate_status = 1
+            self.output_calibrate_status = False
+            self.output_list.clear()
+
             # enable display area
             self.display_output_area = True
 
         if len(self.work_list) == self.gui.get_work_calibrate_time():
+            # process boundary of rectangle
             x1, y1, x2, y2 = self.process_rectangle(self.work_list)
+
+            # keep area of rectangle
             self.work_calibrate_area = [x1, y1, x2, y2]
+
             # stop calibrate and clear list
-            self.work_calibrate_status = 1
+            self.work_calibrate_status = False
+            self.work_list.clear()
+
             # enable display area
             self.display_work_area = True
 
-        # check if all area is finished calibrate set calibrate status to False and reset each area to prepare new calibrate
-        if self.input1_calibrate_status == self.input2_calibrate_status == self.output_calibrate_status == self.work_calibrate_status == 1:
-            self.input1_calibrate_status = self.input2_calibrate_status = self.output_calibrate_status = self.work_calibrate_status = 0
-            self.calibrate_area_status = False
-        print('all area has been drawn')
+    def is_rectangle_overlap(self, rect1, rect2):
+        if (rect1[0] >= rect2[2]) or (rect1[2] <= rect2[0]) or (rect1[3] <= rect2[1]) or (rect1[1] >= rect2[3]):
+            # no overlap occur
+            return False
+        else:
+            # overlap occur
+            return True
+
+    def where_rectangle_overlap(self, rect1, rect2):
+        # rectangle1
+        x1 = rect1[0]
+        y1 = rect1[1]
+        x2 = rect1[2]
+        y2 = rect1[3]
+
+        # rectangle2
+        u1 = rect2[0]
+        v1 = rect2[1]
+        u2 = rect2[2]
+        v2 = rect2[3]
+
+        # overlap on only each side
+        # overlap left
+        if u1 < x1 < u2 and y1 < v1 < v2 and u1 < u2 < x2 and v1 < v2 < y2:
+            return 0
+        # overlap right
+        elif x1 < u1 < u2 and y1 < v1 < v2 and u1 < x2 < u2 and v1 < v2 < y2:
+            return 1
+        # overlap top
+        elif x1 < u1 < u2 and v1 < y1 < v2 and u1 < u2 < x2 and v1 < v2 < y2:
+            return 2
+        # overlap bottom
+        elif x1 < u1 < u2 and y1 < v1 < v2 and u1 < u2 < x2 and v1 < y2 < v2:
+            return 3
+
+        # overlap on corner
+        # overlap top-left
+        elif u1 < x1 < u2 and v1 < y1 < v2 and u1 < u2 < x2 and v1 < v2 < y2:
+            return 4
+        # overlap top-right
+        elif x1 < u1 < u2 and v1 < y1 < v2 and u1 < x2 < u2 and v1 < v2 < y2:
+            return 5
+        # overlap bottom-left
+        elif u1 < x1 < u2 and y1 < v1 < v2 and u1 < u2 < x2 and v1 < y2 < v2:
+            return 6
+        # overlap bottom-right
+        elif x1 < u1 < u2 and y1 < v1 < v2 and u1 < x2 < u2 and v1 < y2 < v2:
+            return 7
+
+        # overlap on vertical
+        # overlap vertical-left
+        elif u1 < x1 < u2 and v1 < y1 < v2 and u1 < u2 < x2 and v1 < y2 < v2:
+            return 8
+        # overlap vertical-center
+        elif x1 < u1 < u2 and v1 < y1 < v2 and u1 < u2 < x2 and v1 < y2 < v2:
+            return 9
+        # overlap vertical-right
+        elif x1 < u1 < u2 and v1 < y1 < v2 and u1 < x2 < u2 and v1 < y2 < v2:
+            return 10
+
+        # overlap on horizontal
+        # overlap horizontal-top
+        elif u1 < x1 < u2 and v1 < y1 < v2 and u1 < x2 < u2 and v1 < v2 < y2:
+            return 11
+        # overlap horizontal-center
+        elif u1 < x1 < u2 and y1 < v1 < v2 and u1 < x2 < u2 and v1 < v2 < y2:
+            return 12
+        # overlap horizontal-bottom
+        elif u1 < x1 < u2 and y1 < v1 < v2 and u1 < x2 < u2 and v1 < y2 < v2:
+            return 13
+
+        # overlap inside and outside
+        # overlap inside other rectangle
+        elif u1 < x1 < u2 and v1 < y1 < v2 and u1 < x2 < u2 and v1 < y2 < v2:
+            raise Exception('No solution for overlap inside other rectangle')
+        # overlap outside other rectangle
+        elif x1 < u1 < u2 and y1 < v1 < v2 and u1 < u2 < x2 and v1 < v2 < y2:
+            raise Exception('No solution for overlap outside other rectangle')
+
+    def overlap_resolution(self, overlap_status, reference_rect, rect):
+
+        self.x1 = rect[0]
+        self.y1 = rect[1]
+        self.x2 = rect[2]
+        self.y2 = rect[3]
+
+        if overlap_status == 0:
+            self.x2 = reference_rect[0] - 1
+        elif overlap_status == 1:
+            self.x1 = reference_rect[2] + 1
+        elif overlap_status == 2:
+            self.y2 = reference_rect[1] - 1
+        elif overlap_status == 3:
+            self.y1 = reference_rect[3] + 1
+
+        elif overlap_status == 4:
+            if self.x2 - self.x1 > self.y2 - self.y1:
+                self.x2 = reference_rect[0] - 1
+            else:
+                self.y2 = reference_rect[1] - 1
+        elif overlap_status == 5:
+            if self.x2 - self.x1 > self.y2 - self.y1:
+                self.x1 = reference_rect[2] + 1
+            else:
+                self.y2 = reference_rect[1] - 1
+        elif overlap_status == 6:
+            if self.x2 - self.x1 > self.y2 - self.y1:
+                self.x2 = reference_rect[0] - 1
+            else:
+                self.y1 = reference_rect[3] + 1
+        elif overlap_status == 7:
+            if self.x2 - self.x1 > self.y2 - self.y1:
+                self.x1 = reference_rect[2] - 1
+            else:
+                self.y1 = reference_rect[3] + 1
+
+        elif overlap_status == 8:
+            self.x2 = reference_rect[0] - 1
+        elif overlap_status == 9:
+            raise Exception('No solution. Recalibrate ...')
+        elif overlap_status == 10:
+            self.x1 = reference_rect[2] + 1
+
+        elif overlap_status == 11:
+            self.y2 = reference_rect[1] - 1
+        elif overlap_status == 12:
+            raise Exception('No solution. Recalibrate ...')
+        elif overlap_status == 13:
+            self.y1 = reference_rect[3] + 1
+
+        elif overlap_status == 14:
+            raise Exception('No solution. Recalibrate ...')
+        elif overlap_status == 15:
+            raise Exception('No solution. Recalibrate ...')

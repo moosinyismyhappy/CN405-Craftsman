@@ -3,7 +3,7 @@
 import cv2
 
 # load image file
-image_frame = cv2.imread('../resources/images/craftsman_hand.png')
+image_frame = cv2.imread('../resources/images/transparent.png')
 click_counter = 0
 x1 = -1
 y1 = -1
@@ -46,18 +46,20 @@ def mouse_click(event, x, y, flags, param):
             # check overlap of new rectangle to exist rectangle
             else:
                 x2, y2 = x, y
+                count = 0
                 for i in range(len(rectangle_list)):
                     new_rectangle = [x1, y1, x2, y2]
                     result = is_rectangle_overlap(rectangle_list[i], new_rectangle)
-                    if not result:
-                        print('No overlap , Rectangle created ...')
-                        # add no overlap rectangle to list
-                        rectangle_list.append((x1, y1, x2, y2))
-                    else:
+                    if result:
                         result = where_rectangle_overlap(rectangle_list[i], new_rectangle)
                         overlap_resolution(result, rectangle_list[i])
                         # add no overlap rectangle to list
                         rectangle_list.append((x1, y1, x2, y2))
+                        count += 1
+
+                if count == 0:
+                    # add no overlap rectangle to list
+                    rectangle_list.append((x1, y1, x2, y2))
 
                 cv2.putText(image_frame, str((x2, y2)), (x2 - 15, y2 - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                             (0, 0, 255))
@@ -111,14 +113,14 @@ def overlap_resolution(overlap_status, reference_rect):
     elif overlap_status == 8:
         x2 = reference_rect[0] - 1
     elif overlap_status == 9:
-        pass
+        raise Exception('No solution. Recalibrate ...')
     elif overlap_status == 10:
         x1 = reference_rect[2] + 1
 
     elif overlap_status == 11:
         y2 = reference_rect[1] - 1
     elif overlap_status == 12:
-        pass
+        raise Exception('No solution. Recalibrate ...')
     elif overlap_status == 13:
         y1 = reference_rect[3] + 1
 
