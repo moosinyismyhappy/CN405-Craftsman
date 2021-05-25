@@ -10,6 +10,8 @@ class GuiColorDetection(Thread):
         super().__init__()
         self.gui = gui
         self.image_storage = input_storage
+        self.calibrate = self.gui.get_reference_calibrate()
+        self.layout = self.gui.get_reference_layout()
         self.tracking = GuiTracking(self.gui, self.image_storage, self)
         self.x_position = -1
         self.y_position = -1
@@ -47,9 +49,10 @@ class GuiColorDetection(Thread):
         self.__hsv_upper_process()
 
     def __hsv_upper_process(self):
-        h_upper = int(self.hsv_list[0] * (1 + self.gui.get_dial_hsv_range()))
-        s_upper = int(self.hsv_list[1] * (1 + self.gui.get_dial_hsv_range()))
-        v_upper = int(self.hsv_list[2] * (1 + self.gui.get_dial_hsv_range()))
+        hsv_range = self.layout.dial_hsv_range.value() / 100
+        h_upper = int(self.hsv_list[0] * (1 + hsv_range))
+        s_upper = int(self.hsv_list[1] * (1 + hsv_range))
+        v_upper = int(self.hsv_list[2] * (1 + hsv_range))
 
         # Set limit maximum of hsv value not more than 255
         if h_upper >= 255: h_upper = 255
@@ -60,9 +63,11 @@ class GuiColorDetection(Thread):
         self.hsv_upper = [h_upper, s_upper, v_upper]
 
     def __hsv_lower_process(self):
-        h_lower = int(self.hsv_list[0] * (1 - self.gui.get_dial_hsv_range()))
-        s_lower = int(self.hsv_list[1] * (1 - self.gui.get_dial_hsv_range()))
-        v_lower = int(self.hsv_list[2] * (1 - self.gui.get_dial_hsv_range()))
+        hsv_range = self.layout.dial_hsv_range.value() / 100
+
+        h_lower = int(self.hsv_list[0] * (1 - hsv_range))
+        s_lower = int(self.hsv_list[1] * (1 - hsv_range))
+        v_lower = int(self.hsv_list[2] * (1 - hsv_range))
 
         # Set limit minimum of hsv value not more than 255
         if h_lower >= 255: h_lower = 255
@@ -101,7 +106,7 @@ class GuiColorDetection(Thread):
             for pic, contour in enumerate(contours):
                 area = cv2.contourArea(contour)
                 # get detect area from dial setting
-                if area > self.gui.get_dial_detect_area():
+                if area > self.layout.dial_detect_area.value():
                     self.x, self.y, self.w, self.h = cv2.boundingRect(contour)
                     center_position = int((2 * self.x + self.w) / 2), int((2 * self.y + self.h) / 2)
                     if self.is_first_detect:
@@ -136,30 +141,30 @@ class GuiColorDetection(Thread):
 
             # draw calibrate area
             image_frame = self.image_storage.get_input_image()
-            if self.tracking.display_input1_area:
-                x1 = self.tracking.input1_calibrate_area[0]
-                y1 = self.tracking.input1_calibrate_area[1]
-                x2 = self.tracking.input1_calibrate_area[2]
-                y2 = self.tracking.input1_calibrate_area[3]
+            if self.calibrate.get_display_input1_area_status():
+                x1 = self.calibrate.get_input1_calibrate_area()[0]
+                y1 = self.calibrate.get_input1_calibrate_area()[1]
+                x2 = self.calibrate.get_input1_calibrate_area()[2]
+                y2 = self.calibrate.get_input1_calibrate_area()[3]
                 cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
 
-            if self.tracking.display_input2_area:
-                x1 = self.tracking.input2_calibrate_area[0]
-                y1 = self.tracking.input2_calibrate_area[1]
-                x2 = self.tracking.input2_calibrate_area[2]
-                y2 = self.tracking.input2_calibrate_area[3]
+            if self.calibrate.get_display_input2_area_status():
+                x1 = self.calibrate.get_input2_calibrate_area()[0]
+                y1 = self.calibrate.get_input2_calibrate_area()[1]
+                x2 = self.calibrate.get_input2_calibrate_area()[2]
+                y2 = self.calibrate.get_input2_calibrate_area()[3]
                 cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 150, 255), 2)
 
-            if self.tracking.display_output_area:
-                x1 = self.tracking.output_calibrate_area[0]
-                y1 = self.tracking.output_calibrate_area[1]
-                x2 = self.tracking.output_calibrate_area[2]
-                y2 = self.tracking.output_calibrate_area[3]
+            if self.calibrate.get_display_output_area_status():
+                x1 = self.calibrate.get_output_calibrate_area()[0]
+                y1 = self.calibrate.get_output_calibrate_area()[1]
+                x2 = self.calibrate.get_output_calibrate_area()[2]
+                y2 = self.calibrate.get_output_calibrate_area()[3]
                 cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 80, 255), 2)
 
-            if self.tracking.display_work_area:
-                x1 = self.tracking.work_calibrate_area[0]
-                y1 = self.tracking.work_calibrate_area[1]
-                x2 = self.tracking.work_calibrate_area[2]
-                y2 = self.tracking.work_calibrate_area[3]
+            if self.calibrate.get_display_work_area_status():
+                x1 = self.calibrate.get_work_calibrate_area()[0]
+                y1 = self.calibrate.get_work_calibrate_area()[1]
+                x2 = self.calibrate.get_work_calibrate_area()[2]
+                y2 = self.calibrate.get_work_calibrate_area()[3]
                 cv2.rectangle(image_frame, (x1, y1), (x2, y2), (150, 80, 255), 2)

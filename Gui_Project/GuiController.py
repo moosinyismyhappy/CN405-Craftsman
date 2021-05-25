@@ -30,16 +30,11 @@ class GuiController(threading.Thread):
         self.toggle_mark_area_status = False
         self.toggle_detect_status = False
         self.toggle_calibrate_status = False
+        self.is_calibrate = False
         self.show_image_type = 0
         self.left_or_right_color = -1
         self.which_marked_area = -1
-        self.is_calibrate = False
 
-        # area position
-        self.input1_position = None
-        self.input2_position = None
-        self.output_position = None
-        self.work_position = None
 
     def run(self):
         # Display Thread and Process ID
@@ -118,10 +113,12 @@ class GuiController(threading.Thread):
             self.ui.text_calibrate.setText('Calibrate is off')
             self.ui.text_calibrate.setStyleSheet('color:red')
             self.is_calibrate = False
+            self.calibrate.set_calibrate_area_status(False)
         else:
             self.ui.text_calibrate.setText('Calibrate is on')
             self.ui.text_calibrate.setStyleSheet('color:lime')
             self.is_calibrate = True
+            self.calibrate.set_calibrate_area_status(True)
 
     def toggle_display_mark_area(self):
         if self.toggle_mark_area_status:
@@ -148,10 +145,10 @@ class GuiController(threading.Thread):
     def clear_mark_button(self):
         self.image_storage.reset_background_image_for_mark()
         # reset all position
-        self.input1_position = (-1, -1)
-        self.input2_position = (-1, -1)
-        self.output_position = (-1, -1)
-        self.work_position = (-1, -1)
+        self.calibrate.set_input1_position((-1, -1))
+        self.calibrate.set_input2_position((-1, -1))
+        self.calibrate.set_output_position((-1, -1))
+        self.calibrate.set_work_position((-1, -1))
 
         # enable all mark button
         self.ui.mark_input1_button.setEnabled(True)
@@ -286,6 +283,7 @@ class GuiController(threading.Thread):
         self.toggle_detect_status = True
         self.toggle_track_status = True
         self.toggle_mark_area_status = True
+        self.is_calibrate = True
         # self.ui.display_mark_area_frame.setVisible(True)
         self.ui.mark_input1_button.setEnabled(True)
         self.ui.mark_input2_button.setEnabled(True)
@@ -363,7 +361,7 @@ class GuiController(threading.Thread):
             cv2.putText(background_image, 'Input1', (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
                         (0, 0, 255))
             cv2.circle(background_image, (x, y), 2, (0, 0, 255), 6)
-            self.set_input1_position((x, y))
+            self.calibrate.set_input1_position((x, y))
             # disable click from input1
             self.which_marked_area = -1
 
@@ -371,7 +369,7 @@ class GuiController(threading.Thread):
             cv2.putText(background_image, 'Input2', (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
                         (0, 150, 255))
             cv2.circle(background_image, (x, y), 2, (0, 150, 255), 6)
-            self.set_input2_position((x, y))
+            self.calibrate.set_input2_position((x, y))
             # disable click from input1
             self.which_marked_area = -1
 
@@ -379,7 +377,7 @@ class GuiController(threading.Thread):
             cv2.putText(background_image, 'Output', (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
                         (0, 80, 255))
             cv2.circle(background_image, (x, y), 2, (0, 80, 255), 6)
-            self.set_output_position((x, y))
+            self.calibrate.set_output_position((x, y))
             # disable click from input1
             self.which_marked_area = -1
 
@@ -387,55 +385,9 @@ class GuiController(threading.Thread):
             cv2.putText(background_image, 'Work', (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
                         (150, 80, 255))
             cv2.circle(background_image, (x, y), 2, (150, 80, 255), 6)
-            self.set_work_position((x, y))
+            self.calibrate.set_work_position((x, y))
             # disable click from input1
             self.which_marked_area = -1
-
-    def set_input1_position(self, position):
-        self.input1_position = position
-
-    def set_input2_position(self, position):
-        self.input2_position = position
-
-    def set_output_position(self, position):
-        self.output_position = position
-
-    def set_work_position(self, position):
-        self.work_position = position
-
-    def get_input1_position(self):
-        return self.input1_position
-
-    def get_input2_position(self):
-        return self.input2_position
-
-    def get_output_position(self):
-        return self.output_position
-
-    def get_work_position(self):
-        return self.work_position
-
-    def get_input1_calibrate_time(self):
-        return self.ui.dial_calibrate_input1.value()
-
-    def get_input2_calibrate_time(self):
-        return self.ui.dial_calibrate_input2.value()
-
-    def get_output_calibrate_time(self):
-        return self.ui.dial_calibrate_output.value()
-
-    def get_work_calibrate_time(self):
-        return self.ui.dial_calibrate_work.value()
-
-    def get_dial_detect_area(self):
-        return self.ui.dial_detect_area.value()
-
-    def get_dial_center_point_boundary(self):
-        return self.ui.dial_center_point_boundary.value()
-
-    def get_dial_hsv_range(self):
-        # hsv_range dial value is 0-100 so divided by 100 convert it to percent
-        return self.ui.dial_hsv_range.value() / 100
 
     def display_calibrated_number_input1(self, number):
         text = str(number) + str('/') + str(self.ui.dial_calibrate_input1.value())
@@ -455,3 +407,6 @@ class GuiController(threading.Thread):
 
     def get_reference_calibrate(self):
         return self.calibrate
+
+    def get_reference_layout(self):
+        return self.ui

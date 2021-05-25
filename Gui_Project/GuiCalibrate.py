@@ -1,6 +1,11 @@
 class GuiCalibrate:
 
     def __init__(self):
+        self.input1_position = (-1, -1)
+        self.input2_position = (-1, -1)
+        self.output_position = (-1, -1)
+        self.work_position = (-1, -1)
+
         self.input1_list = []
         self.input2_list = []
         self.output_list = []
@@ -28,32 +33,41 @@ class GuiCalibrate:
         self.is_position_out_of_boundary = False
         self.minimum_distance = 100
 
-    def set_input1_list(self, new_list):
-        self.input1_list = new_list
+    def set_input1_position(self,new_position):
+        self.input1_position = new_position
+
+    def get_input1_position(self):
+        return self.input1_position
+
+    def set_input2_position(self, new_position):
+        self.input2_position = new_position
+
+    def get_input2_position(self):
+        return self.input2_position
+
+    def set_output_position(self, new_position):
+        self.output_position = new_position
+
+    def get_output_position(self):
+        return self.output_position
+
+    def set_work_position(self, new_position):
+        self.work_position = new_position
+
+    def get_work_position(self):
+        return self.work_position
 
     def get_input1_list(self):
         return self.input1_list
 
-    def set_input2_list(self, new_list):
-        self.input2_list = new_list
-
     def get_input2_list(self):
         return self.input2_list
-
-    def set_output_list(self, new_list):
-        self.input1_list = new_list
 
     def get_output_list(self):
         return self.output_list
 
-    def set_work_list(self, new_list):
-        self.input1_list = new_list
-
     def get_work_list(self):
         return self.work_list
-
-    def set_rectangle_list(self, new_list):
-        self.rectangle_list = new_list
 
     def get_rectangle_list(self):
         return self.rectangle_list
