@@ -43,6 +43,12 @@ class GuiTracking():
         self.count_approaching_output = 0
         self.count_approaching_work = 0
 
+        # temp for overlap resolution
+        self.x1 = -1
+        self.x2 = -1
+        self.y1 = -1
+        self.y2 = -1
+
     def find_direction_number(self, degree):
         ########################################
         #          260    UP    280            #
@@ -321,6 +327,9 @@ class GuiTracking():
             self.count_approaching_output_left = 0
             self.count_approaching_work_left = 0
 
+        # temp variable
+        rectangle_list = self.calibrate.get_rectangle_list()
+
         if len(input1_list) == self.layout.dial_calibrate_input1.value():
             # process boundary of rectangle
             x1, y1, x2, y2 = self.process_rectangle(input1_list)
@@ -331,6 +340,40 @@ class GuiTracking():
             # stop calibrate and clear list
             self.calibrate.set_input1_calibrate_status(False)
             input1_list.clear()
+
+            # first rectangle can draw without overlap process
+            if len(rectangle_list) == 0:
+                # add to rectangle list
+                rectangle_list.append([x1, y1, x2, y2])
+
+                # enable display area
+                self.calibrate.set_display_input1_area_status(True)
+
+            # need to check overlap before enable display
+            else:
+                counter = 0
+                for i in range(len(rectangle_list)):
+                    # temp variable
+                    input1_calibrate_area = self.calibrate.get_input1_calibrate_area()
+
+                    result = self.is_rectangle_overlap(rectangle_list[i], input1_calibrate_area)
+                    if result:
+                        result = self.where_rectangle_overlap(rectangle_list[i], input1_calibrate_area)
+                        self.overlap_resolution(result, rectangle_list[i], input1_calibrate_area)
+
+                        # add overlap rectangle to list
+                        rectangle_list.append((self.x1, self.y1, self.x2, self.y2))
+
+                        # set solution overlap rectangle position input1 calibrate area
+                        self.calibrate.set_input1_calibrate_area((self.x1, self.y1, self.x2, self.y2))
+
+                        # add counter if overlap occur
+                        counter += 1
+
+                # no overlap occur. maintain position
+                if counter == 0:
+                    # add no overlap rectangle to list
+                    rectangle_list.append((x1, y1, x2, y2))
 
             # enable display area
             self.calibrate.set_display_input1_area_status(True)
@@ -346,6 +389,40 @@ class GuiTracking():
             self.calibrate.set_input2_calibrate_status(False)
             input2_list.clear()
 
+            # first rectangle can draw without overlap process
+            if len(rectangle_list) == 0:
+                # add to rectangle list
+                rectangle_list.append([x1, y1, x2, y2])
+
+                # enable display area
+                self.calibrate.set_display_input2_area_status(True)
+
+            # need to check overlap before enable display
+            else:
+                counter = 0
+                for i in range(len(rectangle_list)):
+                    # temp variable
+                    input2_calibrate_area = self.calibrate.get_input2_calibrate_area()
+
+                    result = self.is_rectangle_overlap(rectangle_list[i], input2_calibrate_area)
+                    if result:
+                        result = self.where_rectangle_overlap(rectangle_list[i], input2_calibrate_area)
+                        self.overlap_resolution(result, rectangle_list[i], input2_calibrate_area)
+
+                        # add solution overlap rectangle to list
+                        rectangle_list.append((self.x1, self.y1, self.x2, self.y2))
+
+                        # set solution overlap rectangle position input2 calibrate area
+                        self.calibrate.set_input2_calibrate_area((self.x1, self.y1, self.x2, self.y2))
+
+                        # add counter if overlap occur
+                        counter += 1
+
+                # no overlap occur. maintain position
+                if counter == 0:
+                    # add no overlap rectangle to list
+                    rectangle_list.append((x1, y1, x2, y2))
+
             # enable display area
             self.calibrate.set_display_input2_area_status(True)
 
@@ -360,6 +437,40 @@ class GuiTracking():
             self.calibrate.set_output_calibrate_status(False)
             output_list.clear()
 
+            # first rectangle can draw without overlap process
+            if len(rectangle_list) == 0:
+                # add to rectangle list
+                rectangle_list.append([x1, y1, x2, y2])
+
+                # enable display area
+                self.calibrate.set_display_output_area_status(True)
+
+            # need to check overlap before enable display
+            else:
+                counter = 0
+                for i in range(len(rectangle_list)):
+                    # temp variable
+                    output_calibrate_area = self.calibrate.get_output_calibrate_area()
+
+                    result = self.is_rectangle_overlap(rectangle_list[i], output_calibrate_area)
+                    if result:
+                        result = self.where_rectangle_overlap(rectangle_list[i], output_calibrate_area)
+                        self.overlap_resolution(result, rectangle_list[i], output_calibrate_area)
+
+                        # add overlap rectangle to list
+                        rectangle_list.append((self.x1, self.y1, self.x2, self.y2))
+
+                        # set solution overlap rectangle position output calibrate area
+                        self.calibrate.set_output_calibrate_area((self.x1, self.y1, self.x2, self.y2))
+
+                        # add counter if overlap occur
+                        counter += 1
+
+                # no overlap occur. maintain position
+                if counter == 0:
+                    # add no overlap rectangle to list
+                    rectangle_list.append((x1, y1, x2, y2))
+
             # enable display area
             self.calibrate.set_display_output_area_status(True)
 
@@ -373,6 +484,40 @@ class GuiTracking():
             # stop calibrate and clear list
             self.calibrate.set_work_calibrate_status(False)
             work_list.clear()
+
+            # first rectangle can draw without overlap process
+            if len(rectangle_list) == 0:
+                # add to rectangle list
+                rectangle_list.append([x1, y1, x2, y2])
+
+                # enable display area
+                self.calibrate.set_display_work_area_status(True)
+
+            # need to check overlap before enable display
+            else:
+                counter = 0
+                for i in range(len(rectangle_list)):
+                    # temp variable
+                    work_calibrate_area = self.calibrate.get_work_calibrate_area()
+
+                    result = self.is_rectangle_overlap(rectangle_list[i], work_calibrate_area)
+                    if result:
+                        result = self.where_rectangle_overlap(rectangle_list[i], work_calibrate_area)
+                        self.overlap_resolution(result, rectangle_list[i], work_calibrate_area)
+
+                        # add overlap rectangle to list
+                        rectangle_list.append((self.x1, self.y1, self.x2, self.y2))
+
+                        # set solution overlap rectangle position work calibrate area
+                        self.calibrate.set_work_calibrate_area((self.x1, self.y1, self.x2, self.y2))
+
+                        # add counter if overlap occur
+                        counter += 1
+
+                # no overlap occur. maintain position
+                if counter == 0:
+                    # add no overlap rectangle to list
+                    rectangle_list.append((x1, y1, x2, y2))
 
             # enable display area
             self.calibrate.set_display_work_area_status(True)

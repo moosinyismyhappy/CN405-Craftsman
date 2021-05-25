@@ -53,7 +53,8 @@ def mouse_click(event, x, y, flags, param):
                     if result:
                         result = where_rectangle_overlap(rectangle_list[i], new_rectangle)
                         overlap_resolution(result, rectangle_list[i])
-                        # add no overlap rectangle to list
+                        # add overlap rectangle to list
+                        print('add overlap rectangle to list')
                         rectangle_list.append((x1, y1, x2, y2))
                         count += 1
 
