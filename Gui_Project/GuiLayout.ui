@@ -1446,7 +1446,7 @@
         <number>100</number>
        </property>
        <property name="value">
-        <number>15</number>
+        <number>20</number>
        </property>
       </widget>
       <widget class="QDial" name="dial_calibrate_output">
@@ -1471,7 +1471,7 @@
         <number>100</number>
        </property>
        <property name="value">
-        <number>15</number>
+        <number>20</number>
        </property>
       </widget>
       <widget class="QDial" name="dial_calibrate_work">
@@ -1496,7 +1496,7 @@
         <number>100</number>
        </property>
        <property name="value">
-        <number>20</number>
+        <number>30</number>
        </property>
       </widget>
       <widget class="QLabel" name="text_dial_calibrate_input2">
@@ -1606,9 +1606,9 @@ font: 16pt &quot;Monaco&quot;;</string>
       <widget class="QLabel" name="text_dial_detect_area">
        <property name="geometry">
         <rect>
-         <x>380</x>
+         <x>360</x>
          <y>270</y>
-         <width>51</width>
+         <width>71</width>
          <height>41</height>
         </rect>
        </property>
@@ -1724,7 +1724,7 @@ font: 16pt &quot;Monaco&quot;;</string>
         <number>100</number>
        </property>
        <property name="value">
-        <number>15</number>
+        <number>20</number>
        </property>
       </widget>
       <widget class="QLabel" name="text_dial_calibrate_input1">
@@ -1799,7 +1799,7 @@ font: 16pt &quot;Monaco&quot;;</string>
         <number>50</number>
        </property>
        <property name="value">
-        <number>10</number>
+        <number>15</number>
        </property>
       </widget>
       <widget class="QLabel" name="text_dial_center_point_boundary">

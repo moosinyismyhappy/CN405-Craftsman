@@ -107,7 +107,7 @@ def overlap_resolution(overlap_status, reference_rect):
             y1 = reference_rect[3] + 1
     elif overlap_status == 7:
         if x2 - x1 > y2 - y1:
-            x1 = reference_rect[2] - 1
+            x1 = reference_rect[2] + 1
         else:
             y1 = reference_rect[3] + 1
 

@@ -31,7 +31,7 @@ class GuiCalibrate:
 
         self.center_point_boundary = None
         self.is_position_out_of_boundary = False
-        self.minimum_distance = 100
+        self.minimum_distance = 120
 
     def set_input1_position(self,new_position):
         self.input1_position = new_position

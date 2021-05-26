@@ -245,33 +245,33 @@ def mouse_click(event, x, y, flags, param):
 
     if click_counter == 0:
         if event == cv2.EVENT_LBUTTONDOWN:
-            cv2.putText(background_image, 'Input1' + str((x, y)), (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+            """cv2.putText(background_image, 'Input1' + str((x, y)), (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                         (0, 0, 255))
-            cv2.circle(background_image, (x, y), 2, (0, 0, 255), 2)
+            cv2.circle(background_image, (x, y), 2, (0, 0, 255), 2)"""
             input1_position = x, y
             click_counter = 1
 
     elif click_counter == 1:
         if event == cv2.EVENT_LBUTTONDOWN:
-            cv2.putText(background_image, 'Input2' + str((x, y)), (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+            """cv2.putText(background_image, 'Input2' + str((x, y)), (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                         (0, 150, 255))
-            cv2.circle(background_image, (x, y), 2, (0, 150, 255), 2)
+            cv2.circle(background_image, (x, y), 2, (0, 150, 255), 2)"""
             input2_position = x, y
             click_counter = 2
 
     elif click_counter == 2:
         if event == cv2.EVENT_LBUTTONDOWN:
-            cv2.putText(background_image, 'Output' + str((x, y)), (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+            """cv2.putText(background_image, 'Output' + str((x, y)), (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                         (0, 80, 255))
-            cv2.circle(background_image, (x, y), 2, (0, 80, 255), 2)
+            cv2.circle(background_image, (x, y), 2, (0, 80, 255), 2)"""
             output_position = x, y
             click_counter = 3
 
     elif click_counter == 3:
         if event == cv2.EVENT_LBUTTONDOWN:
-            cv2.putText(background_image, 'Working' + str((x, y)), (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+            """cv2.putText(background_image, 'Working' + str((x, y)), (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                         (150, 80, 255))
-            cv2.circle(background_image, (x, y), 2, (150, 80, 255), 2)
+            cv2.circle(background_image, (x, y), 2, (150, 80, 255), 2)"""
             work_position = x, y
             click_counter = 4
 
@@ -650,8 +650,8 @@ def point_track_right(x, y):
 if __name__ == "__main__":
 
     # Capturing video through webcam
-    webcam = cv2.VideoCapture(file_name)
-    # webcam = cv2.VideoCapture(1)
+    #webcam = cv2.VideoCapture(file_name)
+    webcam = cv2.VideoCapture(1)
     while True:
         # Receive stream image from camera
         _, image_frame = webcam.read()
@@ -784,6 +784,7 @@ if __name__ == "__main__":
             cv2.rectangle(image_frame, (x1, y1), (x2, y2), (150, 80, 255), 2)
 
         final_image = cv2.addWeighted(image_frame, 1.0, background_image, 1.0, 0)
+        cv2.imshow('Multiple color Detection1', background_image)
         cv2.imshow('Multiple color Detection', final_image)
         cv2.setMouseCallback('Multiple color Detection', mouse_click)
 

@@ -49,6 +49,38 @@ class GuiTracking():
         self.y1 = -1
         self.y2 = -1
 
+    # set current position
+    def set_current_position(self, new_position):
+        self.current_position = new_position
+
+    # get current position
+    def get_current_position(self):
+        return self.current_position
+
+    # set previous position
+    def set_previous_position(self, new_position):
+        self.previous_position = new_position
+
+    # get previous position
+    def get_previous_position(self):
+        return self.previous_position
+
+    # set current direction
+    def set_current_direction(self, new_direction):
+        self.curr_direction = new_direction
+
+    # get current direction
+    def get_current_direction(self):
+        return self.curr_direction
+
+    # set previous direction
+    def set_previous_direction(self, new_direction):
+        self.prev_direction = new_direction
+
+    # get previous direction
+    def get_previous_direction(self):
+        return self.prev_direction
+
     def find_direction_number(self, degree):
         ########################################
         #          260    UP    280            #
@@ -84,6 +116,21 @@ class GuiTracking():
         elif 190 <= degree < 260:
             return 8
 
+    def calculate_direction_range(self, area_direction, current_direction):
+        min_direction = current_direction - 1
+        max_direction = current_direction + 1
+
+        if min_direction < 1:
+            min_direction = 8
+
+        if max_direction > 8:
+            max_direction = 1
+
+        if min_direction <= area_direction <= max_direction:
+            return True
+        else:
+            return False
+
     def find_average_point(self, list):
         sum_x = 0
         sum_y = 0
@@ -113,38 +160,6 @@ class GuiTracking():
     def process_rectangle(self, list):
         min_x, max_x, min_y, max_y = self.find_max_min(list)
         return min_x, min_y, max_x, max_y
-
-    # set current position
-    def set_current_position(self, new_position):
-        self.current_position = new_position
-
-    # get current position
-    def get_current_position(self):
-        return self.current_position
-
-    # set previous position
-    def set_previous_position(self, new_position):
-        self.previous_position = new_position
-
-    # get previous position
-    def get_previous_position(self):
-        return self.previous_position
-
-    # set current direction
-    def set_current_direction(self, new_direction):
-        self.current_direction = new_direction
-
-    # get current direction
-    def get_current_direction(self):
-        return self.current_direction
-
-    # set previous direction
-    def set_previous_direction(self, new_direction):
-        self.previous_direction = new_direction
-
-    # get previous direction
-    def get_previous_direction(self):
-        return self.previous_direction
 
     def set_center_point_boundary(self, new_boundary):
         x1 = new_boundary[0] + self.layout.dial_center_point_boundary.value()
@@ -186,7 +201,6 @@ class GuiTracking():
 
     # set to private method for is_out_of_boundary call in class
     def __tracking_direction(self, center_position):
-
         # temp variable
         minimum_distance = self.calibrate.get_minimum_distance()
         calibrate_area_status = self.calibrate.get_calibrate_area_status()
@@ -203,7 +217,7 @@ class GuiTracking():
 
         # set current position and direction to previous, setup for next round
         self.previous_position = self.current_position
-        self.previous_direction = self.current_direction
+        self.prev_direction = self.curr_direction
         self.current_position = center_position
 
         # calculate difference between current point and previous point
@@ -260,14 +274,20 @@ class GuiTracking():
 
         # increase counter when approaching area with lower distance and not change direction
         # except work area due to many direction to approaching. it's use only distance
-        if self.prev_distance_input1 > self.curr_distance_input1 and self.curr_direction_input1 == self.curr_direction:
-            self.count_approaching_input1 += 1
+        if input1_calibrate_status:
+            if self.prev_distance_input1 > self.curr_distance_input1 and self.calculate_direction_range(
+                    self.curr_direction_input1, self.curr_direction):
+                self.count_approaching_input1 += 1
 
-        if self.prev_distance_input2 > self.curr_distance_input2 and self.curr_direction_input2 == self.curr_direction:
-            self.count_approaching_input2 += 1
+        if input2_calibrate_status:
+            if self.prev_distance_input2 > self.curr_distance_input2 and self.calculate_direction_range(
+                    self.curr_direction_input2, self.curr_direction):
+                self.count_approaching_input2 += 1
 
-        if self.prev_distance_output > self.curr_distance_output and self.curr_direction_output == self.curr_direction:
-            self.count_approaching_output += 1
+        if output_calibrate_status:
+            if self.prev_distance_output > self.curr_distance_output and self.calculate_direction_range(
+                    self.curr_direction_output, self.curr_direction):
+                self.count_approaching_output += 1
 
         # do this when direction is changed
         if self.curr_direction != self.prev_direction:
@@ -322,10 +342,10 @@ class GuiTracking():
                         self.gui.display_calibrated_number_work(len(work_list))
 
             # reset approach counter after change direction
-            self.count_approaching_input1_left = 0
-            self.count_approaching_input2_left = 0
-            self.count_approaching_output_left = 0
-            self.count_approaching_work_left = 0
+            self.count_approaching_input1 = 0
+            self.count_approaching_input2 = 0
+            self.count_approaching_output = 0
+            self.count_approaching_work = 0
 
         # temp variable
         rectangle_list = self.calibrate.get_rectangle_list()
