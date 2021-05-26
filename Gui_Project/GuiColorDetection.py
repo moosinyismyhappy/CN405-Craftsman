@@ -123,6 +123,18 @@ class GuiColorDetection(Thread):
                             center_point_boundary = [self.x, self.y, self.x + self.w, self.y + self.h]
                             self.tracking.set_center_point_boundary(center_point_boundary)
 
+                            # when timer is ready check center position is in any created area
+                            if self.calibrate.get_timer_ready_status():
+                                input1_status = self.tracking.is_in_input1_area(center_position)
+                                input2_status = self.tracking.is_in_input2_area(center_position)
+                                output_status = self.tracking.is_in_output_area(center_position)
+                                work_status = self.tracking.is_in_work_area(center_position)
+
+                                self.calibrate.set_input1_area_counter(input1_status)
+                                self.calibrate.set_input2_area_counter(input2_status)
+                                self.calibrate.set_output_area_counter(output_status)
+                                self.calibrate.set_work_area_counter(work_status)
+
                     # check detect button is active
                     if self.gui.get_toggle_detect_status():
                         # Draw rectangle over detect color
@@ -168,3 +180,5 @@ class GuiColorDetection(Thread):
                 x2 = self.calibrate.get_work_calibrate_area()[2]
                 y2 = self.calibrate.get_work_calibrate_area()[3]
                 cv2.rectangle(image_frame, (x1, y1), (x2, y2), (150, 80, 255), 2)
+
+

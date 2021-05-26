@@ -12,6 +12,7 @@ from Gui_Project.GuiImageStorage import GuiImageStorage
 from Gui_Project.GuiInputVideo import GuiInputVideo
 from Gui_Project.GuiLayout import Ui_MainWindow
 from Gui_Project.GuiProcessOutput import GuiProcessOutput
+from Gui_Project.GuiTimer import GuiTimer
 
 
 class GuiController(threading.Thread):
@@ -20,6 +21,7 @@ class GuiController(threading.Thread):
         # declare instance variable for access other class
         self.image_storage = GuiImageStorage()
         self.calibrate = GuiCalibrate()
+        self.timer = None
         self.thread_input_video = None
         self.thread_output_video = None
 
@@ -70,6 +72,7 @@ class GuiController(threading.Thread):
         self.ui.calibrate_button.clicked.connect(self.toggle_calibrate_button)
         self.ui.clear_mark_button.clicked.connect(self.clear_mark_button)
         self.ui.clear_track_button.clicked.connect(self.clear_track_button)
+        self.ui.start_button.clicked.connect(self.start_timer_button)
 
         # set mouse event function
         self.ui.display_camera_frame.mousePressEvent = self.camera_frame_mouse_event
@@ -79,6 +82,7 @@ class GuiController(threading.Thread):
         self.ui.mark_input2_button.setEnabled(False)
         self.ui.mark_output_button.setEnabled(False)
         self.ui.mark_working_button.setEnabled(False)
+        self.ui.start_button.setEnabled(False)
 
         # set stylesheet for text
         self.ui.text_input1_on_camera.setStyleSheet('background: transparent;color: rgb(255, 0, 0);')
@@ -410,3 +414,8 @@ class GuiController(threading.Thread):
 
     def get_reference_layout(self):
         return self.ui
+
+    def start_timer_button(self):
+        self.timer = GuiTimer(self)
+        self.timer.start()
+

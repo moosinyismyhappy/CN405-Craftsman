@@ -13,6 +13,11 @@ class GuiCalibrate:
         self.rectangle_list = []
 
         self.calibrate_area_status = True
+        self.timer_ready_status = False
+        self.input1_counter = 0
+        self.input2_counter = 0
+        self.output_counter = 0
+        self.work_counter = 0
 
         self.input1_calibrate_status = True
         self.input2_calibrate_status = True
@@ -167,3 +172,36 @@ class GuiCalibrate:
 
     def get_minimum_distance(self):
         return self.minimum_distance
+
+    def set_timer_ready_status(self,status):
+        self.timer_ready_status = status
+
+    def get_timer_ready_status(self):
+        return self.timer_ready_status
+
+    def set_input1_area_counter(self,counter):
+        self.input1_counter += counter
+
+    def set_input2_area_counter(self,counter):
+        self.input2_counter += counter
+
+    def set_output_area_counter(self,counter):
+        self.output_counter += counter
+
+    def set_work_area_counter(self,counter):
+        self.work_counter += counter
+
+    def get_input1_area_counter(self):
+        return self.input1_counter
+
+    def get_input2_area_counter(self):
+        return self.input2_counter
+
+    def get_output_area_counter(self):
+        return self.output_counter
+
+    def get_work_area_counter(self):
+        return self.work_counter
+
+
+

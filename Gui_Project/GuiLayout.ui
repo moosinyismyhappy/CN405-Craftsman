@@ -758,7 +758,7 @@
      <widget class="QLabel" name="text_avg_input">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>10</x>
         <y>690</y>
         <width>81</width>
         <height>31</height>
@@ -780,7 +780,7 @@
      <widget class="QLabel" name="text_avg_work">
       <property name="geometry">
        <rect>
-        <x>130</x>
+        <x>200</x>
         <y>690</y>
         <width>81</width>
         <height>31</height>
@@ -802,7 +802,7 @@
      <widget class="QLabel" name="text_avg_output">
       <property name="geometry">
        <rect>
-        <x>240</x>
+        <x>290</x>
         <y>690</y>
         <width>101</width>
         <height>31</height>
@@ -824,7 +824,7 @@
      <widget class="QLabel" name="text_avg_cycle_time">
       <property name="geometry">
        <rect>
-        <x>370</x>
+        <x>390</x>
         <y>690</y>
         <width>131</width>
         <height>31</height>
@@ -846,7 +846,7 @@
      <widget class="QLabel" name="text_display_avg_input">
       <property name="geometry">
        <rect>
-        <x>40</x>
+        <x>30</x>
         <y>720</y>
         <width>51</width>
         <height>31</height>
@@ -868,7 +868,7 @@
      <widget class="QLabel" name="text_display_avg_work">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>220</x>
         <y>720</y>
         <width>61</width>
         <height>31</height>
@@ -912,7 +912,7 @@
      <widget class="QLabel" name="text_display_avg_output">
       <property name="geometry">
        <rect>
-        <x>270</x>
+        <x>310</x>
         <y>720</y>
         <width>61</width>
         <height>31</height>
@@ -934,7 +934,7 @@
      <widget class="QLabel" name="text_display_avg_cycle_time">
       <property name="geometry">
        <rect>
-        <x>410</x>
+        <x>420</x>
         <y>720</y>
         <width>61</width>
         <height>31</height>
@@ -1129,6 +1129,50 @@
        <string>Clear Track</string>
       </property>
      </widget>
+     <widget class="QLabel" name="text_avg_input2">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>690</y>
+        <width>81</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 0, 0);</string>
+      </property>
+      <property name="text">
+       <string>Avg.Input2</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="text_display_avg_input2">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>720</y>
+        <width>51</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(0, 170, 0);</string>
+      </property>
+      <property name="text">
+       <string>0:00</string>
+      </property>
+     </widget>
      <zorder>widget_display</zorder>
      <zorder>setting_button</zorder>
      <zorder>exit_button</zorder>
@@ -1169,6 +1213,8 @@
      <zorder>calibrate_button</zorder>
      <zorder>clear_mark_button</zorder>
      <zorder>clear_track_button</zorder>
+     <zorder>text_avg_input2</zorder>
+     <zorder>text_display_avg_input2</zorder>
     </widget>
     <widget class="QWidget" name="page_2">
      <widget class="QFrame" name="frame">
@@ -1443,7 +1489,7 @@
         <number>5</number>
        </property>
        <property name="maximum">
-        <number>100</number>
+        <number>99</number>
        </property>
        <property name="value">
         <number>20</number>
@@ -1468,7 +1514,7 @@
         <number>5</number>
        </property>
        <property name="maximum">
-        <number>100</number>
+        <number>99</number>
        </property>
        <property name="value">
         <number>20</number>
@@ -1493,7 +1539,7 @@
         <number>5</number>
        </property>
        <property name="maximum">
-        <number>100</number>
+        <number>99</number>
        </property>
        <property name="value">
         <number>30</number>
@@ -1721,7 +1767,7 @@ font: 16pt &quot;Monaco&quot;;</string>
         <number>5</number>
        </property>
        <property name="maximum">
-        <number>100</number>
+        <number>99</number>
        </property>
        <property name="value">
         <number>20</number>

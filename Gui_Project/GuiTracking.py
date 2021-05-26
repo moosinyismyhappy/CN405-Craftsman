@@ -549,7 +549,16 @@ class GuiTracking():
             self.calibrate.set_output_calibrate_status(True)
             self.calibrate.set_work_calibrate_status(True)
             self.calibrate.set_calibrate_area_status(False)
-            print('Calibrate complete all rectangle is occur')
+
+            # set timer status to True
+            self.calibrate.set_timer_ready_status(True)
+
+            # set text calibrate to Timer ready
+            self.layout.text_calibrate.setText('Timer Ready')
+            self.layout.text_calibrate.setStyleSheet('color:lime')
+
+            # enable start button
+            self.layout.start_button.setEnabled(True)
 
     def is_rectangle_overlap(self, rect1, rect2):
         if (rect1[0] >= rect2[2]) or (rect1[2] <= rect2[0]) or (rect1[3] <= rect2[1]) or (rect1[1] >= rect2[3]):
@@ -668,19 +677,70 @@ class GuiTracking():
 
         elif overlap_status == 8:
             self.x2 = reference_rect[0] - 1
-        elif overlap_status == 9:
-            raise Exception('No solution. Recalibrate ...')
+
         elif overlap_status == 10:
             self.x1 = reference_rect[2] + 1
 
         elif overlap_status == 11:
             self.y2 = reference_rect[1] - 1
+
         elif overlap_status == 12:
-            raise Exception('No solution. Recalibrate ...')
-        elif overlap_status == 13:
             self.y1 = reference_rect[3] + 1
 
-        elif overlap_status == 14:
-            raise Exception('No solution. Recalibrate ...')
-        elif overlap_status == 15:
-            raise Exception('No solution. Recalibrate ...')
+    def is_in_input1_area(self,center_position):
+        x1 = self.calibrate.get_input1_calibrate_area()[0]
+        y1 = self.calibrate.get_input1_calibrate_area()[1]
+        x2 = self.calibrate.get_input1_calibrate_area()[2]
+        y2 = self.calibrate.get_input1_calibrate_area()[3]
+
+        x_center = center_position[0]
+        y_center = center_position[1]
+
+        if x1<=x_center<=x2 and y1<=y_center<=y2:
+            return 1
+        else:
+            return -1
+
+    def is_in_input2_area(self,center_position):
+        x1 = self.calibrate.get_input2_calibrate_area()[0]
+        y1 = self.calibrate.get_input2_calibrate_area()[1]
+        x2 = self.calibrate.get_input2_calibrate_area()[2]
+        y2 = self.calibrate.get_input2_calibrate_area()[3]
+
+        x_center = center_position[0]
+        y_center = center_position[1]
+
+        if x1<=x_center<=x2 and y1<=y_center<=y2:
+            return 1
+        else:
+            return -1
+
+    def is_in_output_area(self,center_position):
+        x1 = self.calibrate.get_output_calibrate_area()[0]
+        y1 = self.calibrate.get_output_calibrate_area()[1]
+        x2 = self.calibrate.get_output_calibrate_area()[2]
+        y2 = self.calibrate.get_output_calibrate_area()[3]
+
+        x_center = center_position[0]
+        y_center = center_position[1]
+
+        if x1<=x_center<=x2 and y1<=y_center<=y2:
+            return 1
+        else:
+            return -1
+
+    def is_in_work_area(self, center_position):
+        x1 = self.calibrate.get_work_calibrate_area()[0]
+        y1 = self.calibrate.get_work_calibrate_area()[1]
+        x2 = self.calibrate.get_work_calibrate_area()[2]
+        y2 = self.calibrate.get_work_calibrate_area()[3]
+
+        x_center = center_position[0]
+        y_center = center_position[1]
+
+        if x1 <= x_center <= x2 and y1 <= y_center <= y2:
+            return 1
+        else:
+            return -1
+
+

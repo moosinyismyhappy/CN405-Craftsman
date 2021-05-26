@@ -107,28 +107,23 @@ def overlap_resolution(overlap_status, reference_rect):
             y1 = reference_rect[3] + 1
     elif overlap_status == 7:
         if x2 - x1 > y2 - y1:
-            x1 = reference_rect[2] + 1
+            x1 = reference_rect[2] - 1
         else:
             y1 = reference_rect[3] + 1
 
     elif overlap_status == 8:
         x2 = reference_rect[0] - 1
+
     elif overlap_status == 9:
-        raise Exception('No solution. Recalibrate ...')
-    elif overlap_status == 10:
         x1 = reference_rect[2] + 1
 
-    elif overlap_status == 11:
+    elif overlap_status == 10:
         y2 = reference_rect[1] - 1
-    elif overlap_status == 12:
-        raise Exception('No solution. Recalibrate ...')
-    elif overlap_status == 13:
+
+    elif overlap_status == 11:
         y1 = reference_rect[3] + 1
 
-    elif overlap_status == 14:
-        raise Exception('No solution. Recalibrate ...')
-    elif overlap_status == 15:
-        raise Exception('No solution. Recalibrate ...')
+
 
 
 def is_rectangle_overlap(rect1, rect2):
@@ -185,32 +180,19 @@ def where_rectangle_overlap(rect1, rect2):
     # overlap vertical-left
     elif u1 < x1 < u2 and v1 < y1 < v2 and u1 < u2 < x2 and v1 < y2 < v2:
         return 8
-    # overlap vertical-center
-    elif x1 < u1 < u2 and v1 < y1 < v2 and u1 < u2 < x2 and v1 < y2 < v2:
-        return 9
+
     # overlap vertical-right
     elif x1 < u1 < u2 and v1 < y1 < v2 and u1 < x2 < u2 and v1 < y2 < v2:
-        return 10
+        return 9
 
     # overlap on horizontal
     # overlap horizontal-top
     elif u1 < x1 < u2 and v1 < y1 < v2 and u1 < x2 < u2 and v1 < v2 < y2:
-        return 11
-    # overlap horizontal-center
-    elif u1 < x1 < u2 and y1 < v1 < v2 and u1 < x2 < u2 and v1 < v2 < y2:
-        return 12
+        return 10
+
     # overlap horizontal-bottom
     elif u1 < x1 < u2 and y1 < v1 < v2 and u1 < x2 < u2 and v1 < y2 < v2:
-        return 13
-
-    # overlap inside and outside
-    # overlap inside other rectangle
-    elif u1 < x1 < u2 and v1 < y1 < v2 and u1 < x2 < u2 and v1 < y2 < v2:
-        raise Exception('No solution for overlap inside other rectangle')
-    # overlap outside other rectangle
-    elif x1 < u1 < u2 and y1 < v1 < v2 and u1 < u2 < x2 and v1 < v2 < y2:
-        raise Exception('No solution for overlap outside other rectangle')
-
+        return 11
 
 if __name__ == "__main__":
     while True:
