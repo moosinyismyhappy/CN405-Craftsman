@@ -159,6 +159,7 @@ class GuiColorDetection(Thread):
                 x2 = self.calibrate.get_input1_calibrate_area()[2]
                 y2 = self.calibrate.get_input1_calibrate_area()[3]
                 cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
+                print('input1',x1,y1,x2,y2)
 
             if self.calibrate.get_display_input2_area_status():
                 x1 = self.calibrate.get_input2_calibrate_area()[0]
@@ -166,6 +167,7 @@ class GuiColorDetection(Thread):
                 x2 = self.calibrate.get_input2_calibrate_area()[2]
                 y2 = self.calibrate.get_input2_calibrate_area()[3]
                 cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 150, 255), 2)
+                print('input2', x1, y1, x2, y2)
 
             if self.calibrate.get_display_output_area_status():
                 x1 = self.calibrate.get_output_calibrate_area()[0]
@@ -173,6 +175,7 @@ class GuiColorDetection(Thread):
                 x2 = self.calibrate.get_output_calibrate_area()[2]
                 y2 = self.calibrate.get_output_calibrate_area()[3]
                 cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 80, 255), 2)
+                print('output', x1, y1, x2, y2)
 
             if self.calibrate.get_display_work_area_status():
                 x1 = self.calibrate.get_work_calibrate_area()[0]
@@ -180,5 +183,6 @@ class GuiColorDetection(Thread):
                 x2 = self.calibrate.get_work_calibrate_area()[2]
                 y2 = self.calibrate.get_work_calibrate_area()[3]
                 cv2.rectangle(image_frame, (x1, y1), (x2, y2), (150, 80, 255), 2)
+                print('work', x1, y1, x2, y2)
 
 

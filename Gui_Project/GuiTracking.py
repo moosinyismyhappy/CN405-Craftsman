@@ -671,7 +671,7 @@ class GuiTracking():
                 self.y1 = reference_rect[3] + 1
         elif overlap_status == 7:
             if self.x2 - self.x1 > self.y2 - self.y1:
-                self.x1 = reference_rect[2] - 1
+                self.x1 = reference_rect[2] + 1
             else:
                 self.y1 = reference_rect[3] + 1
 
