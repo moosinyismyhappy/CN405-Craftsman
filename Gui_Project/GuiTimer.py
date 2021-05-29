@@ -15,19 +15,7 @@ class GuiTimer(threading.Thread):
     def run(self):
         # Display Thread and Process ID
         print(threading.current_thread())
-        self.calculate_time()
+        #self.calculate_time()
 
     def calculate_time(self):
-        while True:
-
-            print(self.calibrate.get_work_area_counter())
-
-            """if self.calibrate.get_work_area_counter == 0:
-                self.work_time_now = time.time()
-
-            if self.calibrate.get_work_area_counter == 2:
-                self.work_time_end = time.time()
-
-            total_work_time = self.work_time_end - self.work_time_now
-            self.layout.text_display_avg_work.setText(str(total_work_time))
-            print(total_work_time)"""
+        pass

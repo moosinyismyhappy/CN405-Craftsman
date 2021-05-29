@@ -25,6 +25,13 @@ input2_area = [268, 228, 402, 350]
 output_area = [504, 173, 627, 276]
 work_area = [264, 48, 490, 162]
 
+timer_flag = False
+input1_flag = False
+
+# for timer
+start_time = 0
+end_time = 0
+
 # For left hand
 hsv_lower_left = [-1, -1, -1, -1]
 hsv_upper_left = [-1, -1, -1, -1]
@@ -50,15 +57,24 @@ is_out_right = False
 
 # threading
 def calculate_time():
+    global timer_flag,input1_flag
+    global start_time, end_time
+
     print(threading.current_thread())
     while True:
-        start_time = time.time()
-        time.sleep(1)
-        end_time = time.time()
-        # print(end_time - start_time)
+
+        if timer_flag:
+           print('start timer')
+        else:
+            print('end timer')
+
+
+        #cv2.putText(image_frame, text_time, (50, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255))
 
 
 def is_in_input1_area(center):
+    global timer_flag,input1_flag
+
     x1 = input1_area[0]
     y1 = input1_area[1]
     x2 = input1_area[2]
@@ -67,7 +83,10 @@ def is_in_input1_area(center):
     y_text = center[1] - 15
 
     if x1 < center[0] < x2 and y1 < center[1] < y2:
+        timer_flag = True
         cv2.putText(image_frame, 'In input1', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
+    else:
+        timer_flag = False
 
 
 def is_in_input2_area(center):
@@ -180,8 +199,8 @@ if __name__ == "__main__":
 
                 cv2.circle(image_frame, center, 2, (0, 0, 255), 2)
                 cv2.rectangle(image_frame, (x, y),
-                                           (x + w, y + h),
-                                           (0, 0, 255), 2)
+                              (x + w, y + h),
+                              (0, 0, 255), 2)
 
                 is_in_input1_area(center)
                 is_in_input2_area(center)
@@ -203,8 +222,8 @@ if __name__ == "__main__":
 
                 cv2.circle(image_frame, center, 2, (0, 255, 255), 2)
                 cv2.rectangle(image_frame, (x, y),
-                                           (x + w, y + h),
-                                           (0, 255, 255), 2)
+                              (x + w, y + h),
+                              (0, 255, 255), 2)
 
                 is_in_input1_area(center)
                 is_in_input2_area(center)
