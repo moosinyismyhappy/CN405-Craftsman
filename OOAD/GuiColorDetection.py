@@ -4,6 +4,9 @@ import numpy as np
 from Gui_Project.GuiTracking import GuiTracking
 from threading import Thread
 
+from OOAD.AreaController import AreaController
+from OOAD.Rectangle import Rectangle
+
 
 class GuiColorDetection(Thread):
     def __init__(self, gui, input_storage):
@@ -24,6 +27,18 @@ class GuiColorDetection(Thread):
         self.hsv_upper = None
         self.is_first_detect = True
         self.bgr = [-1, -1, -1]
+
+        self.area_controller = AreaController()
+        self.rect1 = Rectangle(self.image_storage.get_input_image(),-1,-1,-1,-1)
+        self.rect2 = Rectangle(self.image_storage.get_input_image(), -1, -1, -1, -1)
+        self.rect3 = Rectangle(self.image_storage.get_input_image(), -1, -1, -1, -1)
+        self.rect4 = Rectangle(self.image_storage.get_input_image(), -1, -1, -1, -1)
+
+        self.area_controller.add(self.rect1)
+        self.area_controller.add(self.rect2)
+        self.area_controller.add(self.rect3)
+        self.area_controller.add(self.rect4)
+
 
     def run(self):
         # Display Thread and Process ID
@@ -152,33 +167,16 @@ class GuiColorDetection(Thread):
                                       (150, 150, 150), 2)
 
             # draw calibrate area
-            image_frame = self.image_storage.get_input_image()
             if self.calibrate.get_display_input1_area_status():
-                x1 = self.calibrate.get_input1_calibrate_area()[0]
-                y1 = self.calibrate.get_input1_calibrate_area()[1]
-                x2 = self.calibrate.get_input1_calibrate_area()[2]
-                y2 = self.calibrate.get_input1_calibrate_area()[3]
-                cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
+                self.area_controller.update(self.calibrate.get_input1_calibrate_area())
 
             if self.calibrate.get_display_input2_area_status():
-                x1 = self.calibrate.get_input2_calibrate_area()[0]
-                y1 = self.calibrate.get_input2_calibrate_area()[1]
-                x2 = self.calibrate.get_input2_calibrate_area()[2]
-                y2 = self.calibrate.get_input2_calibrate_area()[3]
-                cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 150, 255), 2)
+                self.area_controller.update(self.calibrate.get_input2_calibrate_area())
 
             if self.calibrate.get_display_output_area_status():
-                x1 = self.calibrate.get_output_calibrate_area()[0]
-                y1 = self.calibrate.get_output_calibrate_area()[1]
-                x2 = self.calibrate.get_output_calibrate_area()[2]
-                y2 = self.calibrate.get_output_calibrate_area()[3]
-                cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 80, 255), 2)
+                self.area_controller.update(self.calibrate.get_output_calibrate_area())
 
             if self.calibrate.get_display_work_area_status():
-                x1 = self.calibrate.get_work_calibrate_area()[0]
-                y1 = self.calibrate.get_work_calibrate_area()[1]
-                x2 = self.calibrate.get_work_calibrate_area()[2]
-                y2 = self.calibrate.get_work_calibrate_area()[3]
-                cv2.rectangle(image_frame, (x1, y1), (x2, y2), (150, 80, 255), 2)
+                self.area_controller.update(self.calibrate.get_work_calibrate_area())
 
 

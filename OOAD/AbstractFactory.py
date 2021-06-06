@@ -11,6 +11,9 @@ class AbstractFactory:
         production_instance = GuiControllerProduction()
         return production_instance
 
+    def start(self):
+        pass
+
 
 
    
