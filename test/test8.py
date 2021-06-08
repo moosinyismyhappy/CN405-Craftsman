@@ -21,13 +21,25 @@ input1_area = [192, 51, 245, 141]
 input2_area = [268, 228, 402, 350]
 output_area = [504, 173, 627, 276]
 work_area = [264, 48, 490, 162]
-current_area = -1
+current_area_left = -1
+current_area_right = -1
 timer_button = False
 
 # input1 timer
 input1_start_time = 0
 input1_end_time = 0
 input1_timer_status = -1
+
+# input2 timer
+input2_start_time = 0
+input2_end_time = 0
+input2_timer_status = -1
+input2_check_area = False
+
+# output timer
+output_start_time = 0
+output_end_time = 0
+output_timer_status = -1
 
 # For left hand
 hsv_lower_left = [-1, -1, -1, -1]
@@ -54,8 +66,10 @@ is_out_right = False
 
 def input1_timer():
     global timer_button
-    global current_area, previous_area
+    global current_area_left
     global input1_timer_status, input1_start_time, input1_end_time
+    global input2_timer_status, input2_start_time, input2_end_time, input2_check_area
+    global output_timer_status, output_start_time, output_end_time
 
     print(threading.current_thread())
 
@@ -67,45 +81,105 @@ def input1_timer():
         # check timer button
         if timer_button is True:
 
-            if current_area == 4:
-                if input1_timer_status == -1:
-                    # enable timer for input1
-                    input1_timer_status = 0
-                elif input1_timer_status == 1:
-                    input1_end_time = time.time()
-                    print('end timer ', input1_end_time - input1_start_time)
-                    input1_timer_status = 0
+            # input1 timer
+            # start from work area
+            if current_area_left == 4:
+                input1_timer_status = 0
 
-            elif current_area != 4 and input1_timer_status == 0:
-                print('start timer')
-                input1_start_time = time.time()
-                input1_timer_status = 1
+            # center out of work area
+            else:
+                # set timer to start
+                if input1_timer_status == 0:
+                    print('start timer for input1')
+                    input1_timer_status = 1
+                # continue catch time without start again
+                elif input1_timer_status == 1:
+                    print('catch time')
+
+            # end at work area
+            if current_area_left == 4 and input1_timer_status == 1:
+                print('end timer for input1')
+                input1_timer_status = 0
+
+            #######################################################
+
+            # input2 timer
+            # start from output area
+            if current_area_right == 3:
+                input2_timer_status = 0
+
+            # center out of output area
+            else:
+                # set timer to start
+                if input2_timer_status == 0:
+                    print('start timer for input2')
+                    input2_timer_status = 1
+                # continue catch time without start again
+                elif input2_timer_status == 1:
+                    print('catch time')
+
+            # end at work area
+            if current_area_right == 4 and input2_timer_status == 1:
+                print('end timer for input2')
+                input2_timer_status = 0
 
 
 def where_is_center_in_area_left(center):
-    global current_area
+    global current_area_left
 
     x_text = center[0] - 15
     y_text = center[1] - 15
 
     if is_in_input1_area(center):
         cv2.putText(image_frame, 'In input1', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
-        current_area = 1
+        current_area_left = 1
+
 
     elif is_in_input2_area(center):
         cv2.putText(image_frame, 'In input2', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
-        current_area = 2
+        current_area_left = 2
+
 
     elif is_in_output_area(center):
         cv2.putText(image_frame, 'In output', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
-        current_area = 3
+        current_area_left = 3
+
 
     elif is_in_work_area(center):
         cv2.putText(image_frame, 'In work', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
-        current_area = 4
+        current_area_left = 4
 
     else:
-        current_area = -1
+        current_area_left = -1
+
+
+def where_is_center_in_area_right(center):
+    global current_area_right
+
+    x_text = center[0] - 15
+    y_text = center[1] - 15
+
+    if is_in_input1_area(center):
+        cv2.putText(image_frame, 'In input1', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
+        current_area_right = 1
+
+
+    elif is_in_input2_area(center):
+        cv2.putText(image_frame, 'In input2', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
+        current_area_right = 2
+
+
+    elif is_in_output_area(center):
+        cv2.putText(image_frame, 'In output', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
+        current_area_right = 3
+
+
+    elif is_in_work_area(center):
+        cv2.putText(image_frame, 'In work', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
+        current_area_right = 4
+
+    else:
+        current_area_right = -1
 
 
 def is_in_input1_area(center):
@@ -193,6 +267,7 @@ def mouse_click(event, x, y, flags, param):
     if event == cv2.EVENT_RBUTTONDOWN:
         hsv_lower_right = adjust_lower_hsv(hsv_frame[y, x])
         hsv_upper_right = adjust_upper_hsv(hsv_frame[y, x])
+        timer_button = True
 
 
 if __name__ == "__main__":
@@ -259,6 +334,9 @@ if __name__ == "__main__":
                 cv2.rectangle(image_frame, (x, y),
                               (x + w, y + h),
                               (0, 255, 255), 2)
+
+                # find where area that center at
+                where_is_center_in_area_right(center)
 
         # draw input1_area
         cv2.rectangle(image_frame, (192, 51), (245, 141), (0, 0, 255), 2)
