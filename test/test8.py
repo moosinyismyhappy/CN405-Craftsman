@@ -1,6 +1,3 @@
-# Add new tracking method
-import time
-
 import cv2
 import numpy as np
 import threading
@@ -24,13 +21,13 @@ input1_area = [192, 51, 245, 141]
 input2_area = [268, 228, 402, 350]
 output_area = [504, 173, 627, 276]
 work_area = [264, 48, 490, 162]
+current_area = -1
+timer_button = False
 
-timer_flag = False
-input1_flag = False
-
-# for timer
-start_time = 0
-end_time = 0
+# input1 timer
+input1_start_time = 0
+input1_end_time = 0
+input1_timer_status = -1
 
 # For left hand
 hsv_lower_left = [-1, -1, -1, -1]
@@ -55,38 +52,73 @@ curr_status_right = -1
 is_out_right = False
 
 
-# threading
-def calculate_time():
-    global timer_flag,input1_flag
-    global start_time, end_time
+def input1_timer():
+    global timer_button
+    global current_area, previous_area
+    global input1_timer_status, input1_start_time, input1_end_time
 
     print(threading.current_thread())
+
     while True:
 
-        if timer_flag:
-           print('start timer')
-        else:
-            print('end timer')
+        # for this loop can run without lag
+        time.sleep(0)
+
+        # check timer button
+        if timer_button is True:
+
+            if current_area == 4:
+                if input1_timer_status == -1:
+                    # enable timer for input1
+                    input1_timer_status = 0
+                elif input1_timer_status == 1:
+                    input1_end_time = time.time()
+                    print('end timer ', input1_end_time - input1_start_time)
+                    input1_timer_status = 0
+
+            elif current_area != 4 and input1_timer_status == 0:
+                print('start timer')
+                input1_start_time = time.time()
+                input1_timer_status = 1
 
 
-        #cv2.putText(image_frame, text_time, (50, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255))
+def where_is_center_in_area_left(center):
+    global current_area
+
+    x_text = center[0] - 15
+    y_text = center[1] - 15
+
+    if is_in_input1_area(center):
+        cv2.putText(image_frame, 'In input1', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
+        current_area = 1
+
+    elif is_in_input2_area(center):
+        cv2.putText(image_frame, 'In input2', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
+        current_area = 2
+
+    elif is_in_output_area(center):
+        cv2.putText(image_frame, 'In output', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
+        current_area = 3
+
+    elif is_in_work_area(center):
+        cv2.putText(image_frame, 'In work', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
+        current_area = 4
+
+    else:
+        current_area = -1
 
 
 def is_in_input1_area(center):
-    global timer_flag,input1_flag
-
     x1 = input1_area[0]
     y1 = input1_area[1]
     x2 = input1_area[2]
     y2 = input1_area[3]
-    x_text = center[0] - 15
-    y_text = center[1] - 15
 
+    # do when center inside input1 area
     if x1 < center[0] < x2 and y1 < center[1] < y2:
-        timer_flag = True
-        cv2.putText(image_frame, 'In input1', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
+        return True
     else:
-        timer_flag = False
+        return False
 
 
 def is_in_input2_area(center):
@@ -94,11 +126,12 @@ def is_in_input2_area(center):
     y1 = input2_area[1]
     x2 = input2_area[2]
     y2 = input2_area[3]
-    x_text = center[0] - 15
-    y_text = center[1] - 15
 
+    # do when center inside input2 area
     if x1 < center[0] < x2 and y1 < center[1] < y2:
-        cv2.putText(image_frame, 'In input2', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
+        return True
+    else:
+        return False
 
 
 def is_in_output_area(center):
@@ -106,11 +139,12 @@ def is_in_output_area(center):
     y1 = output_area[1]
     x2 = output_area[2]
     y2 = output_area[3]
-    x_text = center[0] - 15
-    y_text = center[1] - 15
 
+    # do when center inside output area
     if x1 < center[0] < x2 and y1 < center[1] < y2:
-        cv2.putText(image_frame, 'In output', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
+        return True
+    else:
+        return False
 
 
 def is_in_work_area(center):
@@ -118,11 +152,12 @@ def is_in_work_area(center):
     y1 = work_area[1]
     x2 = work_area[2]
     y2 = work_area[3]
-    x_text = center[0] - 15
-    y_text = center[1] - 15
 
+    # do when center inside work area
     if x1 < center[0] < x2 and y1 < center[1] < y2:
-        cv2.putText(image_frame, 'In work', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
+        return True
+    else:
+        return False
 
 
 def set_max_value(input_val):
@@ -146,12 +181,14 @@ def adjust_upper_hsv(input_list):
 
 
 def mouse_click(event, x, y, flags, param):
+    global timer_button
     global hsv_lower_left, hsv_upper_left, hsv_lower_right, hsv_upper_right
 
     # Left Click to get HSV color value from image
     if event == cv2.EVENT_LBUTTONDOWN:
         hsv_lower_left = adjust_lower_hsv(hsv_frame[y, x])
         hsv_upper_left = adjust_upper_hsv(hsv_frame[y, x])
+        timer_button = True
 
     if event == cv2.EVENT_RBUTTONDOWN:
         hsv_lower_right = adjust_lower_hsv(hsv_frame[y, x])
@@ -165,7 +202,7 @@ if __name__ == "__main__":
     # webcam = cv2.VideoCapture(0)
 
     # start timer with thread
-    thr = threading.Thread(target=calculate_time)
+    thr = threading.Thread(target=input1_timer)
     thr.start()
 
     while True:
@@ -202,10 +239,8 @@ if __name__ == "__main__":
                               (x + w, y + h),
                               (0, 0, 255), 2)
 
-                is_in_input1_area(center)
-                is_in_input2_area(center)
-                is_in_output_area(center)
-                is_in_work_area(center)
+                # find where area that center at
+                where_is_center_in_area_left(center)
 
         color_mask2 = cv2.dilate(color_mask2, kernal)
         resultColor2 = cv2.bitwise_and(hsv_frame, hsv_frame,
@@ -224,11 +259,6 @@ if __name__ == "__main__":
                 cv2.rectangle(image_frame, (x, y),
                               (x + w, y + h),
                               (0, 255, 255), 2)
-
-                is_in_input1_area(center)
-                is_in_input2_area(center)
-                is_in_output_area(center)
-                is_in_work_area(center)
 
         # draw input1_area
         cv2.rectangle(image_frame, (192, 51), (245, 141), (0, 0, 255), 2)
