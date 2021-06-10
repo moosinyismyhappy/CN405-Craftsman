@@ -24,6 +24,7 @@ work_area = [264, 48, 490, 162]
 current_area_left = -1
 current_area_right = -1
 timer_button = False
+count = 0
 
 # input1 timer
 input1_start_time = 0
@@ -52,6 +53,11 @@ work_end_time = 0
 work_total_time = 0
 work_timer_status = -1
 
+# cycle timer
+cycle_start_time = 0
+cycle_end_time = 0
+cycle_timer_status = -1
+
 # For left hand
 hsv_lower_left = [-1, -1, -1, -1]
 hsv_upper_left = [-1, -1, -1, -1]
@@ -75,24 +81,24 @@ curr_status_right = -1
 is_out_right = False
 
 
-def input1_timer():
+def my_timer():
     global timer_button
-    global current_area_left
+    global current_area_left, current_area_right
     global input1_timer_status, input1_start_time, input1_end_time, input1_total_time, input1_is_pass_interested_area
     global input2_timer_status, input2_start_time, input2_end_time, input2_total_time, input2_is_pass_interested_area
     global output_timer_status, output_start_time, output_end_time, output_total_time, output_is_pass_interested_area
     global work_timer_status, work_start_time, work_end_time, work_total_time
+    global cycle_start_time, cycle_end_time, cycle_timer_status
 
     print(threading.current_thread())
 
     while True:
 
         # for this loop can run without lag
-        time.sleep(0)
+        # time.sleep(0)
 
         # check timer button
         if timer_button is True:
-
             # timer status = -1 : disable
             # timer status = 0 : standby
             # timer status = 1 : start
@@ -112,9 +118,8 @@ def input1_timer():
                     input1_is_pass_interested_area = False
                     # stamp end time
                     input1_end_time = time.time()
-                    input1_total_time = round((input1_end_time - input1_start_time), 3)
-                    print('Input1 Time:', input1_total_time, 'seconds')
-
+                    input1_total_time = round((input1_end_time - input1_start_time), 2)
+                    # print('Input1 Time:', input1_total_time, 'seconds')
 
             # center out of work area and timer is standby
             elif current_area_left == -1 and input1_timer_status == 0:
@@ -148,6 +153,7 @@ def input1_timer():
                 # stamp start time
                 input2_start_time = time.time()
 
+
             # once timer start still catch time until timer stop
             elif current_area_right == -1 and input2_timer_status == 1:
                 input2_timer_status = 2
@@ -163,8 +169,8 @@ def input1_timer():
                 input2_is_pass_interested_area = False
                 # stamp end time
                 input2_end_time = time.time()
-                input2_total_time = round((input2_end_time - input2_start_time), 3)
-                print('Input2 Time:', input2_total_time, 'seconds')
+                input2_total_time = round((input2_end_time - input2_start_time), 2)
+                # print('Input2 Time:', input2_total_time, 'seconds')
 
             #########################################################
 
@@ -183,6 +189,7 @@ def input1_timer():
                 # stamp start time
                 output_start_time = time.time()
 
+
             # once timer start still catch time until timer stop
             elif current_area_right == -1 and output_timer_status == 1:
                 output_timer_status = 2
@@ -198,8 +205,14 @@ def input1_timer():
                 output_is_pass_interested_area = False
                 # stamp end time
                 output_end_time = time.time()
-                output_total_time = round((output_end_time - output_start_time), 3)
-                print('Output Time:', output_total_time, 'seconds')
+
+                # this case use for fix bug (unknown cause)
+                if (output_end_time - output_start_time) == 0:
+                    # set timer to standby
+                    output_timer_status = 0
+                else:
+                    output_total_time = round((output_end_time - output_start_time), 2)
+                # print('Output Time:', output_total_time, 'seconds')
 
             #########################################################
 
@@ -223,24 +236,24 @@ def input1_timer():
                 work_timer_status = -1
                 # stamp end time
                 work_end_time = time.time()
-                work_total_time = round((work_end_time - work_start_time), 3)
-                print('Work Time:', work_total_time, 'seconds')
+                work_total_time = round((work_end_time - work_start_time), 2)
+                # print('Work Time:', work_total_time, 'seconds')
 
         if not input1_total_time < 0:
             cv2.putText(image_frame, str(input1_total_time) + ' seconds', (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
-                        (0, 0, 255),2)
+                        (0, 0, 255), 2)
 
         if not input2_total_time < 0:
             cv2.putText(image_frame, str(input2_total_time) + ' seconds', (180, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
-                        (255, 255, 255),2)
+                        (255, 255, 255), 2)
 
         if not output_total_time < 0:
             cv2.putText(image_frame, str(output_total_time) + ' seconds', (350, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
-                        (0, 80, 255),2)
+                        (0, 80, 255), 2)
 
         if not work_total_time < 0:
             cv2.putText(image_frame, str(work_total_time) + ' seconds', (500, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
-                        (150, 80, 255),2)
+                        (150, 80, 255), 2)
 
 
 def where_is_center_in_area_left(center):
@@ -282,8 +295,7 @@ def where_is_center_in_area_right(center):
         cv2.putText(image_frame, 'In input1', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
         current_area_right = 1
 
-
-    elif is_in_input2_area(center):
+    if is_in_input2_area(center):
         cv2.putText(image_frame, 'In input2', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
         current_area_right = 2
 
@@ -396,7 +408,7 @@ if __name__ == "__main__":
     # webcam = cv2.VideoCapture(0)
 
     # start timer with thread
-    thr = threading.Thread(target=input1_timer)
+    thr = threading.Thread(target=my_timer)
     thr.start()
 
     while True:
