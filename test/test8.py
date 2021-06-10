@@ -28,20 +28,29 @@ timer_button = False
 # input1 timer
 input1_start_time = 0
 input1_end_time = 0
+input1_total_time = 0
 input1_timer_status = -1
-input1_is_from_input1_area = False
+input1_is_pass_interested_area = False
 
 # input2 timer
 input2_start_time = 0
 input2_end_time = 0
+input2_total_time = 0
 input2_timer_status = -1
-input2_is_from_work_area = False
+input2_is_pass_interested_area = False
 
 # output timer
 output_start_time = 0
 output_end_time = 0
+output_total_time = 0
 output_timer_status = -1
-output_is_in_output_area = False
+output_is_pass_interested_area = False
+
+# work timer
+work_start_time = 0
+work_end_time = 0
+work_total_time = 0
+work_timer_status = -1
 
 # For left hand
 hsv_lower_left = [-1, -1, -1, -1]
@@ -69,9 +78,10 @@ is_out_right = False
 def input1_timer():
     global timer_button
     global current_area_left
-    global input1_timer_status, input1_start_time, input1_end_time, input1_is_from_input1_area
-    global input2_timer_status, input2_start_time, input2_end_time, input2_is_from_work_area
-    global output_timer_status, output_start_time, output_end_time, output_is_in_output_area
+    global input1_timer_status, input1_start_time, input1_end_time, input1_total_time, input1_is_pass_interested_area
+    global input2_timer_status, input2_start_time, input2_end_time, input2_total_time, input2_is_pass_interested_area
+    global output_timer_status, output_start_time, output_end_time, output_total_time, output_is_pass_interested_area
+    global work_timer_status, work_start_time, work_end_time, work_total_time
 
     print(threading.current_thread())
 
@@ -83,70 +93,154 @@ def input1_timer():
         # check timer button
         if timer_button is True:
 
+            # timer status = -1 : disable
+            # timer status = 0 : standby
+            # timer status = 1 : start
+            # timer status = 2 : continue record time
+
             # input1 timer
             # start from work area
             if current_area_left == 4:
-                if input1_is_from_input1_area is False:
+                # first time : enable timer
+                if input1_timer_status == -1:
+                    # set timer to standby
                     input1_timer_status = 0
-                # end at work area
-                elif input1_timer_status == 1:
+
+                elif input1_is_pass_interested_area is True and input1_timer_status == 2:
+                    # disable timer and calculate used time
+                    input1_timer_status = -1
+                    input1_is_pass_interested_area = False
+                    # stamp end time
                     input1_end_time = time.time()
-                    print('Input1 Time :', round((input1_end_time - input1_start_time), 2), 'seconds')
-                    input1_timer_status = 0
+                    input1_total_time = round((input1_end_time - input1_start_time), 3)
+                    print('Input1 Time:', input1_total_time, 'seconds')
 
-            # center out of work area
-            else:
+
+            # center out of work area and timer is standby
+            elif current_area_left == -1 and input1_timer_status == 0:
                 # set timer to start
-                if input1_timer_status == 0:
-                    input1_start_time = time.time()
-                    input1_timer_status = 1
-                    input1_is_from_input1_area = True
+                input1_timer_status = 1
+                # stamp start time
+                input1_start_time = time.time()
 
-            #######################################################
+            # once timer start still catch time until timer stop
+            elif current_area_left == -1 and input1_timer_status == 1:
+                input1_timer_status = 2
 
-            """# input2 timer
+            # center is in input1 area once
+            if current_area_left == 1:
+                input1_is_pass_interested_area = True
+
+            #########################################################
+
+            # input2 timer
             # start from output area
             if current_area_right == 3:
-                input2_timer_status = 0
-                input2_is_from_work_area = True
-
-            # do when center out of output area
-            else:
-                # check center came from work area or not
-                if input2_is_from_work_area is True:
-                    # set timer to start
-                    if input2_timer_status == 0:
-                        input2_start_time = time.time()
-                        input2_timer_status = 1
-
-                # end at work area
-                if current_area_right == 4 and input2_timer_status == 1:
-                    input2_end_time = time.time()
-                    print('Input2 Time :', round((input2_end_time - input2_start_time), 2), 'seconds')
+                # first time : enable timer
+                if input2_timer_status == -1:
+                    # set timer to standby
                     input2_timer_status = 0
-                    input2_is_from_work_area = False"""
 
-            #######################################################
+            # center out of output area and timer is standby
+            elif current_area_right == -1 and input2_timer_status == 0:
+                # set timer to start
+                input2_timer_status = 1
+                # stamp start time
+                input2_start_time = time.time()
+
+            # once timer start still catch time until timer stop
+            elif current_area_right == -1 and input2_timer_status == 1:
+                input2_timer_status = 2
+
+            # center is in input2 area once
+            if current_area_right == 2:
+                input2_is_pass_interested_area = True
+
+            # center is in work area with timer start and already pass input2 area
+            elif current_area_right == 4 and input2_timer_status == 2 and input2_is_pass_interested_area is True:
+                # disable timer and calculate used time
+                input2_timer_status = -1
+                input2_is_pass_interested_area = False
+                # stamp end time
+                input2_end_time = time.time()
+                input2_total_time = round((input2_end_time - input2_start_time), 3)
+                print('Input2 Time:', input2_total_time, 'seconds')
+
+            #########################################################
 
             # output timer
             # start from work area
             if current_area_right == 4:
-                output_timer_status = 0
+                # first time : enable timer
+                if output_timer_status == -1:
+                    # set timer to standby
+                    output_timer_status = 0
 
-            # do when center out of work area
-            else:
+            # center out of work area and timer is standby
+            elif current_area_right == -1 and output_timer_status == 0:
                 # set timer to start
-                if output_timer_status == 0:
-                    print('start timer output')
-                    output_timer_status = 1
+                output_timer_status = 1
+                # stamp start time
+                output_start_time = time.time()
 
-                elif output_timer_status == 1:
-                    pass
+            # once timer start still catch time until timer stop
+            elif current_area_right == -1 and output_timer_status == 1:
+                output_timer_status = 2
 
-                if current_area_right == 3:
-                    output_is_in_output_area = True
-                else:
-                    output_is_in_output_area = False
+            # center is in output area once
+            if current_area_right == 3:
+                output_is_pass_interested_area = True
+
+            # center is out of output area. stop timer and calculate used time
+            elif current_area_right == -1 and output_timer_status == 2 and output_is_pass_interested_area is True:
+                # disable timer
+                output_timer_status = -1
+                output_is_pass_interested_area = False
+                # stamp end time
+                output_end_time = time.time()
+                output_total_time = round((output_end_time - output_start_time), 3)
+                print('Output Time:', output_total_time, 'seconds')
+
+            #########################################################
+
+            # work timer
+            # start from work area
+            if current_area_left == 4 and current_area_right == 4:
+                # first time : enable timer
+                if work_timer_status == -1:
+                    # set timer to start
+                    work_timer_status = 1
+                    # stamp start time
+                    work_start_time = time.time()
+
+                # once timer start still catch time until timer stop
+                elif work_timer_status == 1:
+                    work_timer_status = 2
+
+            # center is out of work area. stop timer and calculate used time
+            elif work_timer_status == 2:
+                # disable timer
+                work_timer_status = -1
+                # stamp end time
+                work_end_time = time.time()
+                work_total_time = round((work_end_time - work_start_time), 3)
+                print('Work Time:', work_total_time, 'seconds')
+
+        if not input1_total_time < 0:
+            cv2.putText(image_frame, str(input1_total_time) + ' seconds', (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                        (0, 0, 255),2)
+
+        if not input2_total_time < 0:
+            cv2.putText(image_frame, str(input2_total_time) + ' seconds', (180, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                        (255, 255, 255),2)
+
+        if not output_total_time < 0:
+            cv2.putText(image_frame, str(output_total_time) + ' seconds', (350, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                        (0, 80, 255),2)
+
+        if not work_total_time < 0:
+            cv2.putText(image_frame, str(work_total_time) + ' seconds', (500, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                        (150, 80, 255),2)
 
 
 def where_is_center_in_area_left(center):
