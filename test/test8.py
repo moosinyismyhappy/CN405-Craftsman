@@ -29,17 +29,19 @@ timer_button = False
 input1_start_time = 0
 input1_end_time = 0
 input1_timer_status = -1
+input1_is_from_input1_area = False
 
 # input2 timer
 input2_start_time = 0
 input2_end_time = 0
 input2_timer_status = -1
-input2_check_area = False
+input2_is_from_work_area = False
 
 # output timer
 output_start_time = 0
 output_end_time = 0
 output_timer_status = -1
+output_is_in_output_area = False
 
 # For left hand
 hsv_lower_left = [-1, -1, -1, -1]
@@ -67,9 +69,9 @@ is_out_right = False
 def input1_timer():
     global timer_button
     global current_area_left
-    global input1_timer_status, input1_start_time, input1_end_time
-    global input2_timer_status, input2_start_time, input2_end_time, input2_check_area
-    global output_timer_status, output_start_time, output_end_time
+    global input1_timer_status, input1_start_time, input1_end_time, input1_is_from_input1_area
+    global input2_timer_status, input2_start_time, input2_end_time, input2_is_from_work_area
+    global output_timer_status, output_start_time, output_end_time, output_is_in_output_area
 
     print(threading.current_thread())
 
@@ -84,44 +86,67 @@ def input1_timer():
             # input1 timer
             # start from work area
             if current_area_left == 4:
-                input1_timer_status = 0
+                if input1_is_from_input1_area is False:
+                    input1_timer_status = 0
+                # end at work area
+                elif input1_timer_status == 1:
+                    input1_end_time = time.time()
+                    print('Input1 Time :', round((input1_end_time - input1_start_time), 2), 'seconds')
+                    input1_timer_status = 0
 
             # center out of work area
             else:
                 # set timer to start
                 if input1_timer_status == 0:
-                    print('start timer for input1')
+                    input1_start_time = time.time()
                     input1_timer_status = 1
-                # continue catch time without start again
-                elif input1_timer_status == 1:
-                    print('catch time')
-
-            # end at work area
-            if current_area_left == 4 and input1_timer_status == 1:
-                print('end timer for input1')
-                input1_timer_status = 0
+                    input1_is_from_input1_area = True
 
             #######################################################
 
-            # input2 timer
+            """# input2 timer
             # start from output area
             if current_area_right == 3:
                 input2_timer_status = 0
+                input2_is_from_work_area = True
 
-            # center out of output area
+            # do when center out of output area
+            else:
+                # check center came from work area or not
+                if input2_is_from_work_area is True:
+                    # set timer to start
+                    if input2_timer_status == 0:
+                        input2_start_time = time.time()
+                        input2_timer_status = 1
+
+                # end at work area
+                if current_area_right == 4 and input2_timer_status == 1:
+                    input2_end_time = time.time()
+                    print('Input2 Time :', round((input2_end_time - input2_start_time), 2), 'seconds')
+                    input2_timer_status = 0
+                    input2_is_from_work_area = False"""
+
+            #######################################################
+
+            # output timer
+            # start from work area
+            if current_area_right == 4:
+                output_timer_status = 0
+
+            # do when center out of work area
             else:
                 # set timer to start
-                if input2_timer_status == 0:
-                    print('start timer for input2')
-                    input2_timer_status = 1
-                # continue catch time without start again
-                elif input2_timer_status == 1:
-                    print('catch time')
+                if output_timer_status == 0:
+                    print('start timer output')
+                    output_timer_status = 1
 
-            # end at work area
-            if current_area_right == 4 and input2_timer_status == 1:
-                print('end timer for input2')
-                input2_timer_status = 0
+                elif output_timer_status == 1:
+                    pass
+
+                if current_area_right == 3:
+                    output_is_in_output_area = True
+                else:
+                    output_is_in_output_area = False
 
 
 def where_is_center_in_area_left(center):
