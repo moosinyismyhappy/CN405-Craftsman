@@ -755,7 +755,7 @@
        <string>No Profile Select</string>
       </property>
      </widget>
-     <widget class="QLabel" name="text_avg_input">
+     <widget class="QLabel" name="text_avg_input1">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -843,7 +843,7 @@
        <string>Avg.Cycle Time</string>
       </property>
      </widget>
-     <widget class="QLabel" name="text_display_avg_input">
+     <widget class="QLabel" name="text_display_avg_input1">
       <property name="geometry">
        <rect>
         <x>30</x>
@@ -1196,11 +1196,11 @@
      <zorder>open_profile_button</zorder>
      <zorder>save_profile_button</zorder>
      <zorder>text_profile</zorder>
-     <zorder>text_avg_input</zorder>
+     <zorder>text_avg_input1</zorder>
      <zorder>text_avg_work</zorder>
      <zorder>text_avg_output</zorder>
      <zorder>text_avg_cycle_time</zorder>
-     <zorder>text_display_avg_input</zorder>
+     <zorder>text_display_avg_input1</zorder>
      <zorder>text_display_avg_work</zorder>
      <zorder>text_avg_input_4</zorder>
      <zorder>text_display_avg_output</zorder>
@@ -1492,7 +1492,7 @@
         <number>99</number>
        </property>
        <property name="value">
-        <number>20</number>
+        <number>5</number>
        </property>
       </widget>
       <widget class="QDial" name="dial_calibrate_output">
@@ -1517,7 +1517,7 @@
         <number>99</number>
        </property>
        <property name="value">
-        <number>20</number>
+        <number>5</number>
        </property>
       </widget>
       <widget class="QDial" name="dial_calibrate_work">
@@ -1542,7 +1542,7 @@
         <number>99</number>
        </property>
        <property name="value">
-        <number>30</number>
+        <number>10</number>
        </property>
       </widget>
       <widget class="QLabel" name="text_dial_calibrate_input2">
@@ -1770,7 +1770,7 @@ font: 16pt &quot;Monaco&quot;;</string>
         <number>99</number>
        </property>
        <property name="value">
-        <number>20</number>
+        <number>5</number>
        </property>
       </widget>
       <widget class="QLabel" name="text_dial_calibrate_input1">

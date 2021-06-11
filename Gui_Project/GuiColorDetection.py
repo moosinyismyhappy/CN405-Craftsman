@@ -24,17 +24,15 @@ class GuiColorDetection(Thread):
         self.hsv_upper = None
         self.is_first_detect = True
         self.bgr = [-1, -1, -1]
-        self.status = None
+        self.side_status = -1
 
     def run(self):
         # Display Thread and Process ID
         print(threading.current_thread())
         self.detect_color()
 
-    def set_status(self, status):
-        # status = 0 : Left
-        # status = 1 : Right
-        self.status = status
+    def set_side_status(self, status):
+        self.side_status = status
 
     def set_color(self, bgr):
         self.bgr = bgr
@@ -145,13 +143,13 @@ class GuiColorDetection(Thread):
                                 self.gui.toggle_track_status = False
                                 self.gui.toggle_mark_area_status = False
 
-                                # for left hand
-                                if self.status == 0:
+                                # left hand
+                                if self.side_status == 0:
                                     # find where area that center at
                                     self.tracking.where_is_center_in_area_left(center_position)
 
-                                # for right hand
-                                elif self.status == 1:
+                                # right hand
+                                elif self.side_status == 1:
                                     # find where area that center at
                                     self.tracking.where_is_center_in_area_right(center_position)
 
@@ -162,7 +160,7 @@ class GuiColorDetection(Thread):
                                       (self.x + self.w, self.y + self.h), (self.get_color()), 2)
 
                         # Draw center point on detect rectangle
-                        cv2.circle(self.image_storage.get_input_image(), center_position, 2, (0, 0, 255), 2)
+                        cv2.circle(self.image_storage.get_input_image(), center_position, 2, (self.get_color()), 2)
 
                         # Draw rectangle boundary over detect
                         # x1 = self.tracking.get_center_point_boundary()[0]
@@ -200,3 +198,4 @@ class GuiColorDetection(Thread):
                 x2 = self.value_for_calibrate.get_work_calibrate_area()[2]
                 y2 = self.value_for_calibrate.get_work_calibrate_area()[3]
                 cv2.rectangle(image_frame, (x1, y1), (x2, y2), (150, 80, 255), 2)
+

@@ -631,14 +631,6 @@ class GuiTracking():
         elif u1 < x1 < u2 and y1 < v1 < v2 and u1 < x2 < u2 and v1 < y2 < v2:
             return 13
 
-        # overlap inside and outside
-        # overlap inside other rectangle
-        elif u1 < x1 < u2 and v1 < y1 < v2 and u1 < x2 < u2 and v1 < y2 < v2:
-            raise Exception('No solution for overlap inside other rectangle')
-        # overlap outside other rectangle
-        elif x1 < u1 < u2 and y1 < v1 < v2 and u1 < u2 < x2 and v1 < v2 < y2:
-            raise Exception('No solution for overlap outside other rectangle')
-
     def overlap_resolution(self, overlap_status, reference_rect, rect):
         self.x1 = rect[0]
         self.y1 = rect[1]
@@ -696,7 +688,7 @@ class GuiTracking():
         x_center = center_position[0]
         y_center = center_position[1]
 
-        if x1 <= x_center <= x2 and y1 <= y_center <= y2:
+        if x1 < x_center < x2 and y1 < y_center < y2:
             return 1
         else:
             return -1
@@ -710,7 +702,7 @@ class GuiTracking():
         x_center = center_position[0]
         y_center = center_position[1]
 
-        if x1 <= x_center <= x2 and y1 <= y_center <= y2:
+        if x1 < x_center < x2 and y1 < y_center < y2:
             return 1
         else:
             return -1
@@ -724,7 +716,7 @@ class GuiTracking():
         x_center = center_position[0]
         y_center = center_position[1]
 
-        if x1 <= x_center <= x2 and y1 <= y_center <= y2:
+        if x1 < x_center < x2 and y1 < y_center < y2:
             return 1
         else:
             return -1
@@ -738,60 +730,42 @@ class GuiTracking():
         x_center = center_position[0]
         y_center = center_position[1]
 
-        if x1 <= x_center <= x2 and y1 <= y_center <= y2:
+        if x1 < x_center < x2 and y1 < y_center < y2:
             return 1
         else:
             return -1
 
+    # for left hand
     def where_is_center_in_area_left(self, center):
-        x_text = center[0] - 15
-        y_text = center[1] - 15
 
         if self.is_in_input1_area(center) == 1:
-            image_frame = self.image_storage.get_input_image()
-            cv2.putText(image_frame, 'In input1', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
             self.value_for_calibrate.set_current_area_left(1)
 
         elif self.is_in_input2_area(center) == 1:
-            image_frame = self.image_storage.get_input_image()
-            cv2.putText(image_frame, 'In input2', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
             self.value_for_calibrate.set_current_area_left(2)
 
         elif self.is_in_output_area(center) == 1:
-            image_frame = self.image_storage.get_input_image()
-            cv2.putText(image_frame, 'In output', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
             self.value_for_calibrate.set_current_area_left(3)
 
         elif self.is_in_work_area(center) == 1:
-            image_frame = self.image_storage.get_input_image()
-            cv2.putText(image_frame, 'In work', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
             self.value_for_calibrate.set_current_area_left(4)
 
         else:
             self.value_for_calibrate.set_current_area_left(-1)
 
+    # for right hand
     def where_is_center_in_area_right(self, center):
-        x_text = center[0] - 15
-        y_text = center[1] - 15
 
         if self.is_in_input1_area(center) == 1:
-            image_frame = self.image_storage.get_input_image()
-            cv2.putText(image_frame, 'In input1', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
             self.value_for_calibrate.set_current_area_right(1)
 
         elif self.is_in_input2_area(center) == 1:
-            image_frame = self.image_storage.get_input_image()
-            cv2.putText(image_frame, 'In input2', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
             self.value_for_calibrate.set_current_area_right(2)
 
         elif self.is_in_output_area(center) == 1:
-            image_frame = self.image_storage.get_input_image()
-            cv2.putText(image_frame, 'In output', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
             self.value_for_calibrate.set_current_area_right(3)
 
         elif self.is_in_work_area(center) == 1:
-            image_frame = self.image_storage.get_input_image()
-            cv2.putText(image_frame, 'In work', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
             self.value_for_calibrate.set_current_area_right(4)
 
         else:

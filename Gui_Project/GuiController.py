@@ -326,7 +326,7 @@ class GuiController(threading.Thread):
                     self.left_color_detection.set_position(x, y)
                     self.left_color_detection.set_hsv()
                     self.left_color_detection.set_color(self.image_storage.get_input_image()[y, x])
-                    self.left_color_detection.set_status(0)
+                    self.left_color_detection.set_side_status(0)
                     self.is_first_left_click = False
                     # disable clear mark button
                     self.ui.clear_mark_button.setEnabled(False)
@@ -348,7 +348,7 @@ class GuiController(threading.Thread):
                     self.right_color_detection.set_position(x, y)
                     self.right_color_detection.set_hsv()
                     self.right_color_detection.set_color(self.image_storage.get_input_image()[y, x])
-                    self.left_color_detection.set_status(1)
+                    self.right_color_detection.set_side_status(1)
                     self.is_first_right_click = False
                     # disable clear mark button
                     self.ui.clear_mark_button.setEnabled(False)

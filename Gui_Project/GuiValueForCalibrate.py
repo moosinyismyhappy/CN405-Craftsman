@@ -53,12 +53,6 @@ class GuiValueForCalibrate:
     def get_current_area_right(self):
         return self.current_area_right
 
-    def set_current_area_right(self,new_area):
-        self.current_area_right = new_area
-
-    def get_current_area_right(self):
-        return self.current_area_right
-
     def set_input1_position(self,new_position):
         self.input1_position = new_position
 
