@@ -8,7 +8,7 @@ class GuiTracking():
         self.gui = gui
         self.image_storage = image_storage
         self.color_detect = color_detect
-        self.calibrate = self.gui.get_reference_calibrate()
+        self.value_for_calibrate = self.gui.get_reference_value_for_calibrate()
         self.layout = self.gui.get_reference_layout()
 
         # center point
@@ -202,18 +202,18 @@ class GuiTracking():
     # set to private method for is_out_of_boundary call in class
     def __tracking_direction(self, center_position):
         # temp variable
-        minimum_distance = self.calibrate.get_minimum_distance()
-        calibrate_area_status = self.calibrate.get_calibrate_area_status()
+        minimum_distance = self.value_for_calibrate.get_minimum_distance()
+        calibrate_area_status = self.value_for_calibrate.get_calibrate_area_status()
 
-        input1_calibrate_status = self.calibrate.get_input1_calibrate_status()
-        input2_calibrate_status = self.calibrate.get_input2_calibrate_status()
-        output_calibrate_status = self.calibrate.get_output_calibrate_status()
-        work_calibrate_status = self.calibrate.get_work_calibrate_status()
+        input1_calibrate_status = self.value_for_calibrate.get_input1_calibrate_status()
+        input2_calibrate_status = self.value_for_calibrate.get_input2_calibrate_status()
+        output_calibrate_status = self.value_for_calibrate.get_output_calibrate_status()
+        work_calibrate_status = self.value_for_calibrate.get_work_calibrate_status()
 
-        input1_list = self.calibrate.get_input1_list()
-        input2_list = self.calibrate.get_input2_list()
-        output_list = self.calibrate.get_output_list()
-        work_list = self.calibrate.get_work_list()
+        input1_list = self.value_for_calibrate.get_input1_list()
+        input2_list = self.value_for_calibrate.get_input2_list()
+        output_list = self.value_for_calibrate.get_output_list()
+        work_list = self.value_for_calibrate.get_work_list()
 
         # set current position and direction to previous, setup for next round
         self.previous_position = self.current_position
@@ -246,10 +246,10 @@ class GuiTracking():
         y = center_position[1]
 
         # reassign input1 to short due to long command to get value from GuiController
-        input1_position = self.calibrate.get_input1_position()
-        input2_position = self.calibrate.get_input2_position()
-        output_position = self.calibrate.get_output_position()
-        work_position = self.calibrate.get_work_position()
+        input1_position = self.value_for_calibrate.get_input1_position()
+        input2_position = self.value_for_calibrate.get_input2_position()
+        output_position = self.value_for_calibrate.get_output_position()
+        work_position = self.value_for_calibrate.get_work_position()
 
         direction_input1_degree = self.calculate_degree(
             math.atan2(input1_position[1] - y, input1_position[0] - x))
@@ -348,17 +348,17 @@ class GuiTracking():
             self.count_approaching_work = 0
 
         # temp variable
-        rectangle_list = self.calibrate.get_rectangle_list()
+        rectangle_list = self.value_for_calibrate.get_rectangle_list()
 
         if len(input1_list) == self.layout.dial_calibrate_input1.value():
             # process boundary of rectangle
             x1, y1, x2, y2 = self.process_rectangle(input1_list)
 
             # keep area of rectangle
-            self.calibrate.set_input1_calibrate_area([x1, y1, x2, y2])
+            self.value_for_calibrate.set_input1_calibrate_area([x1, y1, x2, y2])
 
             # stop calibrate and clear list
-            self.calibrate.set_input1_calibrate_status(False)
+            self.value_for_calibrate.set_input1_calibrate_status(False)
             input1_list.clear()
 
             # first rectangle can draw without overlap process
@@ -367,14 +367,14 @@ class GuiTracking():
                 rectangle_list.append([x1, y1, x2, y2])
 
                 # enable display area
-                self.calibrate.set_display_input1_area_status(True)
+                self.value_for_calibrate.set_display_input1_area_status(True)
 
             # need to check overlap before enable display
             else:
                 counter = 0
                 for i in range(len(rectangle_list)):
                     # temp variable
-                    input1_calibrate_area = self.calibrate.get_input1_calibrate_area()
+                    input1_calibrate_area = self.value_for_calibrate.get_input1_calibrate_area()
 
                     result = self.is_rectangle_overlap(rectangle_list[i], input1_calibrate_area)
                     if result:
@@ -385,7 +385,7 @@ class GuiTracking():
                         rectangle_list.append((self.x1, self.y1, self.x2, self.y2))
 
                         # set solution overlap rectangle position input1 calibrate area
-                        self.calibrate.set_input1_calibrate_area((self.x1, self.y1, self.x2, self.y2))
+                        self.value_for_calibrate.set_input1_calibrate_area((self.x1, self.y1, self.x2, self.y2))
 
                         # add counter if overlap occur
                         counter += 1
@@ -396,17 +396,17 @@ class GuiTracking():
                     rectangle_list.append((x1, y1, x2, y2))
 
             # enable display area
-            self.calibrate.set_display_input1_area_status(True)
+            self.value_for_calibrate.set_display_input1_area_status(True)
 
         if len(input2_list) == self.layout.dial_calibrate_input2.value():
             # process boundary of rectangle
             x1, y1, x2, y2 = self.process_rectangle(input2_list)
 
             # keep area of rectangle
-            self.calibrate.set_input2_calibrate_area([x1, y1, x2, y2])
+            self.value_for_calibrate.set_input2_calibrate_area([x1, y1, x2, y2])
 
             # stop calibrate and clear list
-            self.calibrate.set_input2_calibrate_status(False)
+            self.value_for_calibrate.set_input2_calibrate_status(False)
             input2_list.clear()
 
             # first rectangle can draw without overlap process
@@ -415,14 +415,14 @@ class GuiTracking():
                 rectangle_list.append([x1, y1, x2, y2])
 
                 # enable display area
-                self.calibrate.set_display_input2_area_status(True)
+                self.value_for_calibrate.set_display_input2_area_status(True)
 
             # need to check overlap before enable display
             else:
                 counter = 0
                 for i in range(len(rectangle_list)):
                     # temp variable
-                    input2_calibrate_area = self.calibrate.get_input2_calibrate_area()
+                    input2_calibrate_area = self.value_for_calibrate.get_input2_calibrate_area()
 
                     result = self.is_rectangle_overlap(rectangle_list[i], input2_calibrate_area)
                     if result:
@@ -433,7 +433,7 @@ class GuiTracking():
                         rectangle_list.append((self.x1, self.y1, self.x2, self.y2))
 
                         # set solution overlap rectangle position input2 calibrate area
-                        self.calibrate.set_input2_calibrate_area((self.x1, self.y1, self.x2, self.y2))
+                        self.value_for_calibrate.set_input2_calibrate_area((self.x1, self.y1, self.x2, self.y2))
 
                         # add counter if overlap occur
                         counter += 1
@@ -444,17 +444,17 @@ class GuiTracking():
                     rectangle_list.append((x1, y1, x2, y2))
 
             # enable display area
-            self.calibrate.set_display_input2_area_status(True)
+            self.value_for_calibrate.set_display_input2_area_status(True)
 
         if len(output_list) == self.layout.dial_calibrate_output.value():
             # process boundary of rectangle
             x1, y1, x2, y2 = self.process_rectangle(output_list)
 
             # keep area of rectangle
-            self.calibrate.set_output_calibrate_area([x1, y1, x2, y2])
+            self.value_for_calibrate.set_output_calibrate_area([x1, y1, x2, y2])
 
             # stop calibrate and clear list
-            self.calibrate.set_output_calibrate_status(False)
+            self.value_for_calibrate.set_output_calibrate_status(False)
             output_list.clear()
 
             # first rectangle can draw without overlap process
@@ -463,14 +463,14 @@ class GuiTracking():
                 rectangle_list.append([x1, y1, x2, y2])
 
                 # enable display area
-                self.calibrate.set_display_output_area_status(True)
+                self.value_for_calibrate.set_display_output_area_status(True)
 
             # need to check overlap before enable display
             else:
                 counter = 0
                 for i in range(len(rectangle_list)):
                     # temp variable
-                    output_calibrate_area = self.calibrate.get_output_calibrate_area()
+                    output_calibrate_area = self.value_for_calibrate.get_output_calibrate_area()
 
                     result = self.is_rectangle_overlap(rectangle_list[i], output_calibrate_area)
                     if result:
@@ -481,7 +481,7 @@ class GuiTracking():
                         rectangle_list.append((self.x1, self.y1, self.x2, self.y2))
 
                         # set solution overlap rectangle position output calibrate area
-                        self.calibrate.set_output_calibrate_area((self.x1, self.y1, self.x2, self.y2))
+                        self.value_for_calibrate.set_output_calibrate_area((self.x1, self.y1, self.x2, self.y2))
 
                         # add counter if overlap occur
                         counter += 1
@@ -492,17 +492,17 @@ class GuiTracking():
                     rectangle_list.append((x1, y1, x2, y2))
 
             # enable display area
-            self.calibrate.set_display_output_area_status(True)
+            self.value_for_calibrate.set_display_output_area_status(True)
 
         if len(work_list) == self.layout.dial_calibrate_work.value():
             # process boundary of rectangle
             x1, y1, x2, y2 = self.process_rectangle(work_list)
 
             # keep area of rectangle
-            self.calibrate.set_work_calibrate_area([x1, y1, x2, y2])
+            self.value_for_calibrate.set_work_calibrate_area([x1, y1, x2, y2])
 
             # stop calibrate and clear list
-            self.calibrate.set_work_calibrate_status(False)
+            self.value_for_calibrate.set_work_calibrate_status(False)
             work_list.clear()
 
             # first rectangle can draw without overlap process
@@ -511,14 +511,14 @@ class GuiTracking():
                 rectangle_list.append([x1, y1, x2, y2])
 
                 # enable display area
-                self.calibrate.set_display_work_area_status(True)
+                self.value_for_calibrate.set_display_work_area_status(True)
 
             # need to check overlap before enable display
             else:
                 counter = 0
                 for i in range(len(rectangle_list)):
                     # temp variable
-                    work_calibrate_area = self.calibrate.get_work_calibrate_area()
+                    work_calibrate_area = self.value_for_calibrate.get_work_calibrate_area()
 
                     result = self.is_rectangle_overlap(rectangle_list[i], work_calibrate_area)
                     if result:
@@ -529,7 +529,7 @@ class GuiTracking():
                         rectangle_list.append((self.x1, self.y1, self.x2, self.y2))
 
                         # set solution overlap rectangle position work calibrate area
-                        self.calibrate.set_work_calibrate_area((self.x1, self.y1, self.x2, self.y2))
+                        self.value_for_calibrate.set_work_calibrate_area((self.x1, self.y1, self.x2, self.y2))
 
                         # add counter if overlap occur
                         counter += 1
@@ -540,18 +540,18 @@ class GuiTracking():
                     rectangle_list.append((x1, y1, x2, y2))
 
             # enable display area
-            self.calibrate.set_display_work_area_status(True)
+            self.value_for_calibrate.set_display_work_area_status(True)
 
         # if all area is finished calibrate set calibrate status to False and reset each area to prepare new calibrate
         if input1_calibrate_status == input2_calibrate_status == output_calibrate_status == work_calibrate_status == False:
-            self.calibrate.set_input1_calibrate_status(True)
-            self.calibrate.set_input2_calibrate_status(True)
-            self.calibrate.set_output_calibrate_status(True)
-            self.calibrate.set_work_calibrate_status(True)
-            self.calibrate.set_calibrate_area_status(False)
+            self.value_for_calibrate.set_input1_calibrate_status(True)
+            self.value_for_calibrate.set_input2_calibrate_status(True)
+            self.value_for_calibrate.set_output_calibrate_status(True)
+            self.value_for_calibrate.set_work_calibrate_status(True)
+            self.value_for_calibrate.set_calibrate_area_status(False)
 
             # set timer status to True
-            self.calibrate.set_timer_ready_status(True)
+            self.value_for_calibrate.set_timer_ready_status(True)
 
             # set text calibrate to Timer ready
             self.layout.text_calibrate.setText('Timer Ready')
@@ -687,53 +687,11 @@ class GuiTracking():
         elif overlap_status == 12:
             self.y1 = reference_rect[3] + 1
 
-    def is_in_input1_area(self,center_position):
-        x1 = self.calibrate.get_input1_calibrate_area()[0]
-        y1 = self.calibrate.get_input1_calibrate_area()[1]
-        x2 = self.calibrate.get_input1_calibrate_area()[2]
-        y2 = self.calibrate.get_input1_calibrate_area()[3]
-
-        x_center = center_position[0]
-        y_center = center_position[1]
-
-        if x1<=x_center<=x2 and y1<=y_center<=y2:
-            return 1
-        else:
-            return -1
-
-    def is_in_input2_area(self,center_position):
-        x1 = self.calibrate.get_input2_calibrate_area()[0]
-        y1 = self.calibrate.get_input2_calibrate_area()[1]
-        x2 = self.calibrate.get_input2_calibrate_area()[2]
-        y2 = self.calibrate.get_input2_calibrate_area()[3]
-
-        x_center = center_position[0]
-        y_center = center_position[1]
-
-        if x1<=x_center<=x2 and y1<=y_center<=y2:
-            return 1
-        else:
-            return -1
-
-    def is_in_output_area(self,center_position):
-        x1 = self.calibrate.get_output_calibrate_area()[0]
-        y1 = self.calibrate.get_output_calibrate_area()[1]
-        x2 = self.calibrate.get_output_calibrate_area()[2]
-        y2 = self.calibrate.get_output_calibrate_area()[3]
-
-        x_center = center_position[0]
-        y_center = center_position[1]
-
-        if x1<=x_center<=x2 and y1<=y_center<=y2:
-            return 1
-        else:
-            return -1
-
-    def is_in_work_area(self, center_position):
-        x1 = self.calibrate.get_work_calibrate_area()[0]
-        y1 = self.calibrate.get_work_calibrate_area()[1]
-        x2 = self.calibrate.get_work_calibrate_area()[2]
-        y2 = self.calibrate.get_work_calibrate_area()[3]
+    def is_in_input1_area(self, center_position):
+        x1 = self.value_for_calibrate.get_input1_calibrate_area()[0]
+        y1 = self.value_for_calibrate.get_input1_calibrate_area()[1]
+        x2 = self.value_for_calibrate.get_input1_calibrate_area()[2]
+        y2 = self.value_for_calibrate.get_input1_calibrate_area()[3]
 
         x_center = center_position[0]
         y_center = center_position[1]
@@ -743,4 +701,98 @@ class GuiTracking():
         else:
             return -1
 
+    def is_in_input2_area(self, center_position):
+        x1 = self.value_for_calibrate.get_input2_calibrate_area()[0]
+        y1 = self.value_for_calibrate.get_input2_calibrate_area()[1]
+        x2 = self.value_for_calibrate.get_input2_calibrate_area()[2]
+        y2 = self.value_for_calibrate.get_input2_calibrate_area()[3]
 
+        x_center = center_position[0]
+        y_center = center_position[1]
+
+        if x1 <= x_center <= x2 and y1 <= y_center <= y2:
+            return 1
+        else:
+            return -1
+
+    def is_in_output_area(self, center_position):
+        x1 = self.value_for_calibrate.get_output_calibrate_area()[0]
+        y1 = self.value_for_calibrate.get_output_calibrate_area()[1]
+        x2 = self.value_for_calibrate.get_output_calibrate_area()[2]
+        y2 = self.value_for_calibrate.get_output_calibrate_area()[3]
+
+        x_center = center_position[0]
+        y_center = center_position[1]
+
+        if x1 <= x_center <= x2 and y1 <= y_center <= y2:
+            return 1
+        else:
+            return -1
+
+    def is_in_work_area(self, center_position):
+        x1 = self.value_for_calibrate.get_work_calibrate_area()[0]
+        y1 = self.value_for_calibrate.get_work_calibrate_area()[1]
+        x2 = self.value_for_calibrate.get_work_calibrate_area()[2]
+        y2 = self.value_for_calibrate.get_work_calibrate_area()[3]
+
+        x_center = center_position[0]
+        y_center = center_position[1]
+
+        if x1 <= x_center <= x2 and y1 <= y_center <= y2:
+            return 1
+        else:
+            return -1
+
+    def where_is_center_in_area_left(self, center):
+        x_text = center[0] - 15
+        y_text = center[1] - 15
+
+        if self.is_in_input1_area(center) == 1:
+            image_frame = self.image_storage.get_input_image()
+            cv2.putText(image_frame, 'In input1', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
+            self.value_for_calibrate.set_current_area_left(1)
+
+        elif self.is_in_input2_area(center) == 1:
+            image_frame = self.image_storage.get_input_image()
+            cv2.putText(image_frame, 'In input2', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
+            self.value_for_calibrate.set_current_area_left(2)
+
+        elif self.is_in_output_area(center) == 1:
+            image_frame = self.image_storage.get_input_image()
+            cv2.putText(image_frame, 'In output', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
+            self.value_for_calibrate.set_current_area_left(3)
+
+        elif self.is_in_work_area(center) == 1:
+            image_frame = self.image_storage.get_input_image()
+            cv2.putText(image_frame, 'In work', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
+            self.value_for_calibrate.set_current_area_left(4)
+
+        else:
+            self.value_for_calibrate.set_current_area_left(-1)
+
+    def where_is_center_in_area_right(self, center):
+        x_text = center[0] - 15
+        y_text = center[1] - 15
+
+        if self.is_in_input1_area(center) == 1:
+            image_frame = self.image_storage.get_input_image()
+            cv2.putText(image_frame, 'In input1', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
+            self.value_for_calibrate.set_current_area_right(1)
+
+        elif self.is_in_input2_area(center) == 1:
+            image_frame = self.image_storage.get_input_image()
+            cv2.putText(image_frame, 'In input2', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
+            self.value_for_calibrate.set_current_area_right(2)
+
+        elif self.is_in_output_area(center) == 1:
+            image_frame = self.image_storage.get_input_image()
+            cv2.putText(image_frame, 'In output', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
+            self.value_for_calibrate.set_current_area_right(3)
+
+        elif self.is_in_work_area(center) == 1:
+            image_frame = self.image_storage.get_input_image()
+            cv2.putText(image_frame, 'In work', (x_text, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255))
+            self.value_for_calibrate.set_current_area_right(4)
+
+        else:
+            self.value_for_calibrate.set_current_area_right(-1)

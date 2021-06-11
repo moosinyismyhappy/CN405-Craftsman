@@ -6,7 +6,7 @@ import cv2
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QPixmap
 
-from Gui_Project.GuiCalibrate import GuiCalibrate
+from Gui_Project.GuiValueForCalibrate import GuiValueForCalibrate
 from Gui_Project.GuiColorDetection import GuiColorDetection
 from Gui_Project.GuiImageStorage import GuiImageStorage
 from Gui_Project.GuiInputVideo import GuiInputVideo
@@ -20,7 +20,7 @@ class GuiController(threading.Thread):
         super().__init__()
         # declare instance variable for access other class
         self.image_storage = GuiImageStorage()
-        self.calibrate = GuiCalibrate()
+        self.value_for_calibrate = GuiValueForCalibrate()
         self.timer = None
         self.thread_input_video = None
         self.thread_output_video = None
@@ -117,12 +117,12 @@ class GuiController(threading.Thread):
             self.ui.text_calibrate.setText('Calibrate is off')
             self.ui.text_calibrate.setStyleSheet('color:red')
             self.is_calibrate = False
-            self.calibrate.set_calibrate_area_status(False)
+            self.value_for_calibrate.set_calibrate_area_status(False)
         else:
             self.ui.text_calibrate.setText('Calibrate is on')
             self.ui.text_calibrate.setStyleSheet('color:lime')
             self.is_calibrate = True
-            self.calibrate.set_calibrate_area_status(True)
+            self.value_for_calibrate.set_calibrate_area_status(True)
 
     def toggle_display_mark_area(self):
         if self.toggle_mark_area_status:
@@ -149,10 +149,10 @@ class GuiController(threading.Thread):
     def clear_mark_button(self):
         self.image_storage.reset_background_image_for_mark()
         # reset all position
-        self.calibrate.set_input1_position((-1, -1))
-        self.calibrate.set_input2_position((-1, -1))
-        self.calibrate.set_output_position((-1, -1))
-        self.calibrate.set_work_position((-1, -1))
+        self.value_for_calibrate.set_input1_position((-1, -1))
+        self.value_for_calibrate.set_input2_position((-1, -1))
+        self.value_for_calibrate.set_output_position((-1, -1))
+        self.value_for_calibrate.set_work_position((-1, -1))
 
         # enable all mark button
         self.ui.mark_input1_button.setEnabled(True)
@@ -326,6 +326,7 @@ class GuiController(threading.Thread):
                     self.left_color_detection.set_position(x, y)
                     self.left_color_detection.set_hsv()
                     self.left_color_detection.set_color(self.image_storage.get_input_image()[y, x])
+                    self.left_color_detection.set_status(0)
                     self.is_first_left_click = False
                     # disable clear mark button
                     self.ui.clear_mark_button.setEnabled(False)
@@ -347,6 +348,7 @@ class GuiController(threading.Thread):
                     self.right_color_detection.set_position(x, y)
                     self.right_color_detection.set_hsv()
                     self.right_color_detection.set_color(self.image_storage.get_input_image()[y, x])
+                    self.left_color_detection.set_status(1)
                     self.is_first_right_click = False
                     # disable clear mark button
                     self.ui.clear_mark_button.setEnabled(False)
@@ -365,7 +367,7 @@ class GuiController(threading.Thread):
             cv2.putText(background_image, 'Input1', (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
                         (0, 0, 255))
             cv2.circle(background_image, (x, y), 2, (0, 0, 255), 6)
-            self.calibrate.set_input1_position((x, y))
+            self.value_for_calibrate.set_input1_position((x, y))
             # disable click from input1
             self.which_marked_area = -1
 
@@ -373,7 +375,7 @@ class GuiController(threading.Thread):
             cv2.putText(background_image, 'Input2', (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
                         (0, 150, 255))
             cv2.circle(background_image, (x, y), 2, (0, 150, 255), 6)
-            self.calibrate.set_input2_position((x, y))
+            self.value_for_calibrate.set_input2_position((x, y))
             # disable click from input1
             self.which_marked_area = -1
 
@@ -381,7 +383,7 @@ class GuiController(threading.Thread):
             cv2.putText(background_image, 'Output', (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
                         (0, 80, 255))
             cv2.circle(background_image, (x, y), 2, (0, 80, 255), 6)
-            self.calibrate.set_output_position((x, y))
+            self.value_for_calibrate.set_output_position((x, y))
             # disable click from input1
             self.which_marked_area = -1
 
@@ -389,7 +391,7 @@ class GuiController(threading.Thread):
             cv2.putText(background_image, 'Work', (x - 15, y - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
                         (150, 80, 255))
             cv2.circle(background_image, (x, y), 2, (150, 80, 255), 6)
-            self.calibrate.set_work_position((x, y))
+            self.value_for_calibrate.set_work_position((x, y))
             # disable click from input1
             self.which_marked_area = -1
 
@@ -409,8 +411,8 @@ class GuiController(threading.Thread):
         text = str(number) + str('/') + str(self.ui.dial_calibrate_work.value())
         self.ui.text_calibrate_work_on_camera.setText(text)
 
-    def get_reference_calibrate(self):
-        return self.calibrate
+    def get_reference_value_for_calibrate(self):
+        return self.value_for_calibrate
 
     def get_reference_layout(self):
         return self.ui

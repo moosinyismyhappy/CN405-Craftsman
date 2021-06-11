@@ -1,4 +1,4 @@
-class GuiCalibrate:
+class GuiValueForCalibrate:
 
     def __init__(self):
         self.input1_position = (-1, -1)
@@ -37,6 +37,27 @@ class GuiCalibrate:
         self.center_point_boundary = None
         self.is_position_out_of_boundary = False
         self.minimum_distance = 120
+
+        self.current_area_left = -1
+        self.current_area_right = -1
+
+    def set_current_area_left(self,new_area):
+        self.current_area_left = new_area
+
+    def get_current_area_left(self):
+        return self.current_area_left
+
+    def set_current_area_right(self,new_area):
+        self.current_area_right = new_area
+
+    def get_current_area_right(self):
+        return self.current_area_right
+
+    def set_current_area_right(self,new_area):
+        self.current_area_right = new_area
+
+    def get_current_area_right(self):
+        return self.current_area_right
 
     def set_input1_position(self,new_position):
         self.input1_position = new_position

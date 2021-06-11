@@ -10,7 +10,7 @@ class GuiColorDetection(Thread):
         super().__init__()
         self.gui = gui
         self.image_storage = input_storage
-        self.calibrate = self.gui.get_reference_calibrate()
+        self.value_for_calibrate = self.gui.get_reference_value_for_calibrate()
         self.layout = self.gui.get_reference_layout()
         self.tracking = GuiTracking(self.gui, self.image_storage, self)
         self.x_position = -1
@@ -24,11 +24,17 @@ class GuiColorDetection(Thread):
         self.hsv_upper = None
         self.is_first_detect = True
         self.bgr = [-1, -1, -1]
+        self.status = None
 
     def run(self):
         # Display Thread and Process ID
         print(threading.current_thread())
         self.detect_color()
+
+    def set_status(self, status):
+        # status = 0 : Left
+        # status = 1 : Right
+        self.status = status
 
     def set_color(self, bgr):
         self.bgr = bgr
@@ -124,16 +130,30 @@ class GuiColorDetection(Thread):
                             self.tracking.set_center_point_boundary(center_point_boundary)
 
                             # when timer is ready check center position is in any created area
-                            if self.calibrate.get_timer_ready_status():
+                            if self.value_for_calibrate.get_timer_ready_status():
                                 input1_status = self.tracking.is_in_input1_area(center_position)
                                 input2_status = self.tracking.is_in_input2_area(center_position)
                                 output_status = self.tracking.is_in_output_area(center_position)
                                 work_status = self.tracking.is_in_work_area(center_position)
 
-                                self.calibrate.set_input1_area_counter(input1_status)
-                                self.calibrate.set_input2_area_counter(input2_status)
-                                self.calibrate.set_output_area_counter(output_status)
-                                self.calibrate.set_work_area_counter(work_status)
+                                self.value_for_calibrate.set_input1_area_counter(input1_status)
+                                self.value_for_calibrate.set_input2_area_counter(input2_status)
+                                self.value_for_calibrate.set_output_area_counter(output_status)
+                                self.value_for_calibrate.set_work_area_counter(work_status)
+
+                                # disable display track and mark
+                                self.gui.toggle_track_status = False
+                                self.gui.toggle_mark_area_status = False
+
+                                # for left hand
+                                if self.status == 0:
+                                    # find where area that center at
+                                    self.tracking.where_is_center_in_area_left(center_position)
+
+                                # for right hand
+                                elif self.status == 1:
+                                    # find where area that center at
+                                    self.tracking.where_is_center_in_area_right(center_position)
 
                     # check detect button is active
                     if self.gui.get_toggle_detect_status():
@@ -145,40 +165,38 @@ class GuiColorDetection(Thread):
                         cv2.circle(self.image_storage.get_input_image(), center_position, 2, (0, 0, 255), 2)
 
                         # Draw rectangle boundary over detect
-                        cv2.rectangle(self.image_storage.get_input_image(), (
-                            self.tracking.get_center_point_boundary()[0], self.tracking.get_center_point_boundary()[1]),
-                                      (self.tracking.get_center_point_boundary()[2],
-                                       self.tracking.get_center_point_boundary()[3]),
-                                      (150, 150, 150), 2)
+                        # x1 = self.tracking.get_center_point_boundary()[0]
+                        # y1 = self.tracking.get_center_point_boundary()[1]
+                        # x2 = self.tracking.get_center_point_boundary()[2]
+                        # y2 = self.tracking.get_center_point_boundary()[3]
+                        # cv2.rectangle(self.image_storage.get_input_image(), (x1, y1), (x2, y2), (150, 150, 150), 2)
 
-            # draw calibrate area
+            # draw calibrated area
             image_frame = self.image_storage.get_input_image()
-            if self.calibrate.get_display_input1_area_status():
-                x1 = self.calibrate.get_input1_calibrate_area()[0]
-                y1 = self.calibrate.get_input1_calibrate_area()[1]
-                x2 = self.calibrate.get_input1_calibrate_area()[2]
-                y2 = self.calibrate.get_input1_calibrate_area()[3]
+            if self.value_for_calibrate.get_display_input1_area_status():
+                x1 = self.value_for_calibrate.get_input1_calibrate_area()[0]
+                y1 = self.value_for_calibrate.get_input1_calibrate_area()[1]
+                x2 = self.value_for_calibrate.get_input1_calibrate_area()[2]
+                y2 = self.value_for_calibrate.get_input1_calibrate_area()[3]
                 cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
 
-            if self.calibrate.get_display_input2_area_status():
-                x1 = self.calibrate.get_input2_calibrate_area()[0]
-                y1 = self.calibrate.get_input2_calibrate_area()[1]
-                x2 = self.calibrate.get_input2_calibrate_area()[2]
-                y2 = self.calibrate.get_input2_calibrate_area()[3]
+            if self.value_for_calibrate.get_display_input2_area_status():
+                x1 = self.value_for_calibrate.get_input2_calibrate_area()[0]
+                y1 = self.value_for_calibrate.get_input2_calibrate_area()[1]
+                x2 = self.value_for_calibrate.get_input2_calibrate_area()[2]
+                y2 = self.value_for_calibrate.get_input2_calibrate_area()[3]
                 cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 150, 255), 2)
 
-            if self.calibrate.get_display_output_area_status():
-                x1 = self.calibrate.get_output_calibrate_area()[0]
-                y1 = self.calibrate.get_output_calibrate_area()[1]
-                x2 = self.calibrate.get_output_calibrate_area()[2]
-                y2 = self.calibrate.get_output_calibrate_area()[3]
+            if self.value_for_calibrate.get_display_output_area_status():
+                x1 = self.value_for_calibrate.get_output_calibrate_area()[0]
+                y1 = self.value_for_calibrate.get_output_calibrate_area()[1]
+                x2 = self.value_for_calibrate.get_output_calibrate_area()[2]
+                y2 = self.value_for_calibrate.get_output_calibrate_area()[3]
                 cv2.rectangle(image_frame, (x1, y1), (x2, y2), (0, 80, 255), 2)
 
-            if self.calibrate.get_display_work_area_status():
-                x1 = self.calibrate.get_work_calibrate_area()[0]
-                y1 = self.calibrate.get_work_calibrate_area()[1]
-                x2 = self.calibrate.get_work_calibrate_area()[2]
-                y2 = self.calibrate.get_work_calibrate_area()[3]
+            if self.value_for_calibrate.get_display_work_area_status():
+                x1 = self.value_for_calibrate.get_work_calibrate_area()[0]
+                y1 = self.value_for_calibrate.get_work_calibrate_area()[1]
+                x2 = self.value_for_calibrate.get_work_calibrate_area()[2]
+                y2 = self.value_for_calibrate.get_work_calibrate_area()[3]
                 cv2.rectangle(image_frame, (x1, y1), (x2, y2), (150, 80, 255), 2)
-
-
