@@ -78,6 +78,11 @@ class GuiTimer(threading.Thread):
                         # display time to gui with x:xx format
                         text_input1_total_time = str(self.input1_total_time)
                         text_input1_total_time = text_input1_total_time.split('.')
+
+                        # add one digit at last if there is only one digit to display
+                        if len(text_input1_total_time[1]) == 1:
+                            text_input1_total_time[1] = text_input1_total_time[1] + '0'
+
                         text_input1_total_time = text_input1_total_time[0] + ':' + text_input1_total_time[1]
                         self.layout.text_display_avg_input1.setText(str(text_input1_total_time))
                         # print('Input1 Time:', self.input1_total_time, 'seconds')
@@ -135,6 +140,11 @@ class GuiTimer(threading.Thread):
                     # display time to gui with x:xx format
                     text_input2_total_time = str(self.input2_total_time)
                     text_input2_total_time = text_input2_total_time.split('.')
+
+                    # add one digit at last if there is only one digit to display
+                    if len(text_input2_total_time[1]) == 1:
+                        text_input2_total_time[1] = text_input2_total_time[1] + '0'
+
                     text_input2_total_time = text_input2_total_time[0] + ':' + text_input2_total_time[1]
                     self.layout.text_display_avg_input2.setText(str(text_input2_total_time))
                     # print('Input2 Time:', self.input2_total_time, 'seconds')
@@ -180,16 +190,17 @@ class GuiTimer(threading.Thread):
                     else:
                         self.output_total_time = round((self.output_end_time - self.output_start_time), 2)
 
-                    # display time to gui with x:xx format
-                    text_output_total_time = str(self.output_total_time)
-
-                    try:
+                        # display time to gui with x:xx format
+                        text_output_total_time = str(self.output_total_time)
                         text_output_total_time = text_output_total_time.split('.')
+
+                        # add one digit at last if there is only one digit to display
+                        if len(text_output_total_time[1]) == 1:
+                            text_output_total_time[1] = text_output_total_time[1] + '0'
+
                         text_output_total_time = text_output_total_time[0] + ':' + text_output_total_time[1]
                         self.layout.text_display_avg_output.setText(str(text_output_total_time))
                         # print('Output Time:', self.output_total_time, 'seconds')
-                    except:
-                        self.layout.text_display_avg_output.setText('Error')
 
                 #########################################################
 
@@ -210,7 +221,7 @@ class GuiTimer(threading.Thread):
                 # center is out of work area. stop timer and calculate used time
                 elif self.work_timer_status == 2:
                     # disable timer
-                    self. work_timer_status = -1
+                    self.work_timer_status = -1
                     # stamp end time
                     self.work_end_time = time.time()
                     self.work_total_time = round((self.work_end_time - self.work_start_time), 2)
@@ -218,6 +229,11 @@ class GuiTimer(threading.Thread):
                     # display time to gui with x:xx format
                     text_work_total_time = str(self.work_total_time)
                     text_work_total_time = text_work_total_time.split('.')
+
+                    # add one digit at last if there is only one digit to display
+                    if len(text_work_total_time[1]) == 1:
+                        text_work_total_time[1] = text_work_total_time[1] + '0'
+
                     text_work_total_time = text_work_total_time[0] + ':' + text_work_total_time[1]
                     self.layout.text_display_avg_work.setText(str(text_work_total_time))
                     # print('Work Time:', self.work_total_time, 'seconds')
