@@ -11,7 +11,7 @@ class GuiInputVideo(Thread):
         self.image_storage = image_storage
         self.camera_number = self.gui.ui.dial_camera_number.value()
         #self.webcam = cv2.VideoCapture(self.camera_number)
-        self.webcam = cv2.VideoCapture('../resources/videos/Full_working1.mp4')
+        self.webcam = cv2.VideoCapture('../resources/videos/Full_working2.mp4')
         #self.webcam = cv2.VideoCapture('../resources/videos/pen_working.mp4')
 
     def run(self):

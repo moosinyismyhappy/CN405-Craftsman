@@ -54,6 +54,52 @@ class GuiTimer(threading.Thread):
         self.cycle_timer_status = -1
         self.cycle_is_pass_interested_area = False
 
+    def reset_timer(self):
+        print('reset timer')
+        # input1 timer
+        self.input1_start_time = 0
+        self.input1_end_time = 0
+        self.input1_total_time = 0
+        self.input1_in_round_time = 0
+        self.input1_counter = 0
+        self.input1_timer_status = -1
+        self.input1_is_pass_interested_area = False
+
+        # input2 timer
+        self.input2_start_time = 0
+        self.input2_end_time = 0
+        self.input2_total_time = 0
+        self.input2_in_round_time = 0
+        self.input2_counter = 0
+        self.input2_timer_status = -1
+        self.input2_is_pass_interested_area = False
+
+        # output timer
+        self.output_start_time = 0
+        self.output_end_time = 0
+        self.output_total_time = 0
+        self.output_in_round_time = 0
+        self.output_counter = 0
+        self.output_timer_status = -1
+        self.output_is_pass_interested_area = False
+
+        # work timer
+        self.work_start_time = 0
+        self.work_end_time = 0
+        self.work_total_time = 0
+        self.work_in_round_time = 0
+        self.work_counter = 0
+        self.work_timer_status = -1
+
+        # cycle timer
+        self.cycle_start_time = 0
+        self.cycle_end_time = 0
+        self.cycle_total_time = 0
+        self.cycle_in_round_time = 0
+        self.cycle_counter = 0
+        self.cycle_timer_status = -1
+        self.cycle_is_pass_interested_area = False
+
     def run(self):
         # Display Thread and Process ID
         print(threading.current_thread())

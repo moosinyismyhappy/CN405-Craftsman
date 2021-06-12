@@ -554,8 +554,8 @@ class GuiTracking():
             self.value_for_calibrate.set_timer_ready_status(True)
 
             # set text calibrate to Timer ready
-            self.layout.text_calibrate.setText('Timer Ready')
-            self.layout.text_calibrate.setStyleSheet('color:lime')
+            self.layout.text_calibrate.setText('Calibrate is off')
+            self.layout.text_calibrate.setStyleSheet('color:red')
 
             # enable start button
             self.layout.start_button.setEnabled(True)

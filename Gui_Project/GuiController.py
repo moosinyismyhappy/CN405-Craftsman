@@ -162,7 +162,6 @@ class GuiController(threading.Thread):
         if self.toggle_mark_area_status:
             self.ui.text_mark_area.setText('Mark is off')
             self.ui.text_mark_area.setStyleSheet('color:red')
-            # self.ui.display_mark_area_frame.setVisible(False)
             self.ui.mark_input1_button.setEnabled(False)
             self.ui.mark_input2_button.setEnabled(False)
             self.ui.mark_output_button.setEnabled(False)
@@ -454,4 +453,5 @@ class GuiController(threading.Thread):
     def start_timer_button(self):
         self.timer = GuiTimer(self)
         self.timer.start()
+        self.ui.start_button.setEnabled(False)
 

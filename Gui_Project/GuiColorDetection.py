@@ -139,6 +139,9 @@ class GuiColorDetection(Thread):
                                 self.value_for_calibrate.set_output_area_counter(output_status)
                                 self.value_for_calibrate.set_work_area_counter(work_status)
 
+                                # clear rectangle list
+                                self.value_for_calibrate.get_rectangle_list().clear()
+
                                 # disable text on camera
                                 self.layout.text_input1_on_camera.setVisible(False)
                                 self.layout.text_input2_on_camera.setVisible(False)
@@ -220,4 +223,3 @@ class GuiColorDetection(Thread):
                 x2 = self.value_for_calibrate.get_work_calibrate_area()[2]
                 y2 = self.value_for_calibrate.get_work_calibrate_area()[3]
                 cv2.rectangle(image_frame, (x1, y1), (x2, y2), (150, 80, 255), 2)
-
