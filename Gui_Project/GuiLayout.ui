@@ -292,6 +292,246 @@
         <string/>
        </property>
       </widget>
+      <widget class="QLabel" name="text_input1_time">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>420</y>
+         <width>51</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 0, 0);</string>
+       </property>
+       <property name="text">
+        <string>Input1</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="text_input2_time">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>420</y>
+         <width>51</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 0, 0);</string>
+       </property>
+       <property name="text">
+        <string>Input2</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="text_output_time">
+       <property name="geometry">
+        <rect>
+         <x>310</x>
+         <y>420</y>
+         <width>61</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 0, 0);</string>
+       </property>
+       <property name="text">
+        <string>Output</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="text_work_time">
+       <property name="geometry">
+        <rect>
+         <x>450</x>
+         <y>420</y>
+         <width>51</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 0, 0);</string>
+       </property>
+       <property name="text">
+        <string>Work</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="text_cycle_time">
+       <property name="geometry">
+        <rect>
+         <x>560</x>
+         <y>420</y>
+         <width>51</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 0, 0);</string>
+       </property>
+       <property name="text">
+        <string>Cycle</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="text_display_input1_time">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>450</y>
+         <width>51</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>14</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(0, 170, 0);</string>
+       </property>
+       <property name="text">
+        <string>0.00</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="text_display_input2_time">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>450</y>
+         <width>51</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>14</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(0, 170, 0);</string>
+       </property>
+       <property name="text">
+        <string>0.00</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="text_display_output_time">
+       <property name="geometry">
+        <rect>
+         <x>310</x>
+         <y>450</y>
+         <width>61</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>14</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(0, 170, 0);</string>
+       </property>
+       <property name="text">
+        <string>0.00</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="text_display_work_time">
+       <property name="geometry">
+        <rect>
+         <x>450</x>
+         <y>450</y>
+         <width>61</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>14</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(0, 170, 0);</string>
+       </property>
+       <property name="text">
+        <string>0.00</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="text_display_cycle_time">
+       <property name="geometry">
+        <rect>
+         <x>560</x>
+         <y>450</y>
+         <width>61</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>14</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(0, 170, 0);</string>
+       </property>
+       <property name="text">
+        <string>0.00</string>
+       </property>
+      </widget>
      </widget>
      <widget class="QPushButton" name="exit_button">
       <property name="geometry">
@@ -755,188 +995,12 @@
        <string>No Profile Select</string>
       </property>
      </widget>
-     <widget class="QLabel" name="text_avg_input1">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>690</y>
-        <width>81</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: rgb(255, 0, 0);</string>
-      </property>
-      <property name="text">
-       <string>Avg.Input</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="text_avg_work">
-      <property name="geometry">
-       <rect>
-        <x>200</x>
-        <y>690</y>
-        <width>81</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: rgb(255, 0, 0);</string>
-      </property>
-      <property name="text">
-       <string>Avg.Work</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="text_avg_output">
-      <property name="geometry">
-       <rect>
-        <x>290</x>
-        <y>690</y>
-        <width>101</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: rgb(255, 0, 0);</string>
-      </property>
-      <property name="text">
-       <string>Avg.Output</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="text_avg_cycle_time">
-      <property name="geometry">
-       <rect>
-        <x>390</x>
-        <y>690</y>
-        <width>131</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: rgb(255, 0, 0);</string>
-      </property>
-      <property name="text">
-       <string>Avg.Cycle Time</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="text_display_avg_input1">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>720</y>
-        <width>51</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: rgb(0, 170, 0);</string>
-      </property>
-      <property name="text">
-       <string>0:00</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="text_display_avg_work">
-      <property name="geometry">
-       <rect>
-        <x>220</x>
-        <y>720</y>
-        <width>61</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: rgb(0, 170, 0);</string>
-      </property>
-      <property name="text">
-       <string>0:00</string>
-      </property>
-     </widget>
      <widget class="QLabel" name="text_avg_input_4">
       <property name="geometry">
        <rect>
         <x>250</x>
         <y>750</y>
         <width>41</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: rgb(0, 170, 0);</string>
-      </property>
-      <property name="text">
-       <string>0:00</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="text_display_avg_output">
-      <property name="geometry">
-       <rect>
-        <x>310</x>
-        <y>720</y>
-        <width>61</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: rgb(0, 170, 0);</string>
-      </property>
-      <property name="text">
-       <string>0:00</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="text_display_avg_cycle_time">
-      <property name="geometry">
-       <rect>
-        <x>420</x>
-        <y>720</y>
-        <width>61</width>
         <height>31</height>
        </rect>
       </property>
@@ -1129,33 +1193,11 @@
        <string>Clear Track</string>
       </property>
      </widget>
-     <widget class="QLabel" name="text_avg_input2">
+     <widget class="QLabel" name="text_input1_avg_time">
       <property name="geometry">
        <rect>
-        <x>100</x>
-        <y>690</y>
-        <width>81</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: rgb(255, 0, 0);</string>
-      </property>
-      <property name="text">
-       <string>Avg.Input2</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="text_display_avg_input2">
-      <property name="geometry">
-       <rect>
-        <x>120</x>
-        <y>720</y>
+        <x>20</x>
+        <y>680</y>
         <width>51</width>
         <height>31</height>
        </rect>
@@ -1164,13 +1206,231 @@
        <font>
         <family>Arial</family>
         <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 0, 0);</string>
+      </property>
+      <property name="text">
+       <string>Input1</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="text_input2_avg_time">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>680</y>
+        <width>51</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 0, 0);</string>
+      </property>
+      <property name="text">
+       <string>Input2</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="text_output_avg_time">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>680</y>
+        <width>61</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 0, 0);</string>
+      </property>
+      <property name="text">
+       <string>Output</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="text_work_avg_time">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>680</y>
+        <width>51</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 0, 0);</string>
+      </property>
+      <property name="text">
+       <string>Work</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="text_cycle_avg_time">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>680</y>
+        <width>51</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 0, 0);</string>
+      </property>
+      <property name="text">
+       <string>Cycle</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="text_display_input1_avg_time">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>710</y>
+        <width>51</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>14</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
        </font>
       </property>
       <property name="styleSheet">
        <string notr="true">color: rgb(0, 170, 0);</string>
       </property>
       <property name="text">
-       <string>0:00</string>
+       <string>0.00</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="text_display_input2_avg_time">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>710</y>
+        <width>51</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>14</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(0, 170, 0);</string>
+      </property>
+      <property name="text">
+       <string>0.00</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="text_display_output_avg_time">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>710</y>
+        <width>51</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>14</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(0, 170, 0);</string>
+      </property>
+      <property name="text">
+       <string>0.00</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="text_display_work_avg_time">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>710</y>
+        <width>51</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>14</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(0, 170, 0);</string>
+      </property>
+      <property name="text">
+       <string>0.00</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="text_display_cycle_avg_time">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>710</y>
+        <width>51</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>14</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(0, 170, 0);</string>
+      </property>
+      <property name="text">
+       <string>0.00</string>
       </property>
      </widget>
      <zorder>widget_display</zorder>
@@ -1196,15 +1456,7 @@
      <zorder>open_profile_button</zorder>
      <zorder>save_profile_button</zorder>
      <zorder>text_profile</zorder>
-     <zorder>text_avg_input1</zorder>
-     <zorder>text_avg_work</zorder>
-     <zorder>text_avg_output</zorder>
-     <zorder>text_avg_cycle_time</zorder>
-     <zorder>text_display_avg_input1</zorder>
-     <zorder>text_display_avg_work</zorder>
      <zorder>text_avg_input_4</zorder>
-     <zorder>text_display_avg_output</zorder>
-     <zorder>text_display_avg_cycle_time</zorder>
      <zorder>export_button</zorder>
      <zorder>display_mark_button</zorder>
      <zorder>display_detect_button</zorder>
@@ -1213,8 +1465,16 @@
      <zorder>calibrate_button</zorder>
      <zorder>clear_mark_button</zorder>
      <zorder>clear_track_button</zorder>
-     <zorder>text_avg_input2</zorder>
-     <zorder>text_display_avg_input2</zorder>
+     <zorder>text_input1_avg_time</zorder>
+     <zorder>text_input2_avg_time</zorder>
+     <zorder>text_output_avg_time</zorder>
+     <zorder>text_work_avg_time</zorder>
+     <zorder>text_cycle_avg_time</zorder>
+     <zorder>text_display_input1_avg_time</zorder>
+     <zorder>text_display_input2_avg_time</zorder>
+     <zorder>text_display_output_avg_time</zorder>
+     <zorder>text_display_work_avg_time</zorder>
+     <zorder>text_display_cycle_avg_time</zorder>
     </widget>
     <widget class="QWidget" name="page_2">
      <widget class="QFrame" name="frame">

@@ -139,9 +139,31 @@ class GuiColorDetection(Thread):
                                 self.value_for_calibrate.set_output_area_counter(output_status)
                                 self.value_for_calibrate.set_work_area_counter(work_status)
 
+                                # disable text on camera
+                                self.layout.text_input1_on_camera.setVisible(False)
+                                self.layout.text_input2_on_camera.setVisible(False)
+                                self.layout.text_output_on_camera.setVisible(False)
+                                self.layout.text_work_on_camera.setVisible(False)
+                                self.layout.text_calibrate_input1_on_camera.setVisible(False)
+                                self.layout.text_calibrate_input2_on_camera.setVisible(False)
+                                self.layout.text_calibrate_output_on_camera.setVisible(False)
+                                self.layout.text_calibrate_work_on_camera.setVisible(False)
+
                                 # disable display track and mark
                                 self.gui.toggle_track_status = False
                                 self.gui.toggle_mark_area_status = False
+
+                                # enable text time
+                                self.layout.text_input1_time.setVisible(True)
+                                self.layout.text_input2_time.setVisible(True)
+                                self.layout.text_output_time.setVisible(True)
+                                self.layout.text_work_time.setVisible(True)
+                                self.layout.text_cycle_time.setVisible(True)
+                                self.layout.text_display_input1_time.setVisible(True)
+                                self.layout.text_display_input2_time.setVisible(True)
+                                self.layout.text_display_output_time.setVisible(True)
+                                self.layout.text_display_work_time.setVisible(True)
+                                self.layout.text_display_cycle_time.setVisible(True)
 
                                 # left hand
                                 if self.side_status == 0:

@@ -14,6 +14,8 @@ class GuiTimer(threading.Thread):
         self.input1_start_time = 0
         self.input1_end_time = 0
         self.input1_total_time = 0
+        self.input1_in_round_time = 0
+        self.input1_counter = 0
         self.input1_timer_status = -1
         self.input1_is_pass_interested_area = False
 
@@ -21,6 +23,8 @@ class GuiTimer(threading.Thread):
         self.input2_start_time = 0
         self.input2_end_time = 0
         self.input2_total_time = 0
+        self.input2_in_round_time = 0
+        self.input2_counter = 0
         self.input2_timer_status = -1
         self.input2_is_pass_interested_area = False
 
@@ -28,6 +32,8 @@ class GuiTimer(threading.Thread):
         self.output_start_time = 0
         self.output_end_time = 0
         self.output_total_time = 0
+        self.output_in_round_time = 0
+        self.output_counter = 0
         self.output_timer_status = -1
         self.output_is_pass_interested_area = False
 
@@ -35,7 +41,18 @@ class GuiTimer(threading.Thread):
         self.work_start_time = 0
         self.work_end_time = 0
         self.work_total_time = 0
+        self.work_in_round_time = 0
+        self.work_counter = 0
         self.work_timer_status = -1
+
+        # cycle timer
+        self.cycle_start_time = 0
+        self.cycle_end_time = 0
+        self.cycle_total_time = 0
+        self.cycle_in_round_time = 0
+        self.cycle_counter = 0
+        self.cycle_timer_status = -1
+        self.cycle_is_pass_interested_area = False
 
     def run(self):
         # Display Thread and Process ID
@@ -73,19 +90,21 @@ class GuiTimer(threading.Thread):
                         self.input1_is_pass_interested_area = False
                         # stamp end time
                         self.input1_end_time = time.time()
-                        self.input1_total_time = round((self.input1_end_time - self.input1_start_time), 2)
+                        self.input1_in_round_time = round((self.input1_end_time - self.input1_start_time), 2)
+                        # add in round time to total time and increase counter by 1 for finish round
+                        self.input1_total_time = self.input1_total_time + self.input1_in_round_time
+                        self.input1_counter = self.input1_counter + 1
 
-                        # display time to gui with x:xx format
-                        text_input1_total_time = str(self.input1_total_time)
-                        text_input1_total_time = text_input1_total_time.split('.')
+                        # display time to gui
+                        # at first round if counter is 0 it will divide by zero so error will occur
+                        # display average input1 time
+                        if self.input1_counter != 0:
+                            input1_average_time = self.input1_total_time / self.input1_counter
+                            input1_average_time = round(input1_average_time, 2)
+                            self.layout.text_display_input1_avg_time.setText(str(input1_average_time))
+                        # display in-round time
+                        self.layout.text_display_input1_time.setText(str(self.input1_in_round_time))
 
-                        # add one digit at last if there is only one digit to display
-                        if len(text_input1_total_time[1]) == 1:
-                            text_input1_total_time[1] = text_input1_total_time[1] + '0'
-
-                        text_input1_total_time = text_input1_total_time[0] + ':' + text_input1_total_time[1]
-                        self.layout.text_display_avg_input1.setText(str(text_input1_total_time))
-                        # print('Input1 Time:', self.input1_total_time, 'seconds')
 
                 # center out of work area and timer is standby
                 elif current_area_left == -1 and self.input1_timer_status == 0:
@@ -135,19 +154,20 @@ class GuiTimer(threading.Thread):
                     self.input2_is_pass_interested_area = False
                     # stamp end time
                     self.input2_end_time = time.time()
-                    self.input2_total_time = round((self.input2_end_time - self.input2_start_time), 2)
+                    self.input2_in_round_time = round((self.input2_end_time - self.input2_start_time), 2)
+                    # add in round time to total time and increase counter by 1 for finish round
+                    self.input2_total_time = self.input2_total_time + self.input2_in_round_time
+                    self.input2_counter = self.input2_counter + 1
 
-                    # display time to gui with x:xx format
-                    text_input2_total_time = str(self.input2_total_time)
-                    text_input2_total_time = text_input2_total_time.split('.')
-
-                    # add one digit at last if there is only one digit to display
-                    if len(text_input2_total_time[1]) == 1:
-                        text_input2_total_time[1] = text_input2_total_time[1] + '0'
-
-                    text_input2_total_time = text_input2_total_time[0] + ':' + text_input2_total_time[1]
-                    self.layout.text_display_avg_input2.setText(str(text_input2_total_time))
-                    # print('Input2 Time:', self.input2_total_time, 'seconds')
+                    # display time to gui
+                    # at first round if counter is 0 it will divide by zero so error will occur
+                    # display average input2 time
+                    if self.input2_counter != 0:
+                        input2_average_time = self.input2_total_time / self.input2_counter
+                        input2_average_time = round(input2_average_time, 2)
+                        self.layout.text_display_input2_avg_time.setText(str(input2_average_time))
+                    # display in-round time
+                    self.layout.text_display_input2_time.setText(str(self.input2_in_round_time))
 
                 #########################################################
 
@@ -188,19 +208,20 @@ class GuiTimer(threading.Thread):
                         # set timer to standby
                         self.output_timer_status = 0
                     else:
-                        self.output_total_time = round((self.output_end_time - self.output_start_time), 2)
+                        self.output_in_round_time = round((self.output_end_time - self.output_start_time), 2)
+                        # add in round time to total time and increase counter by 1 for finish round
+                        self.output_total_time = self.output_total_time + self.output_in_round_time
+                        self.output_counter = self.output_counter + 1
 
-                        # display time to gui with x:xx format
-                        text_output_total_time = str(self.output_total_time)
-                        text_output_total_time = text_output_total_time.split('.')
-
-                        # add one digit at last if there is only one digit to display
-                        if len(text_output_total_time[1]) == 1:
-                            text_output_total_time[1] = text_output_total_time[1] + '0'
-
-                        text_output_total_time = text_output_total_time[0] + ':' + text_output_total_time[1]
-                        self.layout.text_display_avg_output.setText(str(text_output_total_time))
-                        # print('Output Time:', self.output_total_time, 'seconds')
+                        # display time to gui
+                        # at first round if counter is 0 it will divide by zero so error will occur
+                        # display average output time
+                        if self.output_counter != 0:
+                            output_average_time = self.output_total_time / self.output_counter
+                            output_average_time = round(output_average_time, 2)
+                            self.layout.text_display_output_avg_time.setText(str(output_average_time))
+                        # display in-round time
+                        self.layout.text_display_output_time.setText(str(self.output_in_round_time))
 
                 #########################################################
 
@@ -224,16 +245,65 @@ class GuiTimer(threading.Thread):
                     self.work_timer_status = -1
                     # stamp end time
                     self.work_end_time = time.time()
-                    self.work_total_time = round((self.work_end_time - self.work_start_time), 2)
+                    self.work_in_round_time = round((self.work_end_time - self.work_start_time), 2)
+                    # add in round time to total time and increase counter by 1 for finish round
+                    self.work_total_time = self.work_total_time + self.work_in_round_time
+                    self.work_counter = self.work_counter + 1
 
-                    # display time to gui with x:xx format
-                    text_work_total_time = str(self.work_total_time)
-                    text_work_total_time = text_work_total_time.split('.')
+                    # display time to gui
+                    # at first round if counter is 0 it will divide by zero so error will occur
+                    # display average work time
+                    if self.work_counter != 0:
+                        work_average_time = self.work_total_time / self.work_counter
+                        work_average_time = round(work_average_time, 2)
+                        self.layout.text_display_work_avg_time.setText(str(work_average_time))
+                    # display in-round time
+                    self.layout.text_display_work_time.setText(str(self.work_in_round_time))
 
-                    # add one digit at last if there is only one digit to display
-                    if len(text_work_total_time[1]) == 1:
-                        text_work_total_time[1] = text_work_total_time[1] + '0'
+                #########################################################
 
-                    text_work_total_time = text_work_total_time[0] + ':' + text_work_total_time[1]
-                    self.layout.text_display_avg_work.setText(str(text_work_total_time))
-                    # print('Work Time:', self.work_total_time, 'seconds')
+                # cycle timer
+                # start from output area
+                if current_area_right == 3:
+                    # first time : enable timer
+                    if self.cycle_timer_status == -1:
+                        # set timer to standby
+                        self.cycle_timer_status = 0
+
+                    # center is back to output area with started timer and pass work area
+                    # stop timer and calculate used time
+                    elif self.cycle_timer_status == 2 and self.cycle_is_pass_interested_area is True:
+                        # reset timer and passed area
+                        self.cycle_timer_status = -1
+                        self.cycle_is_pass_interested_area = False
+                        # stamp end time
+                        self.cycle_end_time = time.time()
+                        self.cycle_in_round_time = round((self.cycle_end_time - self.cycle_start_time), 2)
+                        # add in round time to total time and increase counter by 1 for finish round
+                        self.cycle_total_time = self.cycle_total_time + self.cycle_in_round_time
+                        self.cycle_counter = self.cycle_counter + 1
+
+                        # display time to gui
+                        # at first round if counter is 0 it will divide by zero so error will occur
+                        # display average cycle time
+                        if self.cycle_counter != 0:
+                            cycle_average_time = self.cycle_total_time / self.cycle_counter
+                            cycle_average_time = round(cycle_average_time, 2)
+                            self.layout.text_display_cycle_avg_time.setText(str(cycle_average_time))
+                        # display in-round time
+                        self.layout.text_display_cycle_time.setText(str(self.cycle_in_round_time))
+
+                # center out of output with standby timer so it will start timer
+                elif current_area_right == -1 and self.cycle_timer_status == 0:
+                    # set timer to start
+                    self.cycle_timer_status = 1
+                    # stamp start time
+                    self.cycle_start_time = time.time()
+
+                # once timer start still catch time until timer stop
+                elif current_area_right == -1 and self.cycle_timer_status == 1:
+                    self.cycle_timer_status = 2
+
+                # center is pass work area
+                if current_area_right == 4 and self.cycle_timer_status == 2:
+                    self.cycle_is_pass_interested_area = True

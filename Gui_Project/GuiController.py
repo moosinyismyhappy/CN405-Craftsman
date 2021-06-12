@@ -32,6 +32,7 @@ class GuiController(threading.Thread):
         self.toggle_mark_area_status = False
         self.toggle_detect_status = False
         self.toggle_calibrate_status = False
+        self.toggle_switch_time_status = False
         self.is_calibrate = False
         self.show_image_type = 0
         self.left_or_right_color = -1
@@ -101,6 +102,39 @@ class GuiController(threading.Thread):
         self.ui.text_calibrate_input2_on_camera.setVisible(False)
         self.ui.text_calibrate_output_on_camera.setVisible(False)
         self.ui.text_calibrate_work_on_camera.setVisible(False)
+
+        self.ui.text_input1_time.setStyleSheet('background: transparent;color: rgb(255, 0, 0);')
+        self.ui.text_input2_time.setStyleSheet('background: transparent;color: rgb(255, 150, 0);')
+        self.ui.text_output_time.setStyleSheet('background: transparent;color: rgb(255, 80, 0);')
+        self.ui.text_work_time.setStyleSheet('background: transparent;color: rgb(255, 80, 150);')
+        self.ui.text_cycle_time.setStyleSheet('background: transparent;color: rgb(255, 200, 150);')
+        self.ui.text_display_input1_time.setStyleSheet('background: transparent;color: rgb(255, 0, 0);')
+        self.ui.text_display_input2_time.setStyleSheet('background: transparent;color: rgb(255, 150, 0);')
+        self.ui.text_display_output_time.setStyleSheet('background: transparent;color: rgb(255, 80, 0);')
+        self.ui.text_display_work_time.setStyleSheet('background: transparent;color: rgb(255, 80, 150);')
+        self.ui.text_display_cycle_time.setStyleSheet('background: transparent;color: rgb(255, 200, 150);')
+        self.ui.text_input1_time.setVisible(False)
+        self.ui.text_input2_time.setVisible(False)
+        self.ui.text_output_time.setVisible(False)
+        self.ui.text_work_time.setVisible(False)
+        self.ui.text_cycle_time.setVisible(False)
+        self.ui.text_display_input1_time.setVisible(False)
+        self.ui.text_display_input2_time.setVisible(False)
+        self.ui.text_display_output_time.setVisible(False)
+        self.ui.text_display_work_time.setVisible(False)
+        self.ui.text_display_cycle_time.setVisible(False)
+
+        self.ui.text_input1_avg_time.setStyleSheet('background: transparent;color: rgb(255, 0, 0);')
+        self.ui.text_input2_avg_time.setStyleSheet('background: transparent;color: rgb(255, 150, 0);')
+        self.ui.text_output_avg_time.setStyleSheet('background: transparent;color: rgb(255, 80, 0);')
+        self.ui.text_work_avg_time.setStyleSheet('background: transparent;color: rgb(255, 80, 150);')
+        self.ui.text_cycle_avg_time.setStyleSheet('background: transparent;color: rgb(255, 200, 150);')
+        self.ui.text_display_input1_avg_time.setStyleSheet('background: transparent;color: rgb(255, 0, 0);')
+        self.ui.text_display_input2_avg_time.setStyleSheet('background: transparent;color: rgb(255, 150, 0);')
+        self.ui.text_display_output_avg_time.setStyleSheet('background: transparent;color: rgb(255, 80, 0);')
+        self.ui.text_display_work_avg_time.setStyleSheet('background: transparent;color: rgb(255, 80, 150);')
+        self.ui.text_display_cycle_avg_time.setStyleSheet('background: transparent;color: rgb(255, 200, 150);')
+
 
         # set text value for dial
         self.ui.text_dial_camera_number.setText(str(self.ui.dial_camera_number.value()))
