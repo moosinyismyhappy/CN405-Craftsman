@@ -32,6 +32,7 @@ input1_end_time = 0
 input1_total_time = 0
 input1_timer_status = -1
 input1_is_pass_interested_area = False
+input1_counter = 0
 
 # input2 timer
 input2_start_time = 0
@@ -39,6 +40,7 @@ input2_end_time = 0
 input2_total_time = 0
 input2_timer_status = -1
 input2_is_pass_interested_area = False
+input2_counter = 0
 
 # output timer
 output_start_time = 0
@@ -46,17 +48,22 @@ output_end_time = 0
 output_total_time = 0
 output_timer_status = -1
 output_is_pass_interested_area = False
+output_counter = 0
 
 # work timer
 work_start_time = 0
 work_end_time = 0
 work_total_time = 0
 work_timer_status = -1
+work_counter = 0
 
 # cycle timer
 cycle_start_time = 0
 cycle_end_time = 0
 cycle_timer_status = -1
+cycle_total_time = 0
+cycle_is_pass_interested_area = False
+cycle_counter = 0
 
 # For left hand
 hsv_lower_left = [-1, -1, -1, -1]
@@ -84,11 +91,11 @@ is_out_right = False
 def my_timer():
     global timer_button
     global current_area_left, current_area_right
-    global input1_timer_status, input1_start_time, input1_end_time, input1_total_time, input1_is_pass_interested_area
-    global input2_timer_status, input2_start_time, input2_end_time, input2_total_time, input2_is_pass_interested_area
-    global output_timer_status, output_start_time, output_end_time, output_total_time, output_is_pass_interested_area
-    global work_timer_status, work_start_time, work_end_time, work_total_time
-    global cycle_start_time, cycle_end_time, cycle_timer_status
+    global input1_timer_status, input1_start_time, input1_end_time, input1_total_time, input1_is_pass_interested_area, input1_counter
+    global input2_timer_status, input2_start_time, input2_end_time, input2_total_time, input2_is_pass_interested_area, input2_counter
+    global output_timer_status, output_start_time, output_end_time, output_total_time, output_is_pass_interested_area, output_counter
+    global work_timer_status, work_start_time, work_end_time, work_total_time, work_counter
+    global cycle_start_time, cycle_end_time, cycle_timer_status, cycle_total_time, cycle_is_pass_interested_area, cycle_counter
 
     print(threading.current_thread())
 
@@ -239,21 +246,82 @@ def my_timer():
                 work_total_time = round((work_end_time - work_start_time), 2)
                 # print('Work Time:', work_total_time, 'seconds')
 
+            #########################################################
+            # cycle timer
+            # start from output area
+            if current_area_right == 3:
+                # first time : enable timer
+                if cycle_timer_status == -1:
+                    # set timer to standby
+                    cycle_timer_status = 0
+
+                # center is back to output area with started timer and pass work area
+                # stop timer and calculate used time
+                elif cycle_timer_status == 2 and cycle_is_pass_interested_area is True:
+                    # stamp end time
+                    cycle_end_time = time.time()
+                    cycle_total_time = round((cycle_end_time - cycle_start_time), 2)
+
+                    # reset timer and pass area
+                    cycle_timer_status = -1
+                    cycle_is_pass_interested_area = False
+
+
+            # center out of output with standby timer so it will start timer
+            elif current_area_right == -1 and cycle_timer_status == 0:
+                # set timer to start
+                cycle_timer_status = 1
+                # stamp start time
+                cycle_start_time = time.time()
+
+            # once timer start still catch time until timer stop
+            elif current_area_right == -1 and cycle_timer_status == 1:
+                cycle_timer_status = 2
+
+            # center is pass work area
+            if current_area_right == 4 and cycle_timer_status == 2:
+                cycle_is_pass_interested_area = True
+
+        # display time
         if not input1_total_time < 0:
-            cv2.putText(image_frame, str(input1_total_time) + ' seconds', (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
-                        (0, 0, 255), 2)
+            if timer_button is False:
+                cv2.putText(image_frame, 'Stop', (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                            (0, 0, 255), 2)
+            else:
+                cv2.putText(image_frame, str(input1_total_time) + ' seconds', (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                            (0, 0, 255), 2)
 
         if not input2_total_time < 0:
-            cv2.putText(image_frame, str(input2_total_time) + ' seconds', (180, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
-                        (255, 255, 255), 2)
+            if timer_button is False:
+                cv2.putText(image_frame, 'Stop', (140, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                            (255, 255, 255), 2)
+            else:
+                cv2.putText(image_frame, str(input2_total_time) + ' seconds', (140, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                            (255, 255, 255), 2)
 
         if not output_total_time < 0:
-            cv2.putText(image_frame, str(output_total_time) + ' seconds', (350, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
-                        (0, 80, 255), 2)
+            if timer_button is False:
+                cv2.putText(image_frame, 'Stop', (270, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                            (0, 80, 255), 2)
+            else:
+                cv2.putText(image_frame, str(output_total_time) + ' seconds', (270, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                            (0, 80, 255), 2)
 
         if not work_total_time < 0:
-            cv2.putText(image_frame, str(work_total_time) + ' seconds', (500, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
-                        (150, 80, 255), 2)
+            if timer_button is False:
+                cv2.putText(image_frame, 'Stop', (400, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                            (150, 80, 255), 2)
+            else:
+                cv2.putText(image_frame, str(work_total_time) + ' seconds', (400, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                            (150, 80, 255), 2)
+
+        if not cycle_total_time < 0:
+            if timer_button is False:
+                cv2.putText(image_frame, 'Stop', (520, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                            (145, 10, 91), 2)
+            else:
+                cv2.putText(image_frame, str(cycle_total_time) + ' seconds', (520, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                            (145, 10, 91), 2)
 
 
 def where_is_center_in_area_left(center):
@@ -399,6 +467,9 @@ def mouse_click(event, x, y, flags, param):
         hsv_lower_right = adjust_lower_hsv(hsv_frame[y, x])
         hsv_upper_right = adjust_upper_hsv(hsv_frame[y, x])
         timer_button = True
+
+    if event == cv2.EVENT_MBUTTONDOWN:
+        timer_button = False
 
 
 if __name__ == "__main__":
