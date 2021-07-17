@@ -6,8 +6,8 @@ Senior project of computer engineering @ Thammasat University
 Asst. Prof. Dr. Supakit Prueksaaroon
 
 ## Members</br>
-Mr.Tuchdech   Jirabunyadech</br>
-Ms.Boonyanut  Puingyamsual</br>
+Mr.Tuchdech   Jirabunyadech (5910613248)</br>
+Ms.Boonyanut  Puingyamsual (5910613305)</br>
 
 ## Environment and hardware for Development</br>
 Processor: Intel Core i7 9750H (6 Cores, 12 Threads)</br>
