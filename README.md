@@ -20,4 +20,6 @@ NumPy Version: 1.20.2</br>
 PyQt5 and QT Designer Version: 5.14.1</br>
 
 ## Example of program</br>
-![alt text](https://github.com/moosinyismyhappy/CN405-Craftsman/blob/master/resources/images/overlap2.png)
+![alt text](https://github.com/moosinyismyhappy/CN405-Craftsman/blob/master/resources/images/example_mark_area.png)</br>
+![alt text](https://github.com/moosinyismyhappy/CN405-Craftsman/blob/master/resources/images/example_work.png)</br>
+![alt text](https://github.com/moosinyismyhappy/CN405-Craftsman/blob/master/resources/images/example_time.png)</br>
