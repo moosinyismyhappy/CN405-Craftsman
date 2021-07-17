@@ -1,9 +1,6 @@
 # Craftmanship effectiveness detection
-CN405 - Computer Engieerning Project 2 (semester 2/2020)</br>
-Senior project of computer engineering at Thammasat University
-
-
-
+CN405 - Computer Engieering Project 2 (semester 2/2020)</br>
+Senior project of computer engineering @ Thammasat University
 
 ## Advisor</br>
 Asst. Prof. Dr. Supakit Prueksaaroon
