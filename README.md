@@ -18,6 +18,7 @@ PyQt5 and QT Designer Version: 5.14.1</br>
 
 ## IMPORTANT
 - Files that use for this program is in folder name Gui_Project
+- For testing program please place videos in folder resources/videos and change path in GuiInputVideo.py too.
 
 ## How to use
 1) Click Open Camera Button (In case multiple camera device need to select camera number by Settings Button).
@@ -25,7 +26,7 @@ PyQt5 and QT Designer Version: 5.14.1</br>
 3) Click Left, Right color button to select color for left-hand and right-hand for detection.
 4) Keep working!!!
 5) When appeared points reach maximum number rectangle over mark area will be occur.
-6) Click start button to record time.
+6) Click start button to record time.</br>
 Note: Open Profile, Save Profile, Export, Pause, Stop, Calibrate now is not operant. 
 
 ## Example of program</br>
