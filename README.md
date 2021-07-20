@@ -26,7 +26,8 @@ PyQt5 and QT Designer Version: 5.14.1</br>
 3) Click Left, Right color button to select color for left-hand and right-hand for detection.
 4) Keep working!!!
 5) When appeared points reach maximum number rectangle over mark area will be occur.
-6) Click start button to record time.</br>
+6) Click start button to record time.
+
 Note: Open Profile, Save Profile, Export, Pause, Stop, Calibrate now is not operant. 
 
 ## Example of program</br>
