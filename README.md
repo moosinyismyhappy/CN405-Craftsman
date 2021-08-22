@@ -17,18 +17,18 @@ NumPy Version: 1.20.2</br>
 PyQt5 and QT Designer Version: 5.14.1</br>
 
 ## IMPORTANT
-- Files that use for this program is in folder name Gui_Project
-- For testing program please place videos in folder resources/videos and change path in GuiInputVideo.py too.
+- Files for use in this program are in folder name Gui_Project
+- For testing program please place videos in folder resources/videos and change path in GuiInputVideo.py
 
 ## How to use
-1) Click Open Camera Button (In case multiple camera device need to select camera number by Settings Button).
+1) Click Open Camera Button (In case multiple camera devices you need to select camera number by Settings Button).
 2) Click Mark Input1, Input2, Output, Work button respectively to mark area on screen.
 3) Click Left, Right color button to select color for left-hand and right-hand for detection.
 4) Keep working!!!
-5) When appeared points reach maximum number rectangle over mark area will be occur.
-6) Click start button to record time.
+5) When appeared points reach maximum number rectangle over mark area will show on screen.
+6) Click start button for time record.
 
-Note: Open Profile, Save Profile, Export, Pause, Stop, Calibrate now is not operant. 
+Note: Open Profile, Save Profile, Export, Pause, Stop, Calibrate now are inoperant. 
 
 ## Example of program</br>
 - https://www.youtube.com/watch?v=DPoGNsF1Mts (Real craftsman work)
